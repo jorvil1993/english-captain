@@ -1,0 +1,8 @@
+# Dependencias y compilados: se rehacen con npm install / npm run build.
+en-curso/app/node_modules/
+en-curso/app/dist/
+en-curso/app/*.tsbuildinfo
+
+# Intermedios de los generadores.
+en-curso/artes/__pycache__/
+en-curso/artes/_codex_salidas/
