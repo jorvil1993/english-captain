@@ -79,6 +79,7 @@ export type HistoriaBiblica = {
   id: string
   titulo: string
   icono: string
+  img: string
   escenas: EscenaBiblica[]
 }
 
@@ -87,6 +88,7 @@ export const HISTORIAS_BIBLICAS: HistoriaBiblica[] = [
     id: 'noah',
     titulo: "Noah's Ark",
     icono: '🚢',
+    img: 'noah-ark',
     escenas: [
       {
         titulo: "The Animals in the Ark",
@@ -119,6 +121,7 @@ export const HISTORIAS_BIBLICAS: HistoriaBiblica[] = [
     id: 'baby-jesus',
     titulo: 'Baby Jesus',
     icono: '👶',
+    img: 'u4-mary',
     escenas: [
       {
         titulo: 'The Bright Star',
@@ -151,6 +154,7 @@ export const HISTORIAS_BIBLICAS: HistoriaBiblica[] = [
     id: 'creation',
     titulo: "God's Creation",
     icono: '🌎',
+    img: 'u3-beautiful',
     escenas: [
       {
         titulo: 'Sun and Waters',
@@ -192,6 +196,7 @@ export type CancionAlabanza = {
   id: string
   titulo: string
   emoji: string
+  img: string
   archivoAudio: string
   versos: string[]
   vocabulario: VocabularioCancion[]
@@ -202,6 +207,7 @@ export const CANCIONES_ALABANZA: CancionAlabanza[] = [
     id: 'light',
     titulo: 'This Little Light of Mine',
     emoji: '🕯️',
+    img: 'u5-light',
     archivoAudio: './audio/cancion_light.mp3',
     versos: [
       "This little light of mine, I'm gonna let it shine!",
@@ -219,6 +225,7 @@ export const CANCIONES_ALABANZA: CancionAlabanza[] = [
     id: 'hands',
     titulo: "He's Got the Whole World in His Hands",
     emoji: '🌎',
+    img: 'u3-beautiful',
     archivoAudio: './audio/cancion_world.mp3',
     versos: [
       "He's got the whole world in His hands,",
@@ -236,6 +243,7 @@ export const CANCIONES_ALABANZA: CancionAlabanza[] = [
     id: 'loves-me',
     titulo: 'Jesus Loves Me',
     emoji: '❤️',
+    img: 'u4-mary',
     archivoAudio: './audio/cancion_lovesme.mp3',
     versos: [
       'Jesus loves me, this I know,',
