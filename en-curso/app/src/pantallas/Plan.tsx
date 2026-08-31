@@ -1,28 +1,28 @@
 import { useEffect } from 'react'
 import { decir, esperar } from '../audio/voz'
+import { etiquetaDeParada, type Parada } from '../datos/recorrido'
 import { Tarjeta } from '../componentes/Tarjeta'
 import { Marco } from '../componentes/Marco'
 
-export type Actividad = 'story' | 'move' | 'challenge'
-
-const FICHAS: { id: Actividad; img: string; emoji: string; en: string }[] = [
-  { id: 'story', img: 'plan-story', emoji: '📖', en: 'The story' },
-  { id: 'move', img: 'plan-move', emoji: '🏃', en: 'Move it' },
-  { id: 'challenge', img: 'plan-challenge', emoji: '🏆', en: 'The challenge' },
-]
-
+/**
+ * La elección chica del recorrido: José elige el ORDEN de 2-3 paradas
+ * consecutivas, nunca si las hace. Generaliza lo que antes era un array fijo
+ * de story/move/challenge a cualquier bloque `modo: 'elegible'` del
+ * recorrido de hoy (ver `datos/recorrido.ts`). Sin `onInicio`: esta parada
+ * nunca se salta.
+ */
 export function Plan({
+  paradas,
   hechas,
   onElegir,
   onPanel,
-  onInicio,
 }: {
-  hechas: Actividad[]
-  onElegir: (a: Actividad) => void
+  paradas: Parada[]
+  hechas: Parada[]
+  onElegir: (p: Parada) => void
   onPanel: () => void
-  onInicio?: () => void
 }) {
-  const pendientes = FICHAS.filter((f) => !hechas.includes(f.id))
+  const pendientes = paradas.filter((p) => !hechas.includes(p))
 
   useEffect(() => {
     let cancelado = false
@@ -43,21 +43,22 @@ export function Plan({
   }, [hechas.length, pendientes.length])
 
   return (
-    <Marco paso={hechas.length} total={3} onPanel={onPanel} onInicio={onInicio}>
+    <Marco paso={hechas.length} total={paradas.length} onPanel={onPanel}>
       <div className="pantalla">
         <p className="frase-chica">You choose, Captain.</p>
         <div className="fila">
-          {FICHAS.map((f) => {
-            const hecha = hechas.includes(f.id)
+          {paradas.map((p) => {
+            const hecha = hechas.includes(p)
+            const etiqueta = etiquetaDeParada(p)
             return (
-              <div key={f.id} className="ficha">
+              <div key={p.tipo} className="ficha">
                 <Tarjeta
-                  img={f.img}
-                  emoji={hecha ? '✅' : f.emoji}
+                  img={etiqueta.img}
+                  emoji={hecha ? '✅' : etiqueta.emoji}
                   hecha={hecha}
-                  onClick={hecha ? undefined : () => onElegir(f.id)}
+                  onClick={hecha ? undefined : () => onElegir(p)}
                 />
-                <span className="frase-chica">{f.en}</span>
+                <span className="frase-chica">{etiqueta.en}</span>
               </div>
             )
           })}

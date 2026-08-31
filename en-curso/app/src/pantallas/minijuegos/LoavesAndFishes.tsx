@@ -80,7 +80,7 @@ const CANASTA: { tipo: Vianda; x: number; y: number }[] = [
   { tipo: 'fish', x: 60, y: 86 },
 ]
 
-export function LoavesAndFishes({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+export function LoavesAndFishes({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
   const escena = useRef<HTMLDivElement>(null)
   const mano = useRef<HTMLDivElement>(null)
   const voz = useLocutor()
@@ -250,7 +250,7 @@ export function LoavesAndFishes({ onVolver, onPanel }: { onVolver: () => void; o
   }, [])
 
   return (
-    <Marco paso={servidos.length} total={COMENSALES.length} onPanel={onPanel} onInicio={onVolver}>
+    <Marco paso={servidos.length} total={COMENSALES.length} onPanel={onPanel} onInicio={onInicio}>
       <div className="mjx-pantalla">
         <p className="mjx-titulo">Loaves and Fishes</p>
 

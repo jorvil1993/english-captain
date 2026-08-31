@@ -8,9 +8,16 @@ import { decir } from '../audio/voz'
 export function TableroVocabulario({
   onVolver,
   onPanel,
+  onInicio,
+  onListo,
 }: {
   onVolver: () => void
   onPanel: () => void
+  onInicio?: () => void
+  /** Si está presente, es una parada del recorrido diario: no hay "volver
+   *  al rincón" (no hay a dónde volver), hay un botón para seguir cuando
+   *  José ya escuchó algunas tarjetas. Sin esto, comportamiento de siempre. */
+  onListo?: () => void
 }) {
   const [unidadIdx, setUnidadIdx] = useState(0)
   const unidad = UNIDADES[unidadIdx] ?? UNIDADES[0]
@@ -22,7 +29,7 @@ export function TableroVocabulario({
   }
 
   return (
-    <Marco paso={0} total={3} onPanel={onPanel}>
+    <Marco paso={0} total={3} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla" style={{ overflowY: 'auto', paddingBottom: 40 }}>
         <p className="frase">{fraseActiva ? fraseActiva.en : 'Sound Board'}</p>
         <p className="frase-chica">{fraseActiva ? fraseActiva.gesto : 'Toca cualquier tarjeta para escucharla'}</p>
@@ -61,9 +68,15 @@ export function TableroVocabulario({
           ))}
         </div>
 
-        <button className="boton fantasma" onClick={onVolver} style={{ marginTop: 20 }}>
-          ← Volver al Rincón
-        </button>
+        {onListo ? (
+          <button className="boton fantasma" onClick={onListo} style={{ marginTop: 20 }}>
+            ▶ Continue
+          </button>
+        ) : (
+          <button className="boton fantasma" onClick={onVolver} style={{ marginTop: 20 }}>
+            ← Volver al Rincón
+          </button>
+        )}
       </div>
     </Marco>
   )

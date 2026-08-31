@@ -121,7 +121,7 @@ export const HISTORIAS_BIBLICAS: HistoriaBiblica[] = [
     id: 'baby-jesus',
     titulo: 'Baby Jesus',
     icono: '👶',
-    img: 'u4-mary',
+    img: 'u4-jesus',
     escenas: [
       {
         titulo: 'The Bright Star',
@@ -154,7 +154,7 @@ export const HISTORIAS_BIBLICAS: HistoriaBiblica[] = [
     id: 'creation',
     titulo: "God's Creation",
     icono: '🌎',
-    img: 'u3-beautiful',
+    img: 'world-globe',
     escenas: [
       {
         titulo: 'Sun and Waters',
@@ -216,16 +216,16 @@ export const CANCIONES_ALABANZA: CancionAlabanza[] = [
     ],
     vocabulario: [
       { id: 'v-light', palabra: 'Light', audio: 'Candle! Light!', emoji: '🕯️', img: 'u5-light' },
-      { id: 'v-shine', palabra: 'Shine', audio: 'Let your light shine!', emoji: '✨', img: 'u3-stars' },
-      { id: 'v-star', palabra: 'Star', audio: 'Bright Star!', emoji: '⭐', img: 'u3-stars' },
-      { id: 'v-heart', palabra: 'Heart', audio: 'Jesus, I love you with all my heart! Amen!', emoji: '💖', img: 'u2-i-love-you' },
+      { id: 'v-shine', palabra: 'Shine', audio: 'Let your light shine!', emoji: '✨', img: 'shine-rays' },
+      { id: 'v-star', palabra: 'Star', audio: 'Bright Star!', emoji: '⭐', img: 'star-solo' },
+      { id: 'v-heart', palabra: 'Heart', audio: 'Jesus, I love you with all my heart! Amen!', emoji: '💖', img: 'heart-love' },
     ],
   },
   {
     id: 'hands',
     titulo: "He's Got the Whole World in His Hands",
     emoji: '🌎',
-    img: 'u3-beautiful',
+    img: 'world-globe',
     archivoAudio: './audio/cancion_world.mp3',
     versos: [
       "He's got the whole world in His hands,",
@@ -233,9 +233,9 @@ export const CANCIONES_ALABANZA: CancionAlabanza[] = [
       "He's got the little tiny baby in His hands,",
     ],
     vocabulario: [
-      { id: 'v-world', palabra: 'World', audio: 'Thank you, God, for our world!', emoji: '🌎', img: 'u3-beautiful' },
+      { id: 'v-world', palabra: 'World', audio: 'Thank you, God, for our world!', emoji: '🌎', img: 'world-globe' },
       { id: 'v-sun', palabra: 'Sun', audio: 'Sun! God made the sun!', emoji: '☀️', img: 'u3-sun' },
-      { id: 'v-rain', palabra: 'Rain', audio: 'Water! Splash splash!', emoji: '🌧️', img: 'u3-water' },
+      { id: 'v-rain', palabra: 'Rain', audio: 'Water! Splash splash!', emoji: '🌧️', img: 'rain-drops' },
       { id: 'v-baby', palabra: 'Baby', audio: 'Baby Jesus!', emoji: '👶', img: 'u4-jesus' },
     ],
   },
@@ -243,7 +243,7 @@ export const CANCIONES_ALABANZA: CancionAlabanza[] = [
     id: 'loves-me',
     titulo: 'Jesus Loves Me',
     emoji: '❤️',
-    img: 'u4-mary',
+    img: 'u4-jesus',
     archivoAudio: './audio/cancion_lovesme.mp3',
     versos: [
       'Jesus loves me, this I know,',
@@ -251,10 +251,10 @@ export const CANCIONES_ALABANZA: CancionAlabanza[] = [
       'Little ones to Him belong, yes, Jesus loves me!',
     ],
     vocabulario: [
-      { id: 'v-jesus', palabra: 'Jesus', audio: 'Thank you, Jesus! Amen!', emoji: '✝️', img: 'u6-cross' },
+      { id: 'v-jesus', palabra: 'Jesus', audio: 'Thank you, Jesus! Amen!', emoji: '👶', img: 'u4-jesus' },
       { id: 'v-bible', palabra: 'Bible', audio: 'Open the Word of God!', emoji: '📖', img: 'u6-bible' },
-      { id: 'v-little', palabra: 'Little', audio: 'Good night, little Captain!', emoji: '🧒', img: 'u1-c1' },
-      { id: 'v-love', palabra: 'Love', audio: 'God loves you!', emoji: '❤️', img: 'u2-i-love-you' },
+      { id: 'v-little', palabra: 'Little', audio: 'Good night, little Captain!', emoji: '🧒', img: 'u5-angel' },
+      { id: 'v-love', palabra: 'Love', audio: 'God loves you!', emoji: '❤️', img: 'heart-love' },
     ],
   },
 ]
@@ -314,8 +314,8 @@ export const OBJETOS_SAGRADOS: ObjetoSagrado[] = [
     nombre: 'Flower',
     orden: 'Give a flower to Mother Mary!',
     respuesta: 'Mother Mary loves you! Wonderful!',
-    emoji: '🌹',
-    img: 'u4-mary',
+    emoji: '🌸',
+    img: 'u3-flowers',
   },
   {
     id: 'church',

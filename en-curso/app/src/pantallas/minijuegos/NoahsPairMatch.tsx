@@ -27,7 +27,7 @@ function mezclar<T>(xs: T[]): T[] {
   return a
 }
 
-export function NoahsPairMatch({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+export function NoahsPairMatch({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
   const [paso, setPaso] = useState(0)
   const [bloqueado, setBloqueado] = useState(false)
   const [elegido, setElegido] = useState<string | null>(null)
@@ -151,7 +151,7 @@ export function NoahsPairMatch({ onVolver, onPanel }: { onVolver: () => void; on
   }
 
   return (
-    <Marco paso={paso} total={ANIMALES.length} onPanel={onPanel} onInicio={onVolver}>
+    <Marco paso={paso} total={ANIMALES.length} onPanel={onPanel} onInicio={onInicio}>
       <div
         className="pantalla"
         onPointerMove={moverArrastre}

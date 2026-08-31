@@ -110,7 +110,7 @@ const TOLERANCIA = 12
 
 const VUELTAS = 2
 
-export function TraceTheCross({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+export function TraceTheCross({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
   const escena = useRef<HTMLDivElement>(null)
   const rastro = useRef<SVGLineElement>(null)
   const voz = useLocutor()
@@ -285,7 +285,7 @@ export function TraceTheCross({ onVolver, onPanel }: { onVolver: () => void; onP
   const hechos = PUNTOS.slice(0, paso)
 
   return (
-    <Marco paso={paso} total={PUNTOS.length} onPanel={onPanel} onInicio={onVolver}>
+    <Marco paso={paso} total={PUNTOS.length} onPanel={onPanel} onInicio={onInicio}>
       <div className="mjx-pantalla">
         <p className="mjx-titulo">Trace the Holy Cross</p>
 

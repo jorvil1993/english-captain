@@ -6,12 +6,40 @@ import { Boton } from '../../componentes/Boton'
 import { Marco } from '../../componentes/Marco'
 
 type ModoBendicion = 'menu' | 'morning' | 'night'
+type SubBendicion = 'morning' | 'night'
 
-export function MorningNightBlessings({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+export function MorningNightBlessings({
+  onPanel,
+  onInicio,
+  onListo,
+}: {
+  onPanel: () => void
+  onInicio?: () => void
+  /** Igual que en `ChampionsOfJesus`: si está presente, cuenta las 2
+   *  bendiciones y llama a `onListo` cuando están las dos. Sin `onListo`
+   *  (Modo Calma), el comportamiento es exactamente el de antes. */
+  onListo?: () => void
+}) {
   const [modo, setModo] = useState<ModoBendicion>('menu')
   const [cortinaAbierta, setCortinaAbierta] = useState(false)
   const [cobijado, setCobijado] = useState(false)
   const [bloqueado, setBloqueado] = useState(false)
+  const [completados, setCompletados] = useState<Set<SubBendicion>>(new Set())
+
+  const terminarSub = (sub: SubBendicion) => {
+    bien()
+    if (!onListo) {
+      setModo('menu')
+      return
+    }
+    setCompletados((prev) => {
+      const next = new Set(prev)
+      next.add(sub)
+      if (next.size >= 2) onListo()
+      else setModo('menu')
+      return next
+    })
+  }
 
   const iniciarMorning = async () => {
     setModo('morning')
@@ -54,24 +82,28 @@ export function MorningNightBlessings({ onVolver, onPanel }: { onVolver: () => v
 
   if (modo === 'menu') {
     return (
-      <Marco paso={0} total={0} onPanel={onPanel} onInicio={onVolver}>
+      <Marco paso={0} total={0} onPanel={onPanel} onInicio={onInicio}>
         <div className="pantalla">
           <p className="frase">Daily Blessings</p>
           <p className="frase-chica">Morning & Night Routines</p>
 
           <div className="fila">
-            <div className="ficha">
-              <Tarjeta img="u3-sun" emoji="☀️" onClick={() => void iniciarMorning()} />
-              <span className="frase-chica" style={{ fontWeight: 700 }}>
-                Morning Blessing ☀️
-              </span>
-            </div>
-            <div className="ficha">
-              <Tarjeta img="u5-angel" emoji="🌙" onClick={() => void iniciarNight()} />
-              <span className="frase-chica" style={{ fontWeight: 700 }}>
-                Night Prayer 🌙
-              </span>
-            </div>
+            {!completados.has('morning') && (
+              <div className="ficha">
+                <Tarjeta img="u3-sun" emoji="☀️" onClick={() => void iniciarMorning()} />
+                <span className="frase-chica" style={{ fontWeight: 700 }}>
+                  Morning Blessing ☀️
+                </span>
+              </div>
+            )}
+            {!completados.has('night') && (
+              <div className="ficha">
+                <Tarjeta img="u5-angel" emoji="🌙" onClick={() => void iniciarNight()} />
+                <span className="frase-chica" style={{ fontWeight: 700 }}>
+                  Night Prayer 🌙
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </Marco>
@@ -79,7 +111,7 @@ export function MorningNightBlessings({ onVolver, onPanel }: { onVolver: () => v
   }
 
   return (
-    <Marco paso={1} total={1} onPanel={onPanel} onInicio={() => setModo('menu')}>
+    <Marco paso={1} total={1} onPanel={onPanel} onInicio={onListo ? undefined : () => setModo('menu')}>
       <div className="pantalla">
         <p className="frase">{modo === 'morning' ? 'Morning Blessing ☀️' : 'Night Blessing 🌙'}</p>
 
@@ -116,14 +148,7 @@ export function MorningNightBlessings({ onVolver, onPanel }: { onVolver: () => v
               </p>
             </div>
 
-            <Boton
-              invita
-              onClick={() => {
-                bien()
-                setModo('menu')
-              }}
-              style={{ marginTop: 12 }}
-            >
+            <Boton invita onClick={() => terminarSub('morning')} style={{ marginTop: 12 }}>
               ✔ Amen!
             </Boton>
           </>
@@ -161,14 +186,7 @@ export function MorningNightBlessings({ onVolver, onPanel }: { onVolver: () => v
               </p>
             </div>
 
-            <Boton
-              invita
-              onClick={() => {
-                bien()
-                setModo('menu')
-              }}
-              style={{ marginTop: 12 }}
-            >
+            <Boton invita onClick={() => terminarSub('night')} style={{ marginTop: 12 }}>
               ✔ Amen!
             </Boton>
           </>

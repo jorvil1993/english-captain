@@ -3,34 +3,16 @@ import { LISTA_MINIJUEGOS_EXTRA, type MinijuegoExtraId } from '../datos/minijueg
 import { decir } from '../audio/voz'
 import { toque } from '../audio/sonidos'
 import { Marco } from '../componentes/Marco'
+import { Tarjeta } from '../componentes/Tarjeta'
 import './minijuegos/motor/estilos.css'
-
-/**
- * EL MENÚ DE LOS MINI JUEGOS.
- *
- * Diez juegos en dos familias, y la separación no es de adorno:
- *
- *   TAP & PLAY   se toca algo y pasa algo. Ritmo lento, sin urgencia.
- *   MOVE & PLAY  el dedo hace un gesto sostenido —trazar, arrastrar,
- *                perseguir, agitar, tirar—. Piden cuerpo.
- *
- * José no lee, así que el rótulo de cada familia es para papá; lo que él
- * distingue es la posición y el dibujo. Que los cinco de movimiento estén
- * siempre abajo y los cinco de toque siempre arriba es lo que le permite
- * volver al que le gustó sin preguntar.
- *
- * Y el menú no se desplaza NUNCA. Con diez tarjetas la tentación es dejar que
- * la pantalla haga scroll; para un niño de cuatro años eso significa que la
- * mitad de los juegos simplemente no existen, porque no se le ocurre que haya
- * algo más abajo. Entran los diez o no entra ninguno.
- */
 
 type Elegible = MinijuegoInfo['id'] | MinijuegoExtraId
 
-type Tarjeta = {
+type FichaJuego = {
   id: Elegible
   titulo: string
   emoji: string
+  img: string
 }
 
 export function MinijuegosHub({
@@ -42,49 +24,86 @@ export function MinijuegosHub({
   onVolver: () => void
   onPanel: () => void
 }) {
-  const seleccionar = (t: Tarjeta) => {
+  const seleccionar = (t: FichaJuego) => {
     toque()
     void decir(t.titulo)
     onElegir(t.id)
   }
 
-  const grupo = (rotulo: string, icono: string, tarjetas: Tarjeta[]) => (
-    <>
-      <p className="mjx-hub-rotulo">
+  const renderizarGrupo = (rotulo: string, icono: string, juegos: FichaJuego[]) => (
+    <div style={{ width: '100%', marginBottom: 12 }}>
+      <p
+        style={{
+          fontSize: 'clamp(14px, 3vmin, 18px)',
+          fontWeight: 800,
+          color: 'var(--verde-oscuro)',
+          margin: '4px 0 10px 4px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+        }}
+      >
         <span aria-hidden>{icono}</span> {rotulo}
       </p>
-      {tarjetas.map((t) => (
-        <div
-          key={t.id}
-          className="mjx-hub-tarjeta"
-          role="button"
-          tabIndex={0}
-          onClick={() => seleccionar(t)}
-        >
-          <span className="emoji" aria-hidden>
-            {t.emoji}
-          </span>
-          <span className="titulo">{t.titulo}</span>
-        </div>
-      ))}
-    </>
+
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(95px, 1fr))',
+          gap: 'clamp(8px, 1.5vmin, 14px)',
+        }}
+      >
+        {juegos.map((j) => (
+          <div
+            key={j.id}
+            onClick={() => seleccionar(j)}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              cursor: 'pointer',
+              userSelect: 'none',
+              touchAction: 'manipulation',
+            }}
+          >
+            <div style={{ width: 84, height: 84 }}>
+              <Tarjeta img={j.img} emoji={j.emoji} />
+            </div>
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: 'var(--tinta)',
+                textAlign: 'center',
+                marginTop: 4,
+                lineHeight: 1.2,
+              }}
+            >
+              {j.titulo}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 
   return (
     <Marco paso={0} total={0} onPanel={onPanel} onInicio={onVolver}>
-      <div className="mjx-hub">
-        <p className="mjx-titulo">Catholic Minigames</p>
+      <div className="pantalla" style={{ justifyContent: 'flex-start', maxWidth: 'min(94vw, 560px)' }}>
+        <p className="frase" style={{ marginBottom: 4 }}>
+          Catholic Minigames
+        </p>
 
-        <div className="mjx-hub-lista">
-          {grupo(
+        <div style={{ width: '100%', overflowY: 'auto', paddingBottom: 16 }}>
+          {renderizarGrupo(
             'Tap & Play',
             '👆',
-            LISTA_MINIJUEGOS.map((m) => ({ id: m.id, titulo: m.titulo, emoji: m.emoji })),
+            LISTA_MINIJUEGOS.map((m) => ({ id: m.id, titulo: m.titulo, emoji: m.emoji, img: m.img })),
           )}
-          {grupo(
+          {renderizarGrupo(
             'Move & Play',
             '💪',
-            LISTA_MINIJUEGOS_EXTRA.map((m) => ({ id: m.id, titulo: m.titulo, emoji: m.emoji })),
+            LISTA_MINIJUEGOS_EXTRA.map((m) => ({ id: m.id, titulo: m.titulo, emoji: m.emoji, img: m.img })),
           )}
         </div>
       </div>

@@ -19,7 +19,7 @@ const VELAS: VelaAltar[] = [
   { id: 'candle-3', nombre: 'Third Candle', orden: 'Light the altar candle!', sonido: 'Let your light shine!', emoji: '🕯️', img: 'u5-light' },
 ]
 
-export function LightTheAltar({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+export function LightTheAltar({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
   const [encendidas, setEncendidas] = useState<string[]>([])
   const [bloqueado, setBloqueado] = useState(false)
   const [terminado, setTerminado] = useState(false)
@@ -42,7 +42,7 @@ export function LightTheAltar({ onVolver, onPanel }: { onVolver: () => void; onP
     void (async () => {
       await esperar(300)
       if (cancelado) return
-      await decir('Let your light shine!')
+      await decir('Let your light shine! Light the candle!')
       if (cancelado) return
       setBloqueado(false)
       reiniciarInactividad('Light the candle!')
@@ -101,7 +101,7 @@ export function LightTheAltar({ onVolver, onPanel }: { onVolver: () => void; onP
   }
 
   return (
-    <Marco paso={encendidas.length} total={VELAS.length} onPanel={onPanel} onInicio={onVolver}>
+    <Marco paso={encendidas.length} total={VELAS.length} onPanel={onPanel} onInicio={onInicio}>
       <div
         className="pantalla"
         onPointerMove={moverArrastreLlama}
@@ -109,7 +109,7 @@ export function LightTheAltar({ onVolver, onPanel }: { onVolver: () => void; onP
       >
         <p className="frase">Light the Altar</p>
 
-        {/* Escena del Altar con Cruz Dorada Celestial */}
+        {/* Escena del Altar con Cruz Dorada Celestial (Encabezado General) */}
         <div
           ref={altarRef}
           style={{
@@ -123,14 +123,14 @@ export function LightTheAltar({ onVolver, onPanel }: { onVolver: () => void; onP
               : 'radial-gradient(circle at center, #ffffff 40%, #fef9c3 100%)',
             border: 'clamp(3px, 0.8vmin, 6px) solid var(--fondo-2)',
             borderRadius: 'var(--radio)',
-            padding: 'clamp(14px, 2.5vmin, 22px)',
+            padding: 'clamp(12px, 2vmin, 18px)',
             width: 'min(92vw, 420px)',
             boxShadow: terminado ? '0 0 36px rgba(245, 158, 11, 0.9)' : 'var(--sombra)',
             transition: 'all 500ms ease',
           }}
         >
-          {/* Ilustración de la Cruz del Altar */}
-          <div style={{ width: 88, height: 88, marginBottom: 8 }}>
+          {/* Ilustración de la Escena del Altar */}
+          <div style={{ width: 84, height: 84, marginBottom: 4 }}>
             <Tarjeta img="altar-scene" emoji="✝️" />
           </div>
 
@@ -143,18 +143,33 @@ export function LightTheAltar({ onVolver, onPanel }: { onVolver: () => void; onP
           </p>
         </div>
 
-        {/* Las 3 Velas del Altar para encender */}
+        {/* Las 3 Velas INDIVIDUALES en Primer Plano */}
         <div className="fila" style={{ marginTop: 8 }}>
           {VELAS.map((v, i) => {
             const prendida = encendidas.includes(v.id)
             return (
-              <div key={v.id} className="ficha">
-                <Tarjeta
-                  img="u5-light"
-                  emoji={prendida ? '🔥' : '🕯️'}
-                  elegida={prendida}
-                  onClick={prendida || bloqueado ? undefined : () => void encender(v)}
-                />
+              <div
+                key={v.id}
+                className="ficha"
+                style={{
+                  transform: prendida ? 'scale(1.05)' : 'scale(0.96)',
+                  transition: 'all 250ms ease',
+                }}
+              >
+                <div
+                  style={{
+                    borderRadius: 'var(--radio)',
+                    boxShadow: prendida ? '0 0 20px rgba(245, 158, 11, 0.85)' : 'none',
+                    transition: 'box-shadow 300ms ease',
+                  }}
+                >
+                  <Tarjeta
+                    img="u5-light"
+                    emoji={prendida ? '🔥' : '🕯️'}
+                    elegida={prendida}
+                    onClick={prendida || bloqueado ? undefined : () => void encender(v)}
+                  />
+                </div>
                 <span className="frase-chica" style={{ fontSize: 13, fontWeight: 700 }}>
                   {prendida ? '✨ Shining!' : `Candle ${i + 1}`}
                 </span>

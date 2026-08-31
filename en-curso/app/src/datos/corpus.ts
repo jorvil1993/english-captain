@@ -11,20 +11,22 @@ export type Linea = {
   voz: Voz
 }
 
-export const NOMBRE = 'José'
-
 /** Frases fijas de la interfaz y del Rincón Católico. */
 const INTERFAZ: Linea[] = [
-  { texto: `Good morning, Captain ${NOMBRE}!`, voz: 'maestra' },
-  { texto: `Good afternoon, Captain ${NOMBRE}!`, voz: 'maestra' },
-  { texto: `Good evening, Captain ${NOMBRE}!`, voz: 'maestra' },
+  // Los saludos no contienen el nombre editable: así siempre tienen un MP3
+  // natural, aunque papá cambie el perfil del niño.
+  { texto: 'Good morning, Captain!', voz: 'maestra' },
+  { texto: 'Good afternoon, Captain!', voz: 'maestra' },
+  { texto: 'Good evening, Captain!', voz: 'maestra' },
   { texto: "Let's play!", voz: 'maestra' },
+  { texto: "Let's learn something new!", voz: 'oracion' },
+  { texto: 'Catholic Corner time!', voz: 'maestra' },
   { texto: 'What do we do first?', voz: 'maestra' },
   { texto: 'What is next, Captain?', voz: 'maestra' },
   { texto: 'And now, the last one!', voz: 'maestra' },
   { texto: 'Your turn!', voz: 'maestra' },
   { texto: 'Your mission!', voz: 'maestra' },
-  { texto: `Great job, Captain ${NOMBRE}!`, voz: 'maestra' },
+  { texto: 'Great job, Captain!', voz: 'maestra' },
   { texto: 'See you tomorrow!', voz: 'maestra' },
   { texto: 'Yes!', voz: 'nino' },
   { texto: 'Bravo!', voz: 'nino' },
@@ -49,6 +51,26 @@ const INTERFAZ: Linea[] = [
   { texto: 'Sheep!', voz: 'maestra' },
   { texto: 'Dove!', voz: 'maestra' },
   { texto: 'Elephant!', voz: 'maestra' },
+  // Frases de Fútbol Católico (Messi, Mbappé, Lamine, Dibu)
+  { texto: 'Champions of Jesus', voz: 'coach' },
+  { texto: 'Shoot and score!', voz: 'coach' },
+  { texto: 'Pass to Messi!', voz: 'nino' },
+  { texto: 'Pass to Mbappé!', voz: 'nino' },
+  { texto: 'Pass to Lamine!', voz: 'nino' },
+  { texto: 'Dibu saves the ball!', voz: 'coach' },
+  { texto: 'GOAL! Thank you, God!', voz: 'nino' },
+  { texto: 'Great kick, Captain José!', voz: 'coach' },
+  { texto: 'We play together with Jesus!', voz: 'oracion' },
+  { texto: 'Be strong and brave!', voz: 'coach' },
+  { texto: 'Glory to God!', voz: 'oracion' },
+  { texto: 'Kick the ball!', voz: 'coach' },
+  { texto: 'Goal!', voz: 'nino' },
+  { texto: 'Pass!', voz: 'coach' },
+  { texto: 'Save!', voz: 'coach' },
+  { texto: 'Messi!', voz: 'nino' },
+  { texto: 'Mbappé!', voz: 'nino' },
+  { texto: 'Lamine!', voz: 'nino' },
+  { texto: 'Dibu!', voz: 'coach' },
 ]
 
 function sinRepetir(lineas: Linea[]): Linea[] {
@@ -86,6 +108,7 @@ export function corpus(): Linea[] {
   }
 
   for (const o of ORACIONES) {
+    lineas.push({ texto: o.titulo, voz: 'oracion' })
     o.versos.forEach((v) => lineas.push({ texto: v, voz: 'oracion' }))
   }
 

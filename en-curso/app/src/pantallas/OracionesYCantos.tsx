@@ -34,7 +34,7 @@ export function OracionesYCantos({
     for (const v of o.versos) {
       if (!sigueVivo()) break
       setVersoActual(v)
-      await narrar([v], 300)
+      await narrar([v], 900)
     }
     await esperar(1500)
     setSonando(false)

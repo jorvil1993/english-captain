@@ -20,7 +20,7 @@ const ELEMENTOS: ElementoCreacion[] = [
   { id: 'flowers', nombre: 'Flowers', sonido: 'Beautiful colorful flowers!', emoji: '🌸', animacion: '🌸 🌺 🌻', img: 'u3-flowers' },
 ]
 
-export function CreationTapBloom({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+export function CreationTapBloom({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
   const [descubiertos, setDescubiertos] = useState<string[]>([])
   const [activo, setActivo] = useState<ElementoCreacion | null>(null)
   const [bloqueado, setBloqueado] = useState(false)
@@ -65,7 +65,7 @@ export function CreationTapBloom({ onVolver, onPanel }: { onVolver: () => void; 
   }
 
   return (
-    <Marco paso={descubiertos.length} total={ELEMENTOS.length} onPanel={onPanel} onInicio={onVolver}>
+    <Marco paso={descubiertos.length} total={ELEMENTOS.length} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
         <p className="frase">Creation Tap & Bloom</p>
 

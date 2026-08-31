@@ -14,7 +14,7 @@ function mezclar<T>(xs: T[]): T[] {
   return a
 }
 
-export function HolyThings({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+export function HolyThings({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
   const [i, setI] = useState(0)
   const [bloqueado, setBloqueado] = useState(false)
   const [elegido, setElegido] = useState<string | null>(null)
@@ -101,10 +101,10 @@ export function HolyThings({ onVolver, onPanel }: { onVolver: () => void; onPane
   }
 
   return (
-    <Marco paso={i} total={OBJETOS_SAGRADOS.length} onPanel={onPanel} onInicio={onVolver}>
+    <Marco paso={i} total={OBJETOS_SAGRADOS.length} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
-        <div className="tarjeta tarjeta-grande" onClick={repetir} style={{ cursor: 'pointer' }}>
-          <span className="emoji">⛪</span>
+        <div style={{ width: 'clamp(88px, 20vmin, 120px)', height: 'clamp(88px, 20vmin, 120px)', cursor: 'pointer' }} onClick={repetir}>
+          <Tarjeta img="u6-church" emoji="⛪" />
         </div>
 
         <p className="frase" onClick={repetir} style={{ cursor: 'pointer' }} title="Toca para escuchar">

@@ -1,85 +1,81 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { prepararVoz } from './audio/voz'
-import { useSesion } from './estado/Sesion'
-import { Bienvenida, type SeccionMenu } from './pantallas/Bienvenida'
-import { MyLittlePrayers } from './pantallas/MyLittlePrayers'
-import { BibleFriends } from './pantallas/BibleFriends'
-import { SingAndPraise } from './pantallas/SingAndPraise'
-import { HolyThings } from './pantallas/HolyThings'
-import { MinijuegosHub } from './pantallas/MinijuegosHub'
-import { LightTheAltar } from './pantallas/minijuegos/LightTheAltar'
-import { NoahsPairMatch } from './pantallas/minijuegos/NoahsPairMatch'
-import { DressTheNativity } from './pantallas/minijuegos/DressTheNativity'
-import { CreationTapBloom } from './pantallas/minijuegos/CreationTapBloom'
-import { MorningNightBlessings } from './pantallas/minijuegos/MorningNightBlessings'
-// Los cinco de movimiento: el dedo traza, arrastra, persigue, agita y tira.
-import { TraceTheCross } from './pantallas/minijuegos/TraceTheCross'
-import { LoavesAndFishes } from './pantallas/minijuegos/LoavesAndFishes'
-import { GuardianAngelCatch } from './pantallas/minijuegos/GuardianAngelCatch'
-import { CalmTheStorm } from './pantallas/minijuegos/CalmTheStorm'
-import { RingTheBells } from './pantallas/minijuegos/RingTheBells'
+import { hoyISO, useSesion } from './estado/Sesion'
+import { CANCIONES_ALABANZA, HISTORIAS_BIBLICAS } from './datos/catolico'
+import { planDeOracionDeHoy, type PlanDeOracion } from './datos/oraciones-motor'
+import { generarRecorridoDeHoy, type IdMinijuego, type ItemRecorrido, type Parada, type TipoVariedad } from './datos/recorrido'
+import { renderMinijuegoDeHoy, renderMinijuegoLibre } from './pantallas/registroMinijuegos'
+import { Bienvenida } from './pantallas/Bienvenida'
 import { Prayer } from './pantallas/Prayer'
-import { Plan, type Actividad } from './pantallas/Plan'
+import { Plan } from './pantallas/Plan'
 import { Story } from './pantallas/Story'
 import { MoveIt } from './pantallas/MoveIt'
 import { Challenge } from './pantallas/Challenge'
 import { SayIt } from './pantallas/SayIt'
 import { TakeItHome } from './pantallas/TakeItHome'
 import { Stop } from './pantallas/Stop'
+import { BibleFriends } from './pantallas/BibleFriends'
+import { SingAndPraise } from './pantallas/SingAndPraise'
+import { HolyThings } from './pantallas/HolyThings'
+import { MyLittlePrayers } from './pantallas/MyLittlePrayers'
+import { CancionUnidad } from './pantallas/CancionUnidad'
+import { RinconCatolico, type SeccionRincon } from './pantallas/RinconCatolico'
+import { CuentosExplorer } from './pantallas/CuentosExplorer'
+import { OracionesYCantos } from './pantallas/OracionesYCantos'
+import { TableroVocabulario } from './pantallas/TableroVocabulario'
+import { MinijuegosHub } from './pantallas/MinijuegosHub'
 import { Papas } from './pantallas/Papas'
 import { CompuertaPapas } from './componentes/CompuertaPapas'
 
-type Paso =
-  | 'bienvenida'
-  | 'menu-prayers'
-  | 'menu-bible'
-  | 'menu-sing'
-  | 'menu-church'
-  | 'minijuegos'
-  | 'mj-altar'
-  | 'mj-noah'
-  | 'mj-nativity'
-  | 'mj-creation'
-  | 'mj-routine'
-  | 'mj-trace'
-  | 'mj-loaves'
-  | 'mj-angel'
-  | 'mj-storm'
-  | 'mj-bells'
-  | 'prayer'
-  | 'plan'
-  | Actividad
-  | 'sayit'
-  | 'takehome'
-  | 'stop'
+type ModoCalma = 'cerrado' | 'rincon' | 'minijuegos'
 
 export function App() {
-  const { unidad, repaso, registrarRespuesta, cerrarSesion } = useSesion()
+  const {
+    unidad,
+    repaso,
+    registrarRespuesta,
+    registrarVerso,
+    cerrarSesion,
+    diaRecorridoIndice,
+    oracionIndice,
+    oracionVersoIndice,
+    oracionActual,
+    memoria,
+    yaJugoHoy,
+    modoLibreActivo,
+  } = useSesion()
 
-  const [paso, setPaso] = useState<Paso>('bienvenida')
-  const [hechas, setHechas] = useState<Actividad[]>([])
+  const [empezado, setEmpezado] = useState(false)
+  const [cursor, setCursor] = useState(0)
+  const [hechasElegible, setHechasElegible] = useState<Parada[]>([])
+  const [paradaElegida, setParadaElegida] = useState<Parada | null>(null)
   const [panel, setPanel] = useState(false)
   const [mostrarCompuerta, setMostrarCompuerta] = useState(false)
+  const [modoCalma, setModoCalma] = useState<ModoCalma>('cerrado')
+  const [seccionRincon, setSeccionRincon] = useState<SeccionRincon | null>(null)
+  const [minijuegoLibre, setMinijuegoLibre] = useState<IdMinijuego | null>(null)
 
-  const marcador = useRef({ preguntas: 0, aciertos: 0, intentosVoz: 0 })
+  const marcador = useRef({ preguntas: 0, aciertos: 0, intentosVoz: 0 }).current
 
   useEffect(() => {
     void prepararVoz()
   }, [])
 
-  const responder = (fraseId: string, acierto: boolean) => {
-    marcador.current.preguntas += 1
-    if (acierto) marcador.current.aciertos += 1
-    registrarRespuesta(fraseId, acierto)
-  }
+  // El recorrido y el plan de oración de hoy se calculan UNA sola vez, recién
+  // cuando José toca "Let's play!" — no antes. Si se calcularan en el primer
+  // render de App, se congelarían con los valores de AYER: el efecto de
+  // Sesion.tsx que rota `diaRecorridoIndice`/`oracionIndice` corre después
+  // del primer render, no antes. Y si dependieran de `memoria` en vivo,
+  // terminar un repaso a mitad de sesión podría recalcularlos y cortar lo
+  // que está en curso.
+  const [recorrido, setRecorrido] = useState<ItemRecorrido[] | null>(null)
+  const [planOracion, setPlanOracion] = useState<PlanDeOracion | null>(null)
 
-  const terminarActividad = (a: Actividad) => {
-    const nuevas = [...hechas, a]
-    setHechas(nuevas)
-    setPaso(nuevas.length >= 3 ? 'sayit' : 'plan')
+  const empezar = () => {
+    setRecorrido(generarRecorridoDeHoy({ diaRecorridoIndice }))
+    setPlanOracion(planDeOracionDeHoy({ oracionIndice, oracionVersoIndice, memoria, hoy: hoyISO() }))
+    setEmpezado(true)
   }
-
-  if (panel) return <Papas onSalir={() => setPanel(false)} />
 
   const pedirPanel = () => setMostrarCompuerta(true)
   const aprobarPanel = () => {
@@ -87,164 +83,194 @@ export function App() {
     setPanel(true)
   }
 
-  const irAInicio = () => setPaso('bienvenida')
-  const irAMinijuegos = () => setPaso('minijuegos')
-  const oracionDelDia = new Date().getDate()
+  const responder = (fraseId: string, acierto: boolean) => {
+    marcador.preguntas += 1
+    if (acierto) marcador.aciertos += 1
+    registrarRespuesta(fraseId, acierto)
+  }
 
-  const renderContenido = () => {
-    switch (paso) {
-      case 'bienvenida':
+  const avanzar = () => setCursor((c) => c + 1)
+
+  const elegir = (p: Parada) => {
+    setHechasElegible((prev) => [...prev, p])
+    setParadaElegida(p)
+  }
+
+  const terminarParadaElegida = () => {
+    setParadaElegida(null)
+    // Solo se llama estando dentro del recorrido (ver el guard en
+    // `renderContenido`), así que `recorrido` ya no es null acá.
+    const item = recorrido![cursor] as { modo: 'elegible'; paradas: Parada[] }
+    if (hechasElegible.length >= item.paradas.length) {
+      setHechasElegible([])
+      avanzar()
+    }
+  }
+
+  const renderVariedad = (v: TipoVariedad, onListo: () => void): ReactNode => {
+    switch (v) {
+      case 'story':
+        return <Story unidad={unidad} onListo={onListo} onResponder={responder} onPanel={pedirPanel} />
+      case 'bible': {
+        const historia = HISTORIAS_BIBLICAS[diaRecorridoIndice % HISTORIAS_BIBLICAS.length]
+        return <BibleFriends historiaId={historia.id} onListo={onListo} onPanel={pedirPanel} />
+      }
+      case 'sing':
+        if (diaRecorridoIndice % 2 === 0) {
+          return <CancionUnidad unidad={unidad} onListo={onListo} onPanel={pedirPanel} />
+        }
         return (
-          <Bienvenida
-            onEmpezar={() => setPaso('prayer')}
-            onSeccion={(s: SeccionMenu) => setPaso(`menu-${s}` as Paso)}
-            onMinijuegos={irAMinijuegos}
+          <SingAndPraise
+            cancionId={CANCIONES_ALABANZA[diaRecorridoIndice % CANCIONES_ALABANZA.length].id}
+            onListo={onListo}
             onPanel={pedirPanel}
           />
         )
+      case 'holy':
+        return <HolyThings onVolver={onListo} onPanel={pedirPanel} />
+      case 'tablero':
+        return <TableroVocabulario onVolver={onListo} onListo={onListo} onPanel={pedirPanel} />
+      case 'peques':
+        return <MyLittlePrayers onVolver={onListo} onPanel={pedirPanel} />
+    }
+  }
 
-      case 'menu-prayers':
-        return <MyLittlePrayers onVolver={irAInicio} onPanel={pedirPanel} />
-
-      case 'menu-bible':
-        return <BibleFriends onVolver={irAInicio} onPanel={pedirPanel} />
-
-      case 'menu-sing':
-        return <SingAndPraise onVolver={irAInicio} onPanel={pedirPanel} />
-
-      case 'menu-church':
-        return <HolyThings onVolver={irAInicio} onPanel={pedirPanel} />
-
-      case 'minijuegos':
-        return (
-          <MinijuegosHub
-            onElegir={(id) => setPaso(`mj-${id}` as Paso)}
-            onVolver={irAInicio}
-            onPanel={pedirPanel}
-          />
-        )
-
-      case 'mj-altar':
-        return <LightTheAltar onVolver={irAMinijuegos} onPanel={pedirPanel} />
-
-      case 'mj-noah':
-        return <NoahsPairMatch onVolver={irAMinijuegos} onPanel={pedirPanel} />
-
-      case 'mj-nativity':
-        return <DressTheNativity onVolver={irAMinijuegos} onPanel={pedirPanel} />
-
-      case 'mj-creation':
-        return <CreationTapBloom onVolver={irAMinijuegos} onPanel={pedirPanel} />
-
-      case 'mj-routine':
-        return <MorningNightBlessings onVolver={irAMinijuegos} onPanel={pedirPanel} />
-
-      case 'mj-trace':
-        return <TraceTheCross onVolver={irAMinijuegos} onPanel={pedirPanel} />
-
-      case 'mj-loaves':
-        return <LoavesAndFishes onVolver={irAMinijuegos} onPanel={pedirPanel} />
-
-      case 'mj-angel':
-        return <GuardianAngelCatch onVolver={irAMinijuegos} onPanel={pedirPanel} />
-
-      case 'mj-storm':
-        return <CalmTheStorm onVolver={irAMinijuegos} onPanel={pedirPanel} />
-
-      case 'mj-bells':
-        return <RingTheBells onVolver={irAMinijuegos} onPanel={pedirPanel} />
-
-      case 'prayer':
+  const renderParada = (p: Parada, onListo: () => void): ReactNode => {
+    switch (p.tipo) {
+      case 'oracion':
+        // `renderParada` solo se llama después de confirmar que `planOracion`
+        // no es null (ver el guard en `renderContenido`); TypeScript no puede
+        // seguir esa garantía a través del cierre, de ahí el `!`.
         return (
           <Prayer
-            indice={oracionDelDia}
-            onListo={() => setPaso('plan')}
+            plan={planOracion!}
+            onVersoMostrado={(i) => registrarVerso(oracionActual.id, i)}
+            onListo={onListo}
             onPanel={pedirPanel}
-            onInicio={irAInicio}
           />
         )
-
-      case 'plan':
-        return (
-          <Plan
-            hechas={hechas}
-            onElegir={(a) => setPaso(a)}
-            onPanel={pedirPanel}
-            onInicio={irAInicio}
-          />
-        )
-
-      case 'story':
-        return (
-          <Story
-            unidad={unidad}
-            onListo={() => terminarActividad('story')}
-            onResponder={responder}
-            onPanel={pedirPanel}
-            onInicio={() => setPaso('plan')}
-          />
-        )
-
+      case 'variedad':
+        return renderVariedad(p.variante, onListo)
       case 'move':
-        return (
-          <MoveIt
-            unidad={unidad}
-            onListo={() => terminarActividad('move')}
-            onPanel={pedirPanel}
-            onInicio={() => setPaso('plan')}
-          />
-        )
-
+        return <MoveIt unidad={unidad} onListo={onListo} onPanel={pedirPanel} />
+      case 'minijuego':
+        return renderMinijuegoDeHoy(p.id, { onPanel: pedirPanel, avanzar: onListo })
       case 'challenge':
         return (
           <Challenge
             unidad={unidad}
             repaso={repaso}
-            onListo={() => terminarActividad('challenge')}
+            onListo={onListo}
             onResponder={responder}
             onPanel={pedirPanel}
-            onInicio={() => setPaso('plan')}
           />
         )
-
       case 'sayit':
         return (
           <SayIt
             unidad={unidad}
             onIntento={() => {
-              marcador.current.intentosVoz += 1
+              marcador.intentosVoz += 1
             }}
-            onListo={() => setPaso('takehome')}
+            onListo={onListo}
             onPanel={pedirPanel}
-            onInicio={irAInicio}
           />
         )
-
       case 'takehome':
         return (
           <TakeItHome
             unidad={unidad}
             onListo={() => {
-              cerrarSesion({ ...marcador.current })
-              setPaso('stop')
+              cerrarSesion({ ...marcador })
+              onListo()
             }}
             onPanel={pedirPanel}
-            onInicio={irAInicio}
           />
         )
-
       case 'stop':
         return <Stop />
     }
   }
 
+  const renderModoCalma = () => {
+    if (modoCalma === 'minijuegos') {
+      if (minijuegoLibre) {
+        return renderMinijuegoLibre(minijuegoLibre, {
+          onPanel: pedirPanel,
+          onVolver: () => setMinijuegoLibre(null),
+        })
+      }
+      return (
+        <MinijuegosHub
+          onElegir={(id) => setMinijuegoLibre(id)}
+          onVolver={() => setModoCalma('cerrado')}
+          onPanel={pedirPanel}
+        />
+      )
+    }
+
+    // modoCalma === 'rincon'
+    if (seccionRincon === 'cuentos') {
+      return <CuentosExplorer onVolver={() => setSeccionRincon(null)} onPanel={pedirPanel} />
+    }
+    if (seccionRincon === 'oraciones') {
+      return <OracionesYCantos onVolver={() => setSeccionRincon(null)} onPanel={pedirPanel} />
+    }
+    if (seccionRincon === 'tablero') {
+      return <TableroVocabulario onVolver={() => setSeccionRincon(null)} onPanel={pedirPanel} />
+    }
+    return (
+      <RinconCatolico
+        onElegir={setSeccionRincon}
+        onVolver={() => setModoCalma('cerrado')}
+        onPanel={pedirPanel}
+      />
+    )
+  }
+
+  const renderContenido = () => {
+    if (panel) {
+      return <Papas onSalir={() => setPanel(false)} onEntrarModoCalma={() => { setPanel(false); setModoCalma('rincon') }} />
+    }
+
+    if (yaJugoHoy) {
+      if (modoCalma !== 'cerrado') return renderModoCalma()
+      return (
+        <>
+          <Stop />
+          {modoLibreActivo && (
+            <div style={{ position: 'fixed', bottom: 16, left: 0, right: 0, display: 'flex', gap: 10, justifyContent: 'center' }}>
+              <button className="boton fantasma" onClick={() => setModoCalma('rincon')}>
+                🙏 Catholic Corner
+              </button>
+              <button className="boton fantasma" onClick={() => setModoCalma('minijuegos')}>
+                🎮 Minigames
+              </button>
+            </div>
+          )}
+        </>
+      )
+    }
+
+    if (!empezado || !recorrido || !planOracion) {
+      return <Bienvenida onEmpezar={empezar} onPanel={pedirPanel} />
+    }
+
+    const item = recorrido[cursor]
+    if (!item) return <Stop />
+
+    if (item.modo === 'elegible') {
+      if (paradaElegida) return renderParada(paradaElegida, terminarParadaElegida)
+      return <Plan paradas={item.paradas} hechas={hechasElegible} onElegir={elegir} onPanel={pedirPanel} />
+    }
+
+    return renderParada(item.parada, avanzar)
+  }
+
   return (
     <>
       {mostrarCompuerta && (
-        <CompuertaPapas
-          onAprobado={aprobarPanel}
-          onCerrar={() => setMostrarCompuerta(false)}
-        />
+        <CompuertaPapas onAprobado={aprobarPanel} onCerrar={() => setMostrarCompuerta(false)} />
       )}
       {renderContenido()}
     </>

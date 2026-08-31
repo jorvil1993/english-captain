@@ -32,6 +32,8 @@ let vozIngles: SpeechSynthesisVoice | null = null
 let vozEspanol: SpeechSynthesisVoice | null = null
 let desbloqueado = false
 let reproduciendo: HTMLAudioElement | null = null
+let preparando: Promise<void> | null = null
+let turno = 0
 
 /** Claves de audio que sí existen. Se llena en `prepararVoz()`. */
 const mp3Disponibles = new Set<string>()
@@ -72,22 +74,29 @@ function elegirVoces() {
  * Se llama una vez al arrancar. Descubre qué mp3 existen y prepara las voces.
  * `manifiesto` es la lista de claves con audio grabado (public/audio/audio.json).
  */
-export async function prepararVoz(): Promise<void> {
-  if ('speechSynthesis' in window) {
-    elegirVoces()
-    if (!vocesListas) {
-      window.speechSynthesis.onvoiceschanged = elegirVoces
+export function prepararVoz(): Promise<void> {
+  if (preparando) return preparando
+
+  preparando = (async () => {
+    if ('speechSynthesis' in window) {
+      elegirVoces()
+      if (!vocesListas) {
+        window.speechSynthesis.onvoiceschanged = elegirVoces
+      }
     }
-  }
-  try {
-    const r = await fetch('./audio/audio.json')
-    if (r.ok) {
-      const claves: string[] = await r.json()
-      claves.forEach((c) => mp3Disponibles.add(c))
+    try {
+      const r = await fetch('./audio/audio.json')
+      if (r.ok) {
+        const claves: string[] = await r.json()
+        claves.forEach((c) => mp3Disponibles.add(c))
+      }
+    } catch {
+      // La instalación normal incluye este manifiesto. Si llegara a fallar,
+      // `decir` conserva la red de emergencia sin bloquear la sesión.
     }
-  } catch {
-    // Sin manifiesto simplemente no hay mp3 todavía: habla el sintetizador.
-  }
+  })()
+
+  return preparando
 }
 
 /**
@@ -103,6 +112,7 @@ export function desbloquearAudio() {
 }
 
 export function callar() {
+  turno += 1
   window.speechSynthesis?.cancel()
   if (reproduciendo) {
     reproduciendo.pause()
@@ -181,6 +191,11 @@ function sonarMp3(clave: string): Promise<void> {
  */
 export async function decir(texto: string, clave?: string): Promise<void> {
   callar()
+  const miTurno = turno
+  // Nunca usamos el sintetizador sólo porque el manifiesto todavía estaba
+  // llegando: ésa era la carrera que dejaba oír la voz robótica al arrancar.
+  await prepararVoz()
+  if (miTurno !== turno) return
   const k = clave ?? claveDe(texto)
   if (mp3Disponibles.has(k)) return sonarMp3(k)
   return hablar(texto, 'en')
@@ -189,6 +204,9 @@ export async function decir(texto: string, clave?: string): Promise<void> {
 /** El rescate en español. Corto, y solo cuando José lo pide. */
 export async function decirEs(texto: string, clave?: string): Promise<void> {
   callar()
+  const miTurno = turno
+  await prepararVoz()
+  if (miTurno !== turno) return
   const k = clave ?? claveDe(`es:${texto}`)
   if (mp3Disponibles.has(k)) return sonarMp3(k)
   return hablar(texto, 'es')

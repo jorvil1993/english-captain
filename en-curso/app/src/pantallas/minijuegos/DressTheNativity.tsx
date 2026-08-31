@@ -20,7 +20,7 @@ const FIGURAS: FiguraPesebre[] = [
   { id: 'star', nombre: 'Big Star', orden: 'Put the star in the sky!', sonido: 'Big shining star!', emoji: '⭐', img: 'u3-stars' },
 ]
 
-export function DressTheNativity({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+export function DressTheNativity({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
   const [paso, setPaso] = useState(0)
   const [colocadas, setColocadas] = useState<string[]>([])
   const [bloqueado, setBloqueado] = useState(false)
@@ -128,7 +128,7 @@ export function DressTheNativity({ onVolver, onPanel }: { onVolver: () => void; 
   }
 
   return (
-    <Marco paso={colocadas.length} total={FIGURAS.length} onPanel={onPanel} onInicio={onVolver}>
+    <Marco paso={colocadas.length} total={FIGURAS.length} onPanel={onPanel} onInicio={onInicio}>
       <div
         className="pantalla"
         onPointerMove={moverArrastre}

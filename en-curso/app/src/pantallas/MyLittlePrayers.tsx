@@ -5,7 +5,7 @@ import { estrellitas } from '../audio/sonidos'
 import { Tarjeta } from '../componentes/Tarjeta'
 import { Marco } from '../componentes/Marco'
 
-export function MyLittlePrayers({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+export function MyLittlePrayers({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
   const [i, setI] = useState(0)
   const [completada, setCompletada] = useState<string | null>(null)
   const [bloqueado, setBloqueado] = useState(false)
@@ -71,10 +71,10 @@ export function MyLittlePrayers({ onVolver, onPanel }: { onVolver: () => void; o
   }
 
   return (
-    <Marco paso={i} total={PEQUENAS_ORACIONES.length} onPanel={onPanel} onInicio={onVolver}>
+    <Marco paso={i} total={PEQUENAS_ORACIONES.length} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
-        <div className="tarjeta tarjeta-grande" onClick={repetir} style={{ cursor: 'pointer' }}>
-          <span className="emoji">🙏</span>
+        <div style={{ width: 'clamp(90px, 20vmin, 120px)', height: 'clamp(90px, 20vmin, 120px)', cursor: 'pointer' }} onClick={repetir}>
+          <Tarjeta img="u5-angel" emoji="👼" />
         </div>
 
         <p className="frase" onClick={repetir} style={{ cursor: 'pointer' }} title="Toca para escuchar">

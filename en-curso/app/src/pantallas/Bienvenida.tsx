@@ -1,42 +1,25 @@
 import { useEffect } from 'react'
 import { desbloquearAudio, decir } from '../audio/voz'
 import { useSesion } from '../estado/Sesion'
+import { Tarjeta } from '../componentes/Tarjeta'
+import { Boton } from '../componentes/Boton'
 
-export type SeccionMenu = 'prayers' | 'bible' | 'sing' | 'church'
-
-export function Bienvenida({
-  onEmpezar,
-  onSeccion,
-  onMinijuegos,
-  onPanel,
-}: {
-  onEmpezar: () => void
-  onSeccion: (s: SeccionMenu) => void
-  onMinijuegos: () => void
-  onPanel: () => void
-}) {
+/**
+ * La entrada directa. José toca un solo botón grande y arranca el recorrido
+ * de hoy — nada de menú de secciones para elegir. El primer toque real de
+ * José es también el que desbloquea el audio en iOS/Android.
+ */
+export function Bienvenida({ onEmpezar, onPanel }: { onEmpezar: () => void; onPanel: () => void }) {
   const { nombre } = useSesion()
 
   useEffect(() => {
-    let cancelado = false
-    void (async () => {
-      const hora = new Date().getHours()
-      const saludo = hora < 12 ? 'Good morning' : hora < 19 ? 'Good afternoon' : 'Good evening'
-      await decir(`${saludo}, Captain ${nombre}!`)
-    })()
-    return () => {
-      cancelado = true
-    }
+    const hora = new Date().getHours()
+    const saludo = hora < 12 ? 'Good morning' : hora < 19 ? 'Good afternoon' : 'Good evening'
+    void decir(`${saludo}, Captain!`)
   }, [nombre])
 
-  const entrarSeccion = (s: SeccionMenu, vozTexto: string) => {
-    desbloquearAudio()
-    void decir(vozTexto)
-    onSeccion(s)
-  }
-
   return (
-    <div className="pantalla" style={{ justifyContent: 'flex-start', paddingTop: 'max(16px, env(safe-area-inset-top))' }}>
+    <div className="pantalla" style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}>
       <button className="candado" aria-label="Panel de papás" onClick={onPanel} title="Panel de papás">
         ⚙
       </button>
@@ -45,77 +28,22 @@ export function Bienvenida({
         Captain {nombre}
       </p>
 
-      {/* 4 Secciones Visuales Católicas */}
-      <div className="cuadricula-menu">
-        <div
-          className="tarjeta-menu"
-          role="button"
-          onClick={() => entrarSeccion('prayers', 'My Little Prayers')}
-        >
-          <span className="emoji-menu">🙏</span>
-          <span className="titulo-menu">My Little Prayers</span>
-        </div>
-
-        <div
-          className="tarjeta-menu"
-          role="button"
-          onClick={() => entrarSeccion('bible', 'Bible Friends')}
-        >
-          <span className="emoji-menu">🦁</span>
-          <span className="titulo-menu">Bible Friends</span>
-        </div>
-
-        <div
-          className="tarjeta-menu"
-          role="button"
-          onClick={() => entrarSeccion('sing', 'Sing and Praise')}
-        >
-          <span className="emoji-menu">🎵</span>
-          <span className="titulo-menu">Sing & Praise</span>
-        </div>
-
-        <div
-          className="tarjeta-menu"
-          role="button"
-          onClick={() => entrarSeccion('church', 'Holy Things and Church')}
-        >
-          <span className="emoji-menu">⛪</span>
-          <span className="titulo-menu">Holy Things</span>
-        </div>
+      <div style={{ width: 'clamp(140px, 30vmin, 200px)', height: 'clamp(140px, 30vmin, 200px)', marginTop: 12 }}>
+        <Tarjeta img="portada" emoji="⚽" />
       </div>
 
-      {/* Acciones de Minijuegos y Misión del Día */}
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 6 }}>
-        <button
-          className="boton"
+      <div style={{ marginTop: 16, fontSize: 'clamp(18px, 3.6vmin, 24px)' }}>
+        <Boton
           tono="oro"
-          onClick={() => {
-            desbloquearAudio()
-            void decir('Catholic Minigames')
-            onMinijuegos()
-          }}
-          style={{
-            padding: 'clamp(10px, 2vmin, 14px) clamp(16px, 3.5vmin, 24px)',
-            fontSize: 'clamp(14px, 2.8vmin, 17px)',
-          }}
-        >
-          🎮 Catholic Minigames
-        </button>
-
-        <button
-          className="boton"
+          invita
           onClick={() => {
             desbloquearAudio()
             void decir("Let's play!")
             onEmpezar()
           }}
-          style={{
-            padding: 'clamp(10px, 2vmin, 14px) clamp(16px, 3.5vmin, 24px)',
-            fontSize: 'clamp(14px, 2.8vmin, 17px)',
-          }}
         >
-          ⚽ Daily Mission
-        </button>
+          ▶ Let's play!
+        </Boton>
       </div>
     </div>
   )

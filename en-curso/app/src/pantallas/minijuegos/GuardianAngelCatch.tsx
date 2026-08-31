@@ -54,7 +54,7 @@ const SUELO = 92
 
 const META = 8
 
-export function GuardianAngelCatch({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
   const escena = useRef<HTMLDivElement>(null)
   const angel = useRef<HTMLDivElement>(null)
   const voz = useLocutor()
@@ -215,7 +215,7 @@ export function GuardianAngelCatch({ onVolver, onPanel }: { onVolver: () => void
   }, [])
 
   return (
-    <Marco paso={recogidas} total={META} onPanel={onPanel} onInicio={onVolver}>
+    <Marco paso={recogidas} total={META} onPanel={onPanel} onInicio={onInicio}>
       <div className="mjx-pantalla">
         <p className="mjx-titulo">Guardian Angel Catch</p>
 

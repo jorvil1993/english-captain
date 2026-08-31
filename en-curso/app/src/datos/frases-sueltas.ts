@@ -39,16 +39,34 @@ export const FRASES_SUELTAS: Linea[] = [
 
   // Sing & Praise
   { texto: 'Learn the words!', voz: 'maestra' },
+  { texto: 'Candle! Light!', voz: 'nino' },
+  { texto: 'God loves you!', voz: 'nino' },
 
   // Creation Tap & Bloom
   { texto: 'God made the world! Tap to create!', voz: 'maestra' },
   { texto: 'God saw that it was good! Amen!', voz: 'oracion' },
 
   // Morning & Night Blessings
+  { texto: 'Creation Tap & Bloom', voz: 'oracion' },
+  { texto: 'Morning & Night Blessings', voz: 'oracion' },
   { texto: 'Good morning, God! Open the window!', voz: 'oracion' },
   { texto: 'Sun! Good morning, world! Thank you, Jesus!', voz: 'nino' },
   { texto: 'Bless my day! Amen!', voz: 'oracion' },
   { texto: 'Good night, Jesus! Look at the stars!', voz: 'oracion' },
   { texto: 'Angel of God, protect me through the night!', voz: 'oracion' },
   { texto: 'Good night, little Captain! God bless you! Amen!', voz: 'oracion' },
+
+  // Champions of Jesus — las pantallas juntan dos frases en una sola locución.
+  // Declararlas completas evita que esos momentos de fútbol caigan al TTS del
+  // aparato, que es la voz robótica que José estaba oyendo.
+  { texto: 'Shoot and score! Kick the ball!', voz: 'coach' },
+  { texto: 'We play together with Jesus! Pass to Messi!', voz: 'nino' },
+  { texto: 'Dibu saves the ball! Be strong and brave!', voz: 'coach' },
+  { texto: 'Great kick, Captain José! Glory to God!', voz: 'coach' },
+  { texto: 'One team with Jesus! Great job!', voz: 'oracion' },
+  { texto: 'Save! Dibu saves the ball!', voz: 'coach' },
+  { texto: 'Be strong and brave! God is our shield! Amen!', voz: 'oracion' },
+
+  // Light the Altar
+  { texto: 'Let your light shine! Light the candle!', voz: 'oracion' },
 ]

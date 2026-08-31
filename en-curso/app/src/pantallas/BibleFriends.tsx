@@ -6,8 +6,25 @@ import { Tarjeta } from '../componentes/Tarjeta'
 import { Boton } from '../componentes/Boton'
 import { Marco } from '../componentes/Marco'
 
-export function BibleFriends({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
-  const [historia, setHistoria] = useState<HistoriaBiblica | null>(null)
+export function BibleFriends({
+  onPanel,
+  onInicio,
+  historiaId,
+  onListo,
+}: {
+  onPanel: () => void
+  onInicio?: () => void
+  /** Si viene, se salta el menú de elegir historia y arranca directo en
+   *  esta — así se usa como parada del recorrido diario. */
+  historiaId?: string
+  /** Si está presente, al terminar la historia llama a esto en vez de
+   *  volver al menú interno. Sin esto (Modo Calma), comportamiento igual
+   *  que antes: menú libre de las 3 historias, sin fin. */
+  onListo?: () => void
+}) {
+  const [historia, setHistoria] = useState<HistoriaBiblica | null>(() =>
+    historiaId ? HISTORIAS_BIBLICAS.find((h) => h.id === historiaId) ?? null : null,
+  )
   const [escenaIdx, setEscenaIdx] = useState(0)
   const [elementoActivo, setElementoActivo] = useState<string | null>(null)
 
@@ -47,29 +64,35 @@ export function BibleFriends({ onVolver, onPanel }: { onVolver: () => void; onPa
       setElementoActivo(null)
     } else {
       bien()
+      if (onListo) {
+        onListo()
+        return
+      }
       setHistoria(null)
       setEscenaIdx(0)
     }
   }
 
-  // Menú de selección de historias
+  // Menú de selección de historias con Ilustraciones Reales
   if (!historia) {
     return (
-      <Marco paso={0} total={0} onPanel={onPanel} onInicio={onVolver}>
+      <Marco paso={0} total={0} onPanel={onPanel} onInicio={onInicio}>
         <div className="pantalla">
           <p className="frase">Bible Friends</p>
-          <div className="fila">
+          <div className="fila" style={{ flexWrap: 'wrap' }}>
             {HISTORIAS_BIBLICAS.map((h) => (
               <div key={h.id} className="ficha">
                 <Tarjeta
-                  img=""
+                  img={h.img}
                   emoji={h.icono}
                   onClick={() => {
                     setHistoria(h)
                     setEscenaIdx(0)
                   }}
                 />
-                <span className="frase-chica">{h.titulo}</span>
+                <span className="frase-chica" style={{ fontWeight: 700 }}>
+                  {h.titulo}
+                </span>
               </div>
             ))}
           </div>
@@ -83,7 +106,7 @@ export function BibleFriends({ onVolver, onPanel }: { onVolver: () => void; onPa
       paso={escenaIdx}
       total={historia.escenas.length}
       onPanel={onPanel}
-      onInicio={() => setHistoria(null)}
+      onInicio={onListo ? undefined : () => setHistoria(null)}
     >
       <div className="pantalla">
         <p className="frase-chica" style={{ opacity: 0.7 }}>
@@ -108,7 +131,9 @@ export function BibleFriends({ onVolver, onPanel }: { onVolver: () => void; onPa
                 elegida={elementoActivo === el.id}
                 onClick={() => void tocarElemento(el)}
               />
-              <span className="frase-chica">{el.nombre}</span>
+              <span className="frase-chica" style={{ fontWeight: 700 }}>
+                {el.nombre}
+              </span>
             </div>
           ))}
         </div>

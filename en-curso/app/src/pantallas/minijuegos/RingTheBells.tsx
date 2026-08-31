@@ -84,7 +84,7 @@ const TIRON_MAXIMO = 90
  */
 type Fase = 'libre' | 'conduce' | 'repitiendo' | 'fin'
 
-export function RingTheBells({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+export function RingTheBells({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
   const escena = useRef<HTMLDivElement>(null)
   const voz = useLocutor()
 
@@ -355,7 +355,7 @@ export function RingTheBells({ onVolver, onPanel }: { onVolver: () => void; onPa
   const total = TORRES.length + SECUENCIAS.length
 
   return (
-    <Marco paso={avance} total={total} onPanel={onPanel} onInicio={onVolver}>
+    <Marco paso={avance} total={total} onPanel={onPanel} onInicio={onInicio}>
       <div className="mjx-pantalla">
         <p className="mjx-titulo">Ring the Church Bells</p>
 

@@ -79,6 +79,21 @@ export function estrellitas() {
   nota(1318.5, 0.24, 0.35, 0.16)
 }
 
+/** Patada de balón: impacto grave seco y satisfactorio. */
+export function patadaBalon() {
+  nota(150, 0, 0.12, 0.35, 'triangle')
+  nota(90, 0.02, 0.15, 0.3, 'sine')
+}
+
+/** Celebración de Gol: fanfarria triunfal y bendición. */
+export function golCelebracion() {
+  patadaBalon()
+  nota(523.25, 0.05, 0.18, 0.22)
+  nota(659.25, 0.15, 0.18, 0.22)
+  nota(783.99, 0.25, 0.22, 0.25)
+  nota(1046.5, 0.35, 0.5, 0.28)
+}
+
 /** Reproduce el efecto de sonido real del animal (MP3). */
 export function sonidoAnimal(animal: string): Promise<void> {
   return new Promise((resolve) => {

@@ -33,7 +33,7 @@ export function Stop() {
       final()
       await esperar(700)
       if (cancelado) return
-      await decir(`Great job, Captain ${nombre}!`)
+      await decir('Great job, Captain!')
       if (cancelado) return
       await esperar(400)
       await decir('See you tomorrow!')

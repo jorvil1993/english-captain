@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { TODAS_LAS_FRASES, UNIDADES } from '../datos/curso'
+import { ORACIONES, TODAS_LAS_FRASES, UNIDADES } from '../datos/curso'
 import { VIRTUDES } from '../datos/tipos'
 import { grabacionesDeHoy, reproducir } from '../audio/grabaciones'
 import { ultimoError } from '../componentes/RedDeSeguridad'
@@ -11,7 +11,7 @@ import { FichaJuegosMovimiento } from '../componentes/FichaJuegosMovimiento'
  *
  * Configuración de unidades, modo libre para grupo de oración, y métricas de progreso.
  */
-export function Papas({ onSalir }: { onSalir: () => void }) {
+export function Papas({ onSalir, onEntrarModoCalma }: { onSalir: () => void; onEntrarModoCalma?: () => void }) {
   const {
     nombre,
     unidad,
@@ -19,9 +19,12 @@ export function Papas({ onSalir }: { onSalir: () => void }) {
     sesiones,
     memoria,
     modoLibreActivo,
+    oracionActual,
+    oracionVersoIndice,
     marcarMision,
     ponerNombre,
     fijarUnidadIndice,
+    fijarOracionIndice,
     fijarModoLibre,
     reiniciarDia,
     borrarTodo,
@@ -95,6 +98,31 @@ export function Papas({ onSalir }: { onSalir: () => void }) {
               </small>
             </span>
           </label>
+
+          {modoLibreActivo && onEntrarModoCalma && (
+            <button className="boton fantasma" onClick={onEntrarModoCalma} style={{ marginTop: 12 }}>
+              🙏 Entrar a Modo Calma ahora
+            </button>
+          )}
+        </div>
+
+        <h2>Cómo va con las oraciones</h2>
+        <div style={{ background: 'var(--blanco)', padding: 16, borderRadius: 16, marginBottom: 16 }}>
+          <p style={{ margin: '0 0 8px 0' }}>
+            Aprendiendo: <b>{oracionActual.titulo}</b> — verso {Math.min(oracionVersoIndice + 1, oracionActual.versos.length)} de{' '}
+            {oracionActual.versos.length}
+          </p>
+          <select
+            value={ORACIONES.findIndex((o) => o.id === oracionActual.id)}
+            onChange={(e) => fijarOracionIndice(Number(e.target.value))}
+            style={{ width: '100%', fontSize: 15, padding: '8px 12px', borderRadius: 8, border: '1px solid #ccc' }}
+          >
+            {ORACIONES.map((o, idx) => (
+              <option key={o.id} value={idx}>
+                {o.titulo}
+              </option>
+            ))}
+          </select>
         </div>
 
         <h2>Cómo va</h2>

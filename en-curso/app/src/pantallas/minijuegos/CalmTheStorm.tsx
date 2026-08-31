@@ -59,7 +59,7 @@ const QUIETUD_PEDIDA = [3.4, 4.2]
  */
 const TEMBLOR_TOLERADO = 30
 
-export function CalmTheStorm({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+export function CalmTheStorm({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
   const escena = useRef<HTMLDivElement>(null)
   const barco = useRef<HTMLDivElement>(null)
   const olaAlta = useRef<SVGPathElement>(null)
@@ -359,7 +359,7 @@ export function CalmTheStorm({ onVolver, onPanel }: { onVolver: () => void; onPa
       paso={ciclo * 2 + (fase === 'tormenta' ? 0 : 1)}
       total={CICLOS * 2}
       onPanel={onPanel}
-      onInicio={onVolver}
+      onInicio={onInicio}
     >
       <div className="mjx-pantalla">
         <p className="mjx-titulo">Calm the Storm</p>

@@ -3,7 +3,7 @@
  */
 
 export type MinijuegoInfo = {
-  id: 'altar' | 'noah' | 'nativity' | 'creation' | 'routine'
+  id: 'champions' | 'altar' | 'noah' | 'nativity' | 'creation' | 'routine'
   titulo: string
   emoji: string
   img: string
@@ -11,6 +11,13 @@ export type MinijuegoInfo = {
 }
 
 export const LISTA_MINIJUEGOS: MinijuegoInfo[] = [
+  {
+    id: 'champions',
+    titulo: 'Champions of Jesus',
+    emoji: '⚽',
+    img: 'c-messi',
+    descripcion: 'Fútbol con Messi, Mbappé, Lamine y Dibu dando gracias a Dios.',
+  },
   {
     id: 'altar',
     titulo: 'Light the Altar',

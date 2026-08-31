@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { TODAS_LAS_FRASES, UNIDADES } from '../datos/curso'
-import type { Frase, Unidad } from '../datos/tipos'
+import { ORACIONES, TODAS_LAS_FRASES, UNIDADES } from '../datos/curso'
+import type { Frase, Oracion, Unidad } from '../datos/tipos'
+import { idVerso } from '../datos/oraciones-motor'
 
 /**
  * El estado de José: qué sabe, qué toca repasar, unidad activa y modo de uso.
@@ -37,6 +38,10 @@ type Guardado = {
   diasEnUnidad: number
   ultimoDia: string | null
   modoLibreActivo: boolean
+  diaRecorridoIndice: number
+  ultimaRotacion: string | null
+  oracionIndice: number
+  oracionVersoIndice: number
 }
 
 const INICIAL: Guardado = {
@@ -47,6 +52,10 @@ const INICIAL: Guardado = {
   diasEnUnidad: 0,
   ultimoDia: null,
   modoLibreActivo: true, // Habilitado por defecto para dar flexibilidad en salidas y grupo de oración
+  diaRecorridoIndice: 0,
+  ultimaRotacion: null,
+  oracionIndice: 0,
+  oracionVersoIndice: 0,
 }
 
 export function hoyISO(): string {
@@ -90,11 +99,17 @@ type Contexto = {
   repaso: Frase[]
   sesiones: RegistroSesion[]
   memoria: Record<string, MemoriaFrase>
+  diaRecorridoIndice: number
+  oracionIndice: number
+  oracionVersoIndice: number
+  oracionActual: Oracion
   registrarRespuesta: (fraseId: string, acierto: boolean) => void
+  registrarVerso: (oracionId: string, versoIdx: number) => void
   cerrarSesion: (datos: { preguntas: number; aciertos: number; intentosVoz: number }) => void
   marcarMision: (fecha: string, cumplida: boolean) => void
   ponerNombre: (n: string) => void
   fijarUnidadIndice: (idx: number) => void
+  fijarOracionIndice: (idx: number) => void
   fijarModoLibre: (activo: boolean) => void
   reiniciarDia: () => void
   borrarTodo: () => void
@@ -120,7 +135,33 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
     })
   }, [hoy])
 
+  // Rota el minijuego/bloque de variedad del día y avanza la oración un
+  // verso por día. `ultimaRotacion` (a diferencia del efecto de unidadIndice
+  // de arriba) hace el avance idempotente ante recargas: acá rota a diario,
+  // así que sumar de más en cada recarga sí sería visible.
+  useEffect(() => {
+    setG((v) => {
+      if (v.ultimaRotacion === hoy) return v
+      if (v.ultimaRotacion === null) return { ...v, ultimaRotacion: hoy }
+      const actual = ORACIONES[v.oracionIndice % ORACIONES.length]
+      let oracionIndice = v.oracionIndice
+      let oracionVersoIndice = v.oracionVersoIndice + 1
+      if (oracionVersoIndice > actual.versos.length) {
+        oracionIndice = (oracionIndice + 1) % ORACIONES.length
+        oracionVersoIndice = 0
+      }
+      return {
+        ...v,
+        diaRecorridoIndice: v.diaRecorridoIndice + 1,
+        ultimaRotacion: hoy,
+        oracionIndice,
+        oracionVersoIndice,
+      }
+    })
+  }, [hoy])
+
   const unidad = UNIDADES[g.unidadIndice] ?? UNIDADES[0]
+  const oracionActual = ORACIONES[g.oracionIndice % ORACIONES.length] ?? ORACIONES[0]
 
   const repaso = useMemo(() => {
     const deOtrasUnidades = TODAS_LAS_FRASES.filter((f) => !unidad.frases.some((x) => x.id === f.id))
@@ -152,6 +193,10 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
     })
   }, [hoy])
 
+  const registrarVerso = useCallback((oracionId: string, versoIdx: number) => {
+    registrarRespuesta(idVerso(oracionId, versoIdx), true)
+  }, [registrarRespuesta])
+
   const cerrarSesion = useCallback((datos: { preguntas: number; aciertos: number; intentosVoz: number }) => {
     setG((v) => ({
       ...v,
@@ -180,11 +225,17 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
     repaso,
     sesiones: g.sesiones,
     memoria: g.memoria,
+    diaRecorridoIndice: g.diaRecorridoIndice,
+    oracionIndice: g.oracionIndice,
+    oracionVersoIndice: g.oracionVersoIndice,
+    oracionActual,
     registrarRespuesta,
+    registrarVerso,
     cerrarSesion,
     marcarMision,
     ponerNombre: (n) => setG((v) => ({ ...v, nombre: n.trim() || 'José' })),
     fijarUnidadIndice: (idx) => setG((v) => ({ ...v, unidadIndice: Math.max(0, Math.min(idx, UNIDADES.length - 1)), diasEnUnidad: 0 })),
+    fijarOracionIndice: (idx) => setG((v) => ({ ...v, oracionIndice: Math.max(0, Math.min(idx, ORACIONES.length - 1)), oracionVersoIndice: 0 })),
     fijarModoLibre: (activo) => setG((v) => ({ ...v, modoLibreActivo: activo })),
     reiniciarDia: () => setG((v) => ({ ...v, ultimoDia: null })),
     borrarTodo: () => setG(INICIAL),
