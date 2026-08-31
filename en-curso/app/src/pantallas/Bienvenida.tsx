@@ -1,76 +1,122 @@
-import { useEffect, useState } from 'react'
-import { desbloquearAudio, decir, esperar } from '../audio/voz'
+import { useEffect } from 'react'
+import { desbloquearAudio, decir } from '../audio/voz'
 import { useSesion } from '../estado/Sesion'
-import { Tarjeta } from '../componentes/Tarjeta'
-import { Boton } from '../componentes/Boton'
 
-/**
- * La puerta. Un solo botón enorme.
- *
- * Cumple tres cosas a la vez: desbloquea el audio (los navegadores móviles no
- * dejan sonar nada hasta que el usuario toca), saluda a José POR SU NOMBRE
- * —que es la contingencia mínima (§1.2) y, no por casualidad, la imagen del
- * Buen Pastor que llama a cada oveja por su nombre— y le dice qué va a pasar,
- * porque necesita saber el plan antes de empezar (perfil §1).
- */
-export function Bienvenida({ onEmpezar, onPanel }: { onEmpezar: () => void; onPanel: () => void }) {
-  const { nombre, yaJugoHoy } = useSesion()
-  const [tocado, setTocado] = useState(false)
+export type SeccionMenu = 'prayers' | 'bible' | 'sing' | 'church'
+
+export function Bienvenida({
+  onEmpezar,
+  onSeccion,
+  onMinijuegos,
+  onPanel,
+}: {
+  onEmpezar: () => void
+  onSeccion: (s: SeccionMenu) => void
+  onMinijuegos: () => void
+  onPanel: () => void
+}) {
+  const { nombre } = useSesion()
 
   useEffect(() => {
-    if (!tocado) return
     let cancelado = false
     void (async () => {
       const hora = new Date().getHours()
       const saludo = hora < 12 ? 'Good morning' : hora < 19 ? 'Good afternoon' : 'Good evening'
       await decir(`${saludo}, Captain ${nombre}!`)
-      if (cancelado) return
-      await esperar(400)
-      if (cancelado) return
-      await decir("Let's play!")
-      if (cancelado) return
-      onEmpezar()
     })()
     return () => {
       cancelado = true
     }
-  }, [tocado, nombre, onEmpezar])
+  }, [nombre])
 
-  // Ya jugó hoy: no hay segunda sesión. El límite lo sostiene la app, no papá.
-  if (yaJugoHoy) {
-    return (
-      <div className="pantalla">
-        <button className="candado" aria-label="Panel de papás" onClick={onPanel}>
-          ⚙
-        </button>
-        <Tarjeta img="fin-dia" emoji="🌙" grande />
-        <p className="frase">See you tomorrow, Captain {nombre}!</p>
-        <p className="frase-chica">Hoy ya jugaron. Mañana los espera otra vez.</p>
-      </div>
-    )
+  const entrarSeccion = (s: SeccionMenu, vozTexto: string) => {
+    desbloquearAudio()
+    void decir(vozTexto)
+    onSeccion(s)
   }
 
   return (
-    <div className="pantalla">
-      <button className="candado" aria-label="Panel de papás" onClick={onPanel}>
+    <div className="pantalla" style={{ justifyContent: 'flex-start', paddingTop: 'max(16px, env(safe-area-inset-top))' }}>
+      <button className="candado" aria-label="Panel de papás" onClick={onPanel} title="Panel de papás">
         ⚙
       </button>
 
-      <Tarjeta img="portada" emoji="⚽" grande />
+      <p className="frase" style={{ marginBottom: 4, fontSize: 'clamp(20px, 4vmin, 26px)' }}>
+        Captain {nombre}
+      </p>
 
-      {!tocado ? (
-        <Boton
-          invita
+      {/* 4 Secciones Visuales Católicas */}
+      <div className="cuadricula-menu">
+        <div
+          className="tarjeta-menu"
+          role="button"
+          onClick={() => entrarSeccion('prayers', 'My Little Prayers')}
+        >
+          <span className="emoji-menu">🙏</span>
+          <span className="titulo-menu">My Little Prayers</span>
+        </div>
+
+        <div
+          className="tarjeta-menu"
+          role="button"
+          onClick={() => entrarSeccion('bible', 'Bible Friends')}
+        >
+          <span className="emoji-menu">🦁</span>
+          <span className="titulo-menu">Bible Friends</span>
+        </div>
+
+        <div
+          className="tarjeta-menu"
+          role="button"
+          onClick={() => entrarSeccion('sing', 'Sing and Praise')}
+        >
+          <span className="emoji-menu">🎵</span>
+          <span className="titulo-menu">Sing & Praise</span>
+        </div>
+
+        <div
+          className="tarjeta-menu"
+          role="button"
+          onClick={() => entrarSeccion('church', 'Holy Things and Church')}
+        >
+          <span className="emoji-menu">⛪</span>
+          <span className="titulo-menu">Holy Things</span>
+        </div>
+      </div>
+
+      {/* Acciones de Minijuegos y Misión del Día */}
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 6 }}>
+        <button
+          className="boton"
+          tono="oro"
           onClick={() => {
             desbloquearAudio()
-            setTocado(true)
+            void decir('Catholic Minigames')
+            onMinijuegos()
+          }}
+          style={{
+            padding: 'clamp(10px, 2vmin, 14px) clamp(16px, 3.5vmin, 24px)',
+            fontSize: 'clamp(14px, 2.8vmin, 17px)',
           }}
         >
-          ▶ START
-        </Boton>
-      ) : (
-        <p className="frase">Hello, Captain {nombre}!</p>
-      )}
+          🎮 Catholic Minigames
+        </button>
+
+        <button
+          className="boton"
+          onClick={() => {
+            desbloquearAudio()
+            void decir("Let's play!")
+            onEmpezar()
+          }}
+          style={{
+            padding: 'clamp(10px, 2vmin, 14px) clamp(16px, 3.5vmin, 24px)',
+            fontSize: 'clamp(14px, 2.8vmin, 17px)',
+          }}
+        >
+          ⚽ Daily Mission
+        </button>
+      </div>
     </div>
   )
 }

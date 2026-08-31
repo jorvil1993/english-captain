@@ -1,0 +1,179 @@
+import { useState } from 'react'
+import { decir, esperar } from '../../audio/voz'
+import { bien, campana, estrellitas, toque } from '../../audio/sonidos'
+import { Tarjeta } from '../../componentes/Tarjeta'
+import { Boton } from '../../componentes/Boton'
+import { Marco } from '../../componentes/Marco'
+
+type ModoBendicion = 'menu' | 'morning' | 'night'
+
+export function MorningNightBlessings({ onVolver, onPanel }: { onVolver: () => void; onPanel: () => void }) {
+  const [modo, setModo] = useState<ModoBendicion>('menu')
+  const [cortinaAbierta, setCortinaAbierta] = useState(false)
+  const [cobijado, setCobijado] = useState(false)
+  const [bloqueado, setBloqueado] = useState(false)
+
+  const iniciarMorning = async () => {
+    setModo('morning')
+    setCortinaAbierta(false)
+    await decir('Good morning, God! Open the window!')
+  }
+
+  const abrirVentana = async () => {
+    if (bloqueado) return
+    setBloqueado(true)
+    toque()
+    setCortinaAbierta(true)
+    await decir('Sun! Good morning, world! Thank you, Jesus!')
+    await esperar(400)
+    estrellitas()
+    await decir('Bless my day! Amen!')
+    await esperar(500)
+    setBloqueado(false)
+  }
+
+  const iniciarNight = async () => {
+    setModo('night')
+    setCobijado(false)
+    await decir('Good night, Jesus! Look at the stars!')
+  }
+
+  const arropar = async () => {
+    if (bloqueado) return
+    setBloqueado(true)
+    toque()
+    setCobijado(true)
+    campana()
+    await decir('Angel of God, protect me through the night!')
+    await esperar(400)
+    estrellitas()
+    await decir('Good night, little Captain! God bless you! Amen!')
+    await esperar(500)
+    setBloqueado(false)
+  }
+
+  if (modo === 'menu') {
+    return (
+      <Marco paso={0} total={0} onPanel={onPanel} onInicio={onVolver}>
+        <div className="pantalla">
+          <p className="frase">Daily Blessings</p>
+          <p className="frase-chica">Morning & Night Routines</p>
+
+          <div className="fila">
+            <div className="ficha">
+              <Tarjeta img="u3-sun" emoji="☀️" onClick={() => void iniciarMorning()} />
+              <span className="frase-chica" style={{ fontWeight: 700 }}>
+                Morning Blessing ☀️
+              </span>
+            </div>
+            <div className="ficha">
+              <Tarjeta img="u5-angel" emoji="🌙" onClick={() => void iniciarNight()} />
+              <span className="frase-chica" style={{ fontWeight: 700 }}>
+                Night Prayer 🌙
+              </span>
+            </div>
+          </div>
+        </div>
+      </Marco>
+    )
+  }
+
+  return (
+    <Marco paso={1} total={1} onPanel={onPanel} onInicio={() => setModo('menu')}>
+      <div className="pantalla">
+        <p className="frase">{modo === 'morning' ? 'Morning Blessing ☀️' : 'Night Blessing 🌙'}</p>
+
+        {modo === 'morning' ? (
+          <>
+            {/* Ventana de la mañana */}
+            <div
+              onClick={() => void abrirVentana()}
+              style={{
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: cortinaAbierta
+                  ? 'radial-gradient(circle at center, #fffbeb 30%, #fef3c7 70%, #fde68a 100%)'
+                  : 'radial-gradient(circle at center, #ffffff 40%, #e2e8f0 100%)',
+                border: 'clamp(3px, 0.8vmin, 6px) solid var(--fondo-2)',
+                borderRadius: 'var(--radio)',
+                padding: 'clamp(14px, 2.5vmin, 22px)',
+                width: 'min(92vw, 420px)',
+                minHeight: 160,
+                boxShadow: cortinaAbierta ? '0 0 32px rgba(245, 158, 11, 0.6)' : 'var(--sombra)',
+                cursor: 'pointer',
+                transition: 'all 500ms ease',
+              }}
+            >
+              <div style={{ width: 84, height: 84, marginBottom: 6 }}>
+                <Tarjeta img={cortinaAbierta ? 'u3-sun' : 'u5-angel'} emoji={cortinaAbierta ? '☀️' : '🪟'} />
+              </div>
+
+              <p className="frase" style={{ fontSize: 'clamp(17px, 3.2vmin, 22px)', margin: 0 }}>
+                {cortinaAbierta ? '☀️ Good morning, God!' : 'Tap to open the window! 🪟'}
+              </p>
+            </div>
+
+            <Boton
+              invita
+              onClick={() => {
+                bien()
+                setModo('menu')
+              }}
+              style={{ marginTop: 12 }}
+            >
+              ✔ Amen!
+            </Boton>
+          </>
+        ) : (
+          <>
+            {/* Noche estrellada con Ángel de la Guarda */}
+            <div
+              onClick={() => void arropar()}
+              style={{
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: cobijado
+                  ? 'radial-gradient(circle at center, #1e1b4b 30%, #0f172a 100%)'
+                  : 'radial-gradient(circle at center, #312e81 40%, #1e1b4b 100%)',
+                color: '#ffffff',
+                border: 'clamp(3px, 0.8vmin, 6px) solid #4338ca',
+                borderRadius: 'var(--radio)',
+                padding: 'clamp(14px, 2.5vmin, 22px)',
+                width: 'min(92vw, 420px)',
+                minHeight: 160,
+                boxShadow: cobijado ? '0 0 32px rgba(99, 102, 241, 0.8)' : 'var(--sombra)',
+                cursor: 'pointer',
+                transition: 'all 500ms ease',
+              }}
+            >
+              <div style={{ width: 84, height: 84, marginBottom: 6 }}>
+                <Tarjeta img="u5-angel" emoji="👼" />
+              </div>
+
+              <p className="frase" style={{ color: '#fef08a', fontSize: 'clamp(17px, 3.2vmin, 22px)', margin: 0 }}>
+                {cobijado ? '⭐ Angel of God, protect me! ⭐' : 'Tap to pray and sleep! 🌙'}
+              </p>
+            </div>
+
+            <Boton
+              invita
+              onClick={() => {
+                bien()
+                setModo('menu')
+              }}
+              style={{ marginTop: 12 }}
+            >
+              ✔ Amen!
+            </Boton>
+          </>
+        )}
+      </div>
+    </Marco>
+  )
+}

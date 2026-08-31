@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { fraseDe } from '../datos/curso'
 import type { Unidad } from '../datos/tipos'
 import { useNarrador } from '../audio/narracion'
-import { bien } from '../audio/sonidos'
+import { bien, toque } from '../audio/sonidos'
 import { decir, esperar } from '../audio/voz'
 import { Tarjeta } from '../componentes/Tarjeta'
 import { Boton } from '../componentes/Boton'
@@ -10,103 +10,148 @@ import { Marco } from '../componentes/Marco'
 
 type Fase = 'narrando' | 'sigue' | 'preguntando' | 'resolviendo'
 
-/**
- * EL CUENTO. La columna vertebral de la unidad.
- *
- * Dos decisiones vienen directo de la investigación:
- *
- *  · El cuento gana a la canción en vocabulario incidental (§1.5), y el
- *    "storytelling elaborativo interactivo" —el que se detiene, pregunta y
- *    expande— gana a la relectura repetida. Por eso el cuento SE DETIENE.
- *
- *  · Un cuento que corre solo es un video, y de un video no se aprende (§1.2).
- *    Acá cada escena espera un toque de José y algunas le hacen una pregunta
- *    de verdad. La pantalla no avanza sin él.
- *
- * Y cuando se equivoca no pasa NADA: ningún sonido, ninguna cara, ningún "no".
- * La voz vuelve a decir la frase correcta con calma y el cuento sigue. José no
- * tolera que se rían de él y cualquier señal de fallo le cierra la puerta
- * (perfil §1, sensibilidad a la burla; Don Bosco: mostrar lo lindo, nunca
- * humillar).
- */
 export function Story({
   unidad,
-  paso,
   onListo,
   onResponder,
   onPanel,
+  onInicio,
 }: {
   unidad: Unidad
-  paso: number
+  paso?: number
+  total?: number
   onListo: () => void
   onResponder: (fraseId: string, acierto: boolean) => void
   onPanel: () => void
+  onInicio?: () => void
 }) {
   const { narrar, sigueVivo } = useNarrador()
   const [i, setI] = useState(0)
   const [fase, setFase] = useState<Fase>('narrando')
   const [correcta, setCorrecta] = useState<string | null>(null)
+  const [wobbleId, setWobbleId] = useState<string | null>(null)
+  const [guiando, setGuiando] = useState(false)
+  const timerInactividad = useRef<number | null>(null)
 
-  const escena = unidad.cuento.escenas[i]
+  const escenas = unidad.cuento.escenas
+  const escena = escenas[i]
+
+  const reiniciarInactividad = (texto: string) => {
+    if (timerInactividad.current) window.clearTimeout(timerInactividad.current)
+    setGuiando(false)
+    timerInactividad.current = window.setTimeout(async () => {
+      setGuiando(true)
+      await decir(texto)
+    }, 4500)
+  }
 
   useEffect(() => {
+    if (!escena) return
     let cancelado = false
     setFase('narrando')
     setCorrecta(null)
+    setWobbleId(null)
+    setGuiando(false)
+
     void (async () => {
-      await esperar(400)
+      await esperar(300)
       if (cancelado || !sigueVivo()) return
       await narrar(escena.en)
       if (cancelado || !sigueVivo()) return
+
       if (escena.pregunta) {
-        await esperar(300)
-        if (cancelado) return
-        await decir(escena.pregunta.en)
+        await esperar(200)
         if (cancelado) return
         setFase('preguntando')
+        await decir(escena.pregunta.en)
+        reiniciarInactividad(escena.pregunta.en)
       } else {
         setFase('sigue')
       }
     })()
+
     return () => {
       cancelado = true
+      if (timerInactividad.current) window.clearTimeout(timerInactividad.current)
     }
   }, [escena, narrar, sigueVivo])
 
   const avanzar = () => {
-    if (i + 1 >= unidad.cuento.escenas.length) onListo()
+    setFase('narrando')
+    setCorrecta(null)
+    setWobbleId(null)
+    if (i + 1 >= escenas.length) onListo()
     else setI(i + 1)
   }
 
+  const repetir = () => {
+    if (fase === 'preguntando' && escena?.pregunta) {
+      void decir(escena.pregunta.en)
+      reiniciarInactividad(escena.pregunta.en)
+    } else if (escena) {
+      void narrar(escena.en)
+    }
+  }
+
   const responder = async (fraseId: string, acierta: boolean) => {
-    if (fase !== 'preguntando') return
-    setFase('resolviendo')
+    if (fase !== 'preguntando' || !escena?.pregunta) return
+    if (timerInactividad.current) window.clearTimeout(timerInactividad.current)
+    setGuiando(false)
+
+    const buena = escena.pregunta.opciones.find((o) => o.correcta)
     onResponder(fraseId, acierta)
-    const buena = escena.pregunta!.opciones.find((o) => o.correcta)!
-    setCorrecta(buena.fraseId)
-    if (acierta) {
+
+    if (acierta && buena) {
+      setFase('resolviendo')
+      setCorrecta(buena.fraseId)
       bien()
       await esperar(250)
       await decir(`Yes! ${fraseDe(buena.fraseId).en}`)
+      await esperar(500)
+      avanzar()
     } else {
-      // Sin sonido, sin "no". Se vuelve a modelar bien y ya.
-      await esperar(250)
-      await decir(fraseDe(buena.fraseId).en)
+      // Regla Cero Frustración: wobble suave + auto-nombrado en inglés + re-guía
+      toque()
+      setWobbleId(fraseId)
+      await decir(fraseDe(fraseId).en)
+      await esperar(500)
+      setWobbleId(null)
+      await decir(escena.pregunta.en)
+      reiniciarInactividad(escena.pregunta.en)
     }
-    await esperar(500)
-    avanzar()
   }
 
-  return (
-    <Marco paso={paso} total={6} ayudaEs={escena.es} onPanel={onPanel}>
-      <div className="pantalla">
-        <Tarjeta img={escena.img} emoji={escena.emoji} grande />
+  if (!escena) {
+    return (
+      <Marco paso={escenas.length} total={escenas.length} onPanel={onPanel} onInicio={onInicio}>
+        <div className="pantalla">
+          <Boton invita onClick={onListo}>
+            ▶
+          </Boton>
+        </div>
+      </Marco>
+    )
+  }
 
-        {fase === 'preguntando' || fase === 'resolviendo' ? (
+  const esPregunta = (fase === 'preguntando' || fase === 'resolviendo') && Boolean(escena.pregunta)
+
+  return (
+    <Marco paso={i} total={escenas.length} ayudaEs={escena.es} onPanel={onPanel} onInicio={onInicio}>
+      <div className="pantalla">
+        <Tarjeta img={escena.img} emoji={escena.emoji} grande onClick={repetir} />
+
+        {esPregunta && escena.pregunta ? (
           <>
-            <p className="frase">{escena.pregunta!.en}</p>
+            <p
+              className="frase"
+              onClick={repetir}
+              style={{ cursor: 'pointer' }}
+              title="Toca para volver a escuchar"
+            >
+              🔊 {escena.pregunta.en}
+            </p>
             <div className="fila">
-              {escena.pregunta!.opciones.map((o) => {
+              {escena.pregunta.opciones.map((o) => {
                 const f = fraseDe(o.fraseId)
                 return (
                   <Tarjeta
@@ -114,15 +159,26 @@ export function Story({
                     img={f.img}
                     emoji={f.emoji}
                     elegida={correcta === o.fraseId}
+                    wobble={wobbleId === o.fraseId}
+                    guiando={guiando && o.correcta}
                     onClick={fase === 'preguntando' ? () => void responder(o.fraseId, o.correcta) : undefined}
                   />
                 )
               })}
             </div>
+            <button
+              className="boton fantasma"
+              onClick={repetir}
+              style={{ marginTop: 4, fontSize: 15 }}
+            >
+              🔊 Escuchar de nuevo
+            </button>
           </>
         ) : (
           <>
-            <p className="frase">{escena.en.join(' ')}</p>
+            <p className="frase" onClick={repetir} style={{ cursor: 'pointer' }}>
+              {escena.en.join(' ')}
+            </p>
             {fase === 'sigue' && (
               <Boton invita onClick={avanzar}>
                 ▶

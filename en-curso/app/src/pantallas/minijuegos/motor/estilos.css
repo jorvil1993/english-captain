@@ -1,0 +1,647 @@
+/*
+  ESTILOS DE LOS CINCO JUEGOS DE MOVIMIENTO.
+
+  Todo lleva el prefijo `mjx-` para no pisar ni una sola clase de `global.css`.
+
+  La regla que gobierna este archivo y que no vale para el resto de la app:
+  acá hay una ESCENA, un rectángulo donde el dedo manda y el navegador no.
+  Fuera de la escena siguen mandando las reglas de siempre —nada de scroll,
+  medidas en vmin, ritmo lento—; dentro, el gesto es el juego.
+
+  Y como el resto de la app: cero destellos, cero sacudidas, cero rojo de
+  error. Lo único que cambia de color acá es lo que va bien.
+*/
+
+/* ── El menú de los diez juegos ─────────────────────────────────────────── */
+
+.mjx-hub {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 1.6vmin, 14px);
+  padding: clamp(8px, 2vmin, 18px);
+  padding-top: max(clamp(46px, 9vmin, 64px), calc(env(safe-area-inset-top) + 44px));
+  padding-bottom: max(clamp(8px, 2vmin, 18px), env(safe-area-inset-bottom));
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Dos columnas y cinco filas. El rótulo de cada familia ocupa el ancho entero
+   para que las dos familias se lean como dos bloques y no como diez cosas. */
+.mjx-hub-lista {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(6px, 1.4vmin, 12px);
+  width: 100%;
+  max-width: min(92vw, 560px);
+  align-content: center;
+}
+
+.mjx-hub-rotulo {
+  grid-column: 1 / -1;
+  margin: clamp(2px, 0.8vmin, 8px) 0 0;
+  font-size: clamp(11px, 2.1vmin, 16px);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+/*
+  La tarjeta es ANCHA y no cuadrada. Con diez juegos, una tarjeta cuadrada
+  obligaría a achicarlas hasta que el dedo de un niño tape dos a la vez; así,
+  cada una ocupa media pantalla de ancho y el blanco es enorme aunque sean
+  diez.
+*/
+.mjx-hub-tarjeta {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1.6vmin, 12px);
+  min-height: clamp(58px, 9vh, 104px);
+  padding: clamp(6px, 1.4vmin, 12px) clamp(8px, 2vmin, 16px);
+  background: radial-gradient(circle at 24% 30%, #ffffff 40%, #f9f0df 100%);
+  border: clamp(3px, 0.7vmin, 5px) solid var(--fondo-2);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 180ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.mjx-hub-tarjeta:hover,
+.mjx-hub-tarjeta:active {
+  border-color: var(--verde-claro);
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(27, 107, 74, 0.18);
+}
+
+.mjx-hub-tarjeta .emoji {
+  font-size: clamp(24px, 5.6vmin, 40px);
+  line-height: 1;
+  flex: none;
+  filter: drop-shadow(0 3px 5px rgba(51, 41, 29, 0.14));
+}
+
+.mjx-hub-tarjeta .titulo {
+  font-size: clamp(11px, 2.2vmin, 16px);
+  font-weight: 700;
+  color: var(--tinta);
+  line-height: 1.12;
+}
+
+/* Apaisado: sobra ancho y falta alto, así que las diez van en cuatro columnas
+   y cada familia ocupa una fila y media en vez de cinco. */
+@media (orientation: landscape) {
+  .mjx-hub-lista {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    max-width: min(96vw, 900px);
+  }
+  .mjx-hub-tarjeta {
+    min-height: clamp(48px, 14vh, 72px);
+  }
+}
+
+/* ── La escena ──────────────────────────────────────────────────────────── */
+
+.mjx-pantalla {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 1.4vmin, 14px);
+  padding: clamp(8px, 2vmin, 18px);
+  padding-top: max(clamp(46px, 9vmin, 64px), calc(env(safe-area-inset-top) + 44px));
+  padding-bottom: max(clamp(8px, 2vmin, 18px), env(safe-area-inset-bottom));
+  text-align: center;
+  overflow: hidden;
+}
+
+/*
+  `touch-action: none` es la línea más importante del archivo. Sin ella, en la
+  tablet un arrastre hacia abajo lo interpreta el navegador como "recargar" y
+  uno lateral como "volver atrás": el juego perdería el dedo justo cuando lo
+  necesita. Acá adentro el dedo es del juego.
+*/
+.mjx-escena {
+  position: relative;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+  border-radius: var(--radio);
+  border: clamp(3px, 0.8vmin, 6px) solid var(--fondo-2);
+  box-shadow: var(--sombra);
+  background: var(--blanco);
+  width: min(94vw, 620px);
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: min(74vh, 600px);
+}
+
+.mjx-escena > * {
+  /* Nada dentro de la escena roba el gesto: los eventos los lee la escena. */
+  pointer-events: none;
+}
+
+.mjx-titulo {
+  font-size: clamp(19px, 4.2vmin, 38px);
+  font-weight: 800;
+  color: var(--verde);
+  line-height: 1.12;
+  margin: 0;
+  max-width: 24ch;
+}
+
+.mjx-pie {
+  font-size: clamp(13px, 2.6vmin, 22px);
+  color: var(--tinta-suave);
+  font-weight: 700;
+  margin: 0;
+  max-width: 32ch;
+  min-height: 1.3em;
+}
+
+/* Cuenta de lo logrado, en fichas, nunca en números que haya que leer. */
+.mjx-marcador {
+  display: flex;
+  gap: clamp(4px, 1vmin, 9px);
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  min-height: clamp(16px, 3vmin, 26px);
+}
+
+.mjx-ficha {
+  font-size: clamp(15px, 3vmin, 26px);
+  line-height: 1;
+  opacity: 0.22;
+  transition: opacity 420ms ease, transform 420ms cubic-bezier(0.2, 1.5, 0.4, 1);
+  transform: scale(0.85);
+}
+
+.mjx-ficha.llena {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/*
+  EL FONDO ILUSTRADO DE UNA ESCENA.
+
+  Va ENCIMA del degradado de CSS, no en su lugar: si el jpg todavía no está
+  generado o no carga, debajo queda el color y la escena se ve bien igual.
+  Nunca hay un rectángulo blanco.
+
+  El recorte de 5% por lado no es decorativo: el modelo devuelve la
+  ilustración con un margen crema alrededor, como si fuera una lámina pegada
+  sobre un papel, y ese borde se vería como una línea rara dentro de la
+  escena. Recortando un poco, entra solo el dibujo.
+
+  `object-position` lo elige cada juego y no es un detalle de gusto: en el
+  campanario las campanas cuelgan de la viga, así que la viga tiene que estar
+  SIEMPRE arriba pase lo que pase con la forma de la pantalla; en la ladera y
+  en el cielo del ángel lo que no se puede perder es el suelo, porque encima
+  se paran los niños y crecen las flores.
+*/
+.mjx-fondo {
+  position: absolute;
+  inset: -5%;
+  width: 110%;
+  height: 110%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.mjx-fondo.abajo {
+  object-position: center bottom;
+}
+
+.mjx-fondo.arriba {
+  object-position: center top;
+}
+
+/* Escena cuadrada: el SVG usa un viewBox de 100 × 100, así que el contenedor
+   tiene que ser cuadrado para que un círculo se vea círculo y para que la
+   posición del dedo (0..1) coincida exactamente con la coordenada del SVG. */
+.mjx-escena.cuadrada {
+  aspect-ratio: 1;
+  width: min(88vw, 62vh, 480px);
+  flex: none;
+  max-height: none;
+}
+
+/* ── 1 · Trace the Holy Cross ───────────────────────────────────────────── */
+
+.mjx-cuerpo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* El punto que hay que tocar late despacio para que se vea sin gritar. */
+@keyframes mjxLatido {
+  0%,
+  100% {
+    r: var(--r);
+    opacity: 0.9;
+  }
+  50% {
+    r: calc(var(--r) * 1.22);
+    opacity: 1;
+  }
+}
+
+.mjx-guia {
+  animation: mjxLatido 1.6s ease-in-out infinite;
+}
+
+@keyframes mjxHalo {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.1);
+  }
+}
+
+.mjx-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mjxHalo 1.6s ease-out infinite;
+}
+
+/* ── 2 · Loaves and Fishes ──────────────────────────────────────────────── */
+
+.mjx-comensal {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  transition: transform 420ms cubic-bezier(0.2, 1.4, 0.4, 1);
+  font-size: clamp(30px, 7vmin, 54px);
+  line-height: 1;
+}
+
+.mjx-comensal .plato {
+  font-size: clamp(15px, 3.4vmin, 27px);
+  margin-top: 2px;
+  min-height: 1.1em;
+}
+
+/* El globo de pensamiento: lo que ese niño está pidiendo. */
+.mjx-comensal .pedido {
+  font-size: clamp(15px, 3.4vmin, 26px);
+  line-height: 1;
+  min-height: 1.35em;
+  padding: 0.16em 0.34em;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.92);
+  box-shadow: 0 2px 0 rgba(51, 41, 29, 0.12);
+}
+
+.mjx-comensal .pedido:empty {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.mjx-comensal.servido {
+  transform: translate(-50%, -50%) scale(1.12);
+}
+
+/* El que toca ahora respira, para que se sepa a quién hay que llevarle. */
+@keyframes mjxRespira {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.09);
+  }
+}
+
+.mjx-comensal.esperando {
+  animation: mjxRespira 1.5s ease-in-out infinite;
+}
+
+/*
+  La canasta es SOLO decorado. Las dos viandas se posicionan una por una en el
+  porcentaje exacto que el juego usa para saber si el dedo las agarró: si la
+  canasta las acomodara con flex, lo que se ve y lo que se toca dejarían de
+  coincidir y José agarraría aire al lado del pan.
+*/
+.mjx-canasta {
+  position: absolute;
+  left: 50%;
+  top: 87%;
+  transform: translate(-50%, -50%);
+  width: clamp(120px, 34vmin, 230px);
+  height: clamp(46px, 13vmin, 86px);
+  border-radius: 999px;
+  background: rgba(249, 240, 223, 0.94);
+  box-shadow: 0 4px 0 rgba(51, 41, 29, 0.12);
+}
+
+.mjx-vianda {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: clamp(28px, 6.4vmin, 50px);
+  line-height: 1;
+  transition: transform 260ms ease;
+  z-index: 2;
+}
+
+.mjx-vianda.activa {
+  transform: translate(-50%, -50%) scale(1.16);
+  filter: drop-shadow(0 0 10px rgba(230, 168, 34, 0.7));
+}
+
+/* Lo que va pegado al dedo mientras se arrastra. */
+.mjx-en-mano {
+  position: absolute;
+  transform: translate(-50%, -50%) scale(1.2);
+  font-size: clamp(30px, 6.8vmin, 54px);
+  line-height: 1;
+  filter: drop-shadow(0 6px 8px rgba(51, 41, 29, 0.28));
+  z-index: 3;
+}
+
+/* ── 3 · Guardian Angel Catch ───────────────────────────────────────────── */
+
+.mjx-cielo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #eaf2fb 0%, #f7f1e4 72%, #edf6e9 100%);
+}
+
+.mjx-suelo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 10%;
+  background: linear-gradient(180deg, rgba(46, 145, 105, 0), rgba(46, 145, 105, 0.28));
+}
+
+.mjx-angel {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: clamp(38px, 8.5vmin, 68px);
+  line-height: 1;
+  filter: drop-shadow(0 0 14px rgba(230, 190, 90, 0.55));
+  z-index: 2;
+  will-change: transform;
+}
+
+.mjx-cae {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: clamp(26px, 5.6vmin, 44px);
+  line-height: 1;
+  will-change: transform;
+}
+
+/* ── 4 · Calm the Storm ─────────────────────────────────────────────────── */
+
+.mjx-mar {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #dbe7f3 0%, #b9cfe3 46%, #7fa3c0 100%);
+  transition: filter 900ms ease;
+}
+
+.mjx-mar.calmo {
+  background: linear-gradient(180deg, #fdf1d6 0%, #cfe4f2 48%, #9dc4dc 100%);
+}
+
+.mjx-nube {
+  position: absolute;
+  font-size: clamp(34px, 7.5vmin, 60px);
+  line-height: 1;
+  opacity: 0.85;
+  will-change: transform, opacity;
+}
+
+.mjx-barco {
+  position: absolute;
+  left: 50%;
+  font-size: clamp(44px, 10vmin, 82px);
+  line-height: 1;
+  transform-origin: 50% 90%;
+  will-change: transform;
+  z-index: 2;
+}
+
+.mjx-sol {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(34px, 7.5vmin, 62px);
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 1600ms ease;
+}
+
+.mjx-sol.visible {
+  opacity: 1;
+}
+
+/* El aro de la quietud: se llena mientras el dedo NO se mueve. */
+.mjx-aro {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(120px, 30vmin, 210px);
+  height: clamp(120px, 30vmin, 210px);
+  z-index: 3;
+}
+
+.mjx-aro circle {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.mjx-aro .fondo {
+  stroke: rgba(255, 253, 248, 0.6);
+}
+
+.mjx-aro .lleno {
+  stroke: var(--oro);
+  transition: stroke-dashoffset 140ms linear;
+}
+
+.mjx-aro-centro {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(30px, 7vmin, 52px);
+  line-height: 1;
+  z-index: 4;
+}
+
+/* ── 5 · Ring the Church Bells ──────────────────────────────────────────── */
+
+.mjx-campanario {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #f6eeda 0%, #efe2c6 100%);
+}
+
+.mjx-viga {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: clamp(8px, 2.4vmin, 20px);
+  height: clamp(10px, 2.2vmin, 18px);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #b78a4e, #8a6535);
+  box-shadow: 0 3px 0 rgba(51, 41, 29, 0.18);
+}
+
+.mjx-torre {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+  /* En porcentaje y no en pixeles: las campanas tienen que colgar justo por
+     debajo de la viga de madera de la ilustracion, y la viga esta en un
+     porcentaje del alto, no a tantos píxeles del borde. */
+  padding-top: 13%;
+}
+
+/* La viga dibujada solo se ve si la ilustración no cargó. */
+.mjx-escena:has(.mjx-fondo) .mjx-viga {
+  display: none;
+}
+
+.mjx-campana {
+  font-size: var(--tam);
+  line-height: 1;
+  transform-origin: 50% 12%;
+  will-change: transform;
+  filter: drop-shadow(0 4px 5px rgba(51, 41, 29, 0.2));
+}
+
+/*
+  La cuerda se estira con `scaleY` y el tirador baja con `translateY`, los dos
+  sobre el mismo alto fijo de esta caja. Estirarla cambiando su `height` haría
+  que el navegador recalculara la posición de todo el campanario en cada frame
+  del tirón; con transform, la cuerda se estira en la GPU y el resto ni se
+  entera.
+*/
+.mjx-cuerda-caja {
+  position: relative;
+  width: clamp(26px, 6vmin, 44px);
+  /* Proporcional a la escena y no en píxeles fijos: una cuerda corta en una
+     tablet grande deja media pantalla vacía y obliga a tirar con la punta de
+     los dedos. Larga, se tira con toda la mano. */
+  height: 46%;
+  min-height: 64px;
+  margin-top: clamp(2px, 0.6vmin, 6px);
+}
+
+.mjx-cuerda {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: clamp(7px, 1.6vmin, 12px);
+  height: 100%;
+  transform: translateX(-50%) scaleY(1);
+  transform-origin: 50% 0;
+  border-radius: 999px;
+  background: repeating-linear-gradient(
+    180deg,
+    #c9a875 0 7px,
+    #a9854f 7px 14px
+  );
+  will-change: transform;
+}
+
+.mjx-tirador {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(26px, 6vmin, 44px);
+  height: clamp(26px, 6vmin, 44px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #e8c98f, #b48a4e 70%, #8a6535);
+  box-shadow: 0 4px 0 rgba(51, 41, 29, 0.2);
+  will-change: transform;
+}
+
+/* La campana que la app está tocando para que José escuche. */
+.mjx-torre.sonando .mjx-campana {
+  filter: drop-shadow(0 0 16px rgba(230, 168, 34, 0.85));
+}
+
+/* ── Momento de gloria: el cierre de cada juego ─────────────────────────── */
+
+.mjx-final {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 1.6vmin, 14px);
+  background: radial-gradient(circle at center, rgba(255, 251, 235, 0.96) 30%, rgba(254, 243, 199, 0.94) 100%);
+  z-index: 6;
+  font-size: clamp(46px, 12vmin, 96px);
+  line-height: 1;
+  opacity: 0;
+  animation: mjxEntrarFinal 900ms ease forwards;
+}
+
+@keyframes mjxEntrarFinal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.mjx-final .leyenda {
+  font-size: clamp(15px, 3vmin, 24px);
+  font-weight: 800;
+  color: var(--verde);
+  max-width: 22ch;
+}
+
+/* Horizontal: sobra ancho y falta alto. La escena se achica de altura y el
+   texto se aprieta, igual que hace `global.css` con las tarjetas. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .mjx-escena {
+    max-height: 62vh;
+  }
+  .mjx-pantalla {
+    gap: 4px;
+    padding-top: max(38px, calc(env(safe-area-inset-top) + 38px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mjx-guia,
+  .mjx-halo,
+  .mjx-comensal.esperando,
+  .mjx-final {
+    animation: none !important;
+  }
+  .mjx-final {
+    opacity: 1;
+  }
+}

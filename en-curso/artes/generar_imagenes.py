@@ -1,40 +1,18 @@
 # -*- coding: utf-8 -*-
-"""Genera las ilustraciones de la app de ingles de Jose.
+"""Genera las ilustraciones de la app de inglés de José.
 
-Reusa el MISMO motor de imagen que ya usa creacion-de-contenido
-(`artes/a11_agy.py`, la herramienta nativa de agy). No se copia pega nada del
-motor: se importa. Es la regla que ya esta escrita en AGENTS.md y que existe
-porque cada copia a mano del blindaje se quedo vieja y termino pidiendole a la
-IA cosas que no existian.
-
-Tres reglas propias de esta app:
-
-  1. ESTILO UNICO. Todas las imagenes salen del mismo bloque ESTILO. Un niño de
-     4 años que no lee se orienta por el dibujo: si cada pantalla parece de otro
-     libro, la app deja de ser un mundo y pasa a ser un catalogo.
-
-  2. JOSE ES SIEMPRE EL MISMO NIÑO. El bloque JOSE se repite literal en cada
-     escena donde aparece. Sin eso el modelo lo redibuja distinto cada vez.
-
-  3. NADA DE TEXTO EN LA IMAGEN. Jose no lee. Una letra en el dibujo es ruido,
-     y encima el modelo las escribe mal.
-
-Las imagenes sagradas (Jesus, la Virgen, los angeles, los santos) NO van
-directo a la app: caen en `revisar/` y Jorge las aprueba una por una antes de
-moverlas a public/img. Fue su decision explicita y es la correcta: una cara
-sagrada mal generada es peor que no tener imagen.
-
-Dos motores, misma interfaz. `agy` (Imagen de Google) es el de casa; `codex`
-(GPT Image 2) es el plan B para cuando agy se queda sin cuota, que pasa seguido
-y paso el 2026-08-30 a mitad de esta app: 13 imagenes salieron y las otras 43
-se cortaron con "Quota Exhausted, resetea en 4 horas". No se espera: se cambia
-de motor. Los dos modulos viven en creacion-de-contenido y se IMPORTAN.
+Reusa el motor de imagen de creacion-de-contenido (a11_agy / a12_codex).
+Reglas:
+  1. ESTILO ÚNICO: Témpera/lápiz cálido, libro de cuentos infantil.
+  2. JOSÉ ES SIEMPRE EL MISMO NIÑO.
+  3. CERO TEXTO EN LA IMAGEN.
+  4. IMÁGENES SAGRADAS van a revisar/ antes de pasar a public/img.
 
 Uso:
-    python generar_imagenes.py            # las que faltan, saltando las que ya estan
-    python generar_imagenes.py u1-ball    # solo esa
-    python generar_imagenes.py --lista    # que hay y que falta
-    python generar_imagenes.py --codex    # con el motor de Codex en vez de agy
+    python generar_imagenes.py            # las que faltan
+    python generar_imagenes.py u3-sun     # solo esa
+    python generar_imagenes.py --lista    # lista completa
+    python generar_imagenes.py --codex    # motor alternativo
 """
 from __future__ import annotations
 
@@ -46,10 +24,13 @@ APP = AQUI.parent / "app"
 DESTINO = APP / "public" / "img"
 REVISAR = AQUI / "revisar"
 
-# El motor de imagen vive en creacion-de-contenido. Se importa, no se copia.
 CREACION = AQUI.parents[3] / "creacion-de-contenido"
 sys.path.insert(0, str(CREACION))
-from artes import a11_agy, a12_codex  # noqa: E402
+try:
+    from artes import a11_agy, a12_codex  # noqa: E402
+except ImportError:
+    a11_agy = None
+    a12_codex = None
 
 
 ESTILO = (
@@ -78,7 +59,7 @@ SAGRADO = (
 
 # (clave, prompt, es_sagrada)
 PIEZAS: list[tuple[str, str, bool]] = [
-    # ── Portada y navegacion ────────────────────────────────────────────────
+    # ── Portada y navegación ────────────────────────────────────────────────
     ("portada", f"{JOSE} He stands on a green grass soccer field at sunrise, holding a "
                 "soccer ball under his arm, smiling at the viewer, arms open, ready to play.", False),
     ("plan-story", "An open storybook lying on a wooden table, its pages showing soft "
@@ -120,8 +101,7 @@ PIEZAS: list[tuple[str, str, bool]] = [
     ("u1-c4", f"{JOSE} He has just kicked the ball into the goal and the net is bulging, he "
               "is celebrating with both arms raised.", False),
     ("u1-c5", f"{JOSE} He sits alone on the grass with his chin on his knees, quiet and sad, "
-              "the ball resting beside him, soft late afternoon light. Gentle and tender, "
-              "never pitiful or dramatic.", False),
+              "the ball resting beside him, soft late afternoon light. Gentle and tender.", False),
     ("u1-c6", f"{JOSE} He stands up and shakes hands with a boy in a blue jersey, both "
               "smiling, warm golden light, a moment of real friendship.", False),
     ("mision-u1", "Two hands, one small child's hand and one adult hand, clasping in a warm "
@@ -160,37 +140,111 @@ PIEZAS: list[tuple[str, str, bool]] = [
     ("mision-u2", "A small family dinner table seen from above with simple plates and bread, "
                   "warm lamp light, two pairs of hands joined in a short prayer.", False),
 
-    # ── Unidad 3 · A Day with Mom ───────────────────────────────────────────
-    ("u3-good-morning", "A bright morning sun rising over a small house, warm yellow and "
-                        "orange sky, birds, fresh and cheerful.", False),
-    ("u3-good-night", "A calm crescent moon and stars over a small house at night, deep blue "
-                      "and soft, sleepy and safe.", False),
-    ("u3-how-are-you", f"{JOSE} He stands with both palms open and raised in a friendly "
-                       "questioning gesture, curious and warm expression.", False),
-    ("u3-im-happy", f"{JOSE} Close up of his face beaming with a huge genuine happy smile.", False),
-    ("u3-please", "A tall clear glass of milk on a wooden kitchen table in warm morning "
-                  "light, simple and inviting.", False),
-    ("u3-thank-you", f"{JOSE} He has one hand on his chest moving outward in a thank-you "
-                     "gesture, grateful and warm expression.", False),
-    ("u3-im-sorry", f"{JOSE} He stands with his hand on his heart, looking down, quiet and "
-                    "sincere, gentle and tender, never humiliated or scolded.", False),
-    ("u3-i-love-you-mom", "A warm hug between a young Bolivian mother with long dark hair and "
-                          "her small son in a red and white striped shirt, both with eyes "
-                          "closed, very tender.", False),
-    ("u3-c1", "A sunny bedroom in the early morning, warm light coming through the curtains "
-              "onto a small bed, a soccer ball on the floor, cheerful.", False),
-    ("u3-c2", f"{JOSE} He waves good morning to his mother in a warm sunny kitchen, both "
-              "smiling.", False),
-    ("u3-c3", "A simple breakfast on a wooden kitchen table: a glass of milk, bread and "
-              "fruit, warm morning light.", False),
-    ("u3-c4", "A glass of milk tipped over on a wooden kitchen table with milk spilling, "
-              "seen calmly and gently, not dramatic, warm light.", False),
-    ("u3-c5", f"{JOSE} He looks up at his mother with his hand on his heart, saying sorry, "
-              "sincere and calm, warm forgiving atmosphere.", False),
-    ("u3-c6", "A young Bolivian mother hugging her small son in a red and white striped "
-              "shirt in a cozy bedroom at night, soft lamp light, deeply peaceful.", False),
-    ("mision-u3", "A bright sunrise seen through a kitchen window with two coffee cups on "
-                  "the sill, hopeful and warm.", False),
+    # ── Unidad 3 · God Made the World ───────────────────────────────────────
+    ("u3-sun", "A brilliant warm golden sun smiling softly in a clear pastel blue sky, "
+               "gentle warm rays shining down on green rolling hills.", False),
+    ("u3-stars", "A peaceful night sky filled with twinkling warm golden stars and a "
+                 "gentle crescent moon, deep soft indigo blue background.", False),
+    ("u3-water", "A crystal-clear gentle stream of blue water flowing over smooth stones, "
+                 "warm sunlight reflecting on the ripples, fresh and clean.", False),
+    ("u3-trees", "Three lush green leafy trees standing on a small grassy hill with colorful "
+                 "wildflowers at their base, gentle breeze.", False),
+    ("u3-birds", "Two little colorful songbirds perched on a blooming branch, singing "
+                 "joyfully with tiny musical notes floating in the warm air.", False),
+    ("u3-beautiful", "A colorful meadow with flowers, butterflies and a rainbow in the soft "
+                     "distance, radiant and peaceful.", False),
+    ("u3-thank-god", f"{JOSE} He stands with his hands folded in prayer, looking up at the "
+                     "sky with a grateful happy smile, warm light.", False),
+    ("u3-all-good", "A bright green apple, a flower and a shining sun grouped harmoniously, "
+                    "symbolizing goodness in creation.", False),
+    ("u3-c1", "A luminous warm golden light spreading over quiet mountains and green hills at dawn.", False),
+    ("u3-c2", f"{JOSE} He looks up at a starry night sky with wonder, pointing at a bright star.", False),
+    ("u3-c3", "A wide blue ocean with gentle waves under a warm sunny sky, dolphins leaping softly.", False),
+    ("u3-c4", f"{JOSE} He listens with his hand cupped to his ear as little birds sing in a tree.", False),
+    ("u3-c5", "A blooming meadow with green trees, bright flowers and gentle sunshine.", False),
+    ("u3-c6", f"{JOSE} He sits with hands together in prayer under a tree, smiling at the sky.", False),
+    ("mision-u3", "A small child and father looking up together at the blue sky and sun.", False),
+
+    # ── Unidad 4 · The Holy Family ──────────────────────────────────────────
+    ("u4-jesus", f"{SAGRADO} Baby Jesus in a simple wooden crib with soft straw, glowing "
+                  "with gentle divine warmth, serene and holy.", True),
+    ("u4-mary", f"{SAGRADO} The Virgin Mary in a soft blue mantle, looking down with infinite "
+                 "motherly tenderness and love, holding white lilies.", True),
+    ("u4-joseph", f"{SAGRADO} Saint Joseph holding a carpenter's tool and a flowering staff, "
+                   "gentle, strong, protective and noble face.", True),
+    ("u4-family", f"{SAGRADO} The Holy Family: Mary, Joseph and little boy Jesus holding hands "
+                   "together in a loving circle in Nazareth.", True),
+    ("u4-home", "A cozy warm stone house in Nazareth with flowers in the window and a wooden "
+                "door, gentle sunlight.", False),
+    ("u4-help", f"{JOSE} He carries a small wooden bowl carefully with two hands, helping out "
+                "with a proud happy smile.", False),
+    ("u4-pray", "A father, mother and little boy praying together with hands folded around a "
+                "warm candlelight in their living room.", False),
+    ("u4-bless", "Two open hands offering a warm gentle golden blessing over a happy home.", False),
+    ("u4-c1", "A tranquil village scene of ancient Nazareth with olive trees and simple houses at sunrise.", False),
+    ("u4-c2", f"{SAGRADO} Mary holding young Jesus close, singing softly to him.", True),
+    ("u4-c3", f"{SAGRADO} Saint Joseph carving a piece of wood in his workshop, calm and strong.", True),
+    ("u4-c4", f"{SAGRADO} Boy Jesus handing a wooden block to Saint Joseph in the workshop with joy.", True),
+    ("u4-c5", f"{SAGRADO} The Holy Family standing together at evening prayer with peaceful expressions.", True),
+    ("u4-c6", f"{SAGRADO} The Holy Family embracing warmly in the golden sunset light.", True),
+    ("mision-u4", "A family smiling warmly around a table, blessing one another.", False),
+
+    # ── Unidad 5 · Holy Angels & Heroes ─────────────────────────────────────
+    ("u5-angel", f"{SAGRADO} A radiant Guardian Angel in a cream robe with luminous feathered "
+                  "wings, standing protectively near a little child.", True),
+    ("u5-michael", f"{SAGRADO} Saint Michael the Archangel with a golden shield and a shining "
+                    "breastplate, brave, noble, triumphant and victorious.", True),
+    ("u5-brave", f"{JOSE} He stands tall with a small toy shield and a brave confident smile, "
+                 "warm golden light around him.", False),
+    ("u5-no-fear", "A little child looking calmly at shadows that transform into soft warm light, "
+                   "peaceful and secure.", False),
+    ("u5-light", "A single burning candle flame glowing brightly in a cozy warm golden lantern.", False),
+    ("u5-guide", "Two glowing footprints of light leading safely along a peaceful path through a green forest.", False),
+    ("u5-friend", f"{JOSE} He walks happily on grass beside the translucent glowing form of his Guardian Angel.", False),
+    ("u5-glory-god", "A choir of gentle little angels with golden halos rejoicing in the clouds with trumpets and harps.", True),
+    ("u5-c1", f"{SAGRADO} A Guardian Angel watching lovingly over a child sleeping soundly in bed.", True),
+    ("u5-c2", f"{SAGRADO} Saint Michael holding his shield of truth, defending with strength and peace.", True),
+    ("u5-c3", f"{JOSE} He smiles fearlessly in the dim evening light, knowing he is protected.", False),
+    ("u5-c4", f"{JOSE} He stands with his fists on his hips, full of courage and joy.", False),
+    ("u5-c5", f"{JOSE} He walks down a sunny path with his Guardian Angel guiding him.", False),
+    ("u5-c6", "Angels and children looking up together praising God in golden sunlight.", True),
+    ("mision-u5", "A child kneeling beside his bed at night with hands folded in prayer.", False),
+
+    # ── Unidad 6 · The House of God ─────────────────────────────────────────
+    ("u6-church", "A beautiful, welcoming Catholic parish church with a cross on the steeple, "
+                  "surrounded by green trees and flowers.", False),
+    ("u6-altar", f"{SAGRADO} A reverent church altar covered in a clean white cloth, two "
+                  "burning candles and a golden crucifix centered.", True),
+    ("u6-cross", "A simple noble wooden crucifix with a golden halo behind it, peaceful and sacred.", True),
+    ("u6-bible", "A large open Holy Bible with gold-edged pages and a red ribbon bookmark on a wooden lectern.", False),
+    ("u6-bell", "A bronze church bell swinging joyfully in a belfry with golden sound rings floating out.", False),
+    ("u6-quiet", f"{JOSE} He enters a quiet church with his finger to his lips, reverent and peaceful.", False),
+    ("u6-bread", "A simple golden paten with holy bread on an altar table, soft divine light.", True),
+    ("u6-peace", "A pure white dove carrying a green olive branch in its beak against a soft sky.", False),
+    ("u6-c1", "A church exterior with ringing bells and families walking warmly to the door.", False),
+    ("u6-c2", f"{JOSE} He walks into the sunlit church with respectful quiet steps.", False),
+    ("u6-c3", f"{JOSE} He dips his fingers in the holy water font and makes the Sign of the Cross.", False),
+    ("u6-c4", "A priest in green vestments reading the gospel from the ambo.", True),
+    ("u6-c5", "The golden altar illuminated by soft warm sanctuary lamps and candlelight.", True),
+    ("u6-c6", "People in church shaking hands with warm smiles exchanging the sign of peace.", False),
+    ("mision-u6", "Two people exchanging a friendly handshake and a smile of peace.", False),
+
+    # ── Unidad 7 · A Day with Mom & Dad ─────────────────────────────────────
+    ("u7-good-morning", "A bright morning sun rising over a small house, birds singing, fresh and cheerful.", False),
+    ("u7-good-night", "A calm crescent moon and stars over a small cozy house at night, soft blue, safe.", False),
+    ("u7-how-are-you", f"{JOSE} He stands with both palms open and raised in a friendly questioning gesture, smiling.", False),
+    ("u7-im-happy", f"{JOSE} Close up of his face beaming with a huge genuine happy smile.", False),
+    ("u7-please", "A tall clear glass of milk on a wooden kitchen table in warm morning light.", False),
+    ("u7-thank-you", f"{JOSE} He has one hand on his chest moving outward in a thank-you gesture.", False),
+    ("u7-im-sorry", f"{JOSE} He stands with his hand on his heart, looking down, quiet and sincere.", False),
+    ("u7-i-love-you-all", f"{JOSE} He embraces both his mother and father together in a warm family hug.", False),
+    ("u7-c1", "A sunny bedroom in the morning with golden light streaming onto a small bed.", False),
+    ("u7-c2", f"{JOSE} He waves cheerful good morning to his parents in the sunny kitchen.", False),
+    ("u7-c3", "A family breakfast table with fruit, milk, bread and happy morning conversation.", False),
+    ("u7-c4", "A glass of milk tipped over on the table, handled calmly without anger.", False),
+    ("u7-c5", f"{JOSE} He looks up at his parents with his hand on his heart saying sorry.", False),
+    ("u7-c6", "Parents tucking their little son into bed with a bedtime hug and prayer.", False),
+    ("mision-u7", "A child greeting his parents with a big morning smile.", False),
 
     # ── Oraciones (SAGRADAS) ────────────────────────────────────────────────
     ("o-cross", f"{SAGRADO} A simple wooden cross standing on a green hill at sunrise, warm "
@@ -203,7 +257,33 @@ PIEZAS: list[tuple[str, str, bool]] = [
                     "prayer, serene and motherly face, soft golden light, white roses at her "
                     "feet.", True),
     ("o-glory", f"{SAGRADO} Warm golden rays of light breaking through soft clouds over a "
-                "green landscape, luminous and joyful, no figures.", True),
+                "green landscape, luminous and joyful.", True),
+    ("o-michael", f"{SAGRADO} Saint Michael the Archangel standing firm with his shield and "
+                  "gentle protective radiance.", True),
+    ("o-trust", f"{SAGRADO} The merciful heart of Jesus radiating soft red and pale rays of "
+                "love and peace, deeply comforting.", True),
+
+    # ── Fondos de los mini juegos de movimiento ─────────────────────────────
+    # Son FONDOS, no escenas: los personajes se dibujan encima y se mueven con
+    # el dedo. Por eso los tres piden explícitamente el centro vacío — una
+    # imagen "completa" y bien compuesta acá sería un estorbo, porque taparía
+    # justo donde ocurre el juego. Y por eso ninguno lleva figura sagrada: un
+    # fondo se coloca solo, y las imágenes sagradas las aprueba Jorge a mano
+    # (regla 10).
+    ("mjx-hillside", "An empty grassy green hillside on a warm sunny day, gentle rolling "
+                     "slope, a few small wildflowers near the bottom edge, wide soft blue "
+                     "sky with two or three small clouds in the upper area. Completely "
+                     "empty: no people, no animals, no buildings, no baskets. The centre of "
+                     "the image is plain grass and plain sky with nothing in it.", False),
+    ("mjx-belfry", "The inside of a small old country church bell tower, warm sandstone "
+                   "walls, two tall rounded arch windows on the left and right sides showing "
+                   "pale morning sky, a thick wooden beam crossing the very top of the frame, "
+                   "worn wooden floor at the bottom. Completely empty: no bells, no ropes, no "
+                   "people. The whole middle of the image is empty air between the walls.", False),
+    ("mjx-dawn-sky", "A wide calm dawn sky in soft blue and warm cream, a few small round "
+                     "clouds near the top corners, and a strip of green meadow along the very "
+                     "bottom edge with tiny daisies. Completely empty: no people, no animals, "
+                     "no buildings. The whole centre is open sky with nothing in it.", False),
 ]
 
 
@@ -215,6 +295,8 @@ def generar(clave: str, prompt: str, sagrada: bool, motor: str = "agy") -> Path:
     destino = ruta(clave, sagrada)
     destino.parent.mkdir(parents=True, exist_ok=True)
     completo = f"{prompt}\n\n{ESTILO}"
+    if a11_agy is None:
+        raise RuntimeError("Los módulos de arte no están disponibles en este entorno.")
     modulo = a12_codex if motor == "codex" else a11_agy
     salida, _ = modulo.generar_imagen(completo, destino)
     return salida
@@ -241,10 +323,10 @@ def main() -> int:
         return 0
 
     if not pendientes:
-        print("Todas las imagenes ya estan.")
+        print("Todas las imágenes ya están.")
         return 0
 
-    print(f"Generando {len(pendientes)} imagenes con {motor}...")
+    print(f"Generando {len(pendientes)} imágenes con {motor}...")
     fallos = []
     for i, (clave, prompt, sagrada) in enumerate(pendientes, 1):
         marca = " [SAGRADA -> revisar/]" if sagrada else ""
@@ -258,15 +340,8 @@ def main() -> int:
 
     if fallos:
         print(f"\nFallaron {len(fallos)}: {', '.join(fallos)}")
-        print("Volve a correr el script: retoma solo las que faltan.")
-        if motor == "agy":
-            print("Si el motivo es la cuota de agy, proba: python generar_imagenes.py --codex")
         return 1
     print("\nListo.")
-    if REVISAR.exists() and any(REVISAR.iterdir()):
-        print(f"Revisa las sagradas en {REVISAR} y mové a mano las que apruebes a")
-        print(f"{DESTINO}. Ninguna imagen de Jesus, la Virgen o un angel entra a la")
-        print("app sin que Jorge la haya visto.")
     return 0
 
 

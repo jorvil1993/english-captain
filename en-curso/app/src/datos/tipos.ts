@@ -12,7 +12,15 @@
 
 export type Hilo = 'vida' | 'fe' | 'futbol'
 
-export type Virtud = 'piedad' | 'obediencia' | 'dominio' | 'fortaleza' | 'humildad'
+export type Virtud =
+  | 'piedad'
+  | 'obediencia'
+  | 'dominio'
+  | 'fortaleza'
+  | 'humildad'
+  | 'gratitud'
+  | 'reverencia'
+  | 'valentia'
 
 export const VIRTUDES: Record<Virtud, string> = {
   piedad: 'Amor a Dios',
@@ -20,12 +28,58 @@ export const VIRTUDES: Record<Virtud, string> = {
   dominio: 'Dominio propio',
   fortaleza: 'Fortaleza y esfuerzo',
   humildad: 'Humildad',
+  gratitud: 'Gratitud y asombro',
+  reverencia: 'Reverencia y respeto sagrado',
+  valentia: 'Valentía y protección',
+}
+
+/**
+ * La palabra SOLA, sin marco alrededor.
+ *
+ * Es la pieza que faltaba y sin la cual el método no cierra. Un niño no puede
+ * deducir qué significa "Show me the ball" si nunca oyó "the ball" a secas
+ * mientras miraba una pelota. Primero se ancla la etiqueta con la imagen —eso
+ * es aprendizaje trans-situacional puro: la palabra que siempre coincide con
+ * esa cosa gana— y recién después se le pone un marco encima.
+ *
+ * `tipo` decide qué marcos le sirven: a una COSA se le puede decir "show me
+ * the ball", a una ACCIÓN no ("show me jump" no existe); las acciones van con
+ * imperativo desnudo, que es el marco más fácil de todos porque se demuestra
+ * con el cuerpo.
+ */
+export type Etiqueta = {
+  en: string
+  es: string
+  tipo: 'cosa' | 'accion'
+}
+
+/**
+ * Un MARCO: la parte que no cambia de una frase.
+ *
+ * "Show me ___", "Where is ___". El niño no lo traduce: lo despeja. Si el
+ * mismo marco aparece con cinco sustantivos que ya conoce, lo único que queda
+ * sin explicar es el marco, y el significado cae solo. Por eso los marcos
+ * suben de a uno, en escalera, y cada uno se DEMUESTRA en pantalla antes de
+ * pedírselo por primera vez.
+ */
+export type Marco = {
+  id: string
+  /** `{x}` es el hueco donde entra la etiqueta. */
+  plantilla: string
+  /** `{es}` es el hueco del rescate en español. */
+  es: string
+  /** Qué hace el dedo en pantalla cuando se demuestra. */
+  demo: 'senalar' | 'buscar'
+  /** Posición en la escalera: no se sube al siguiente sin dominar el anterior. */
+  nivel: number
 }
 
 export type Frase = {
   /** Id estable: es la clave del mp3 y la del motor de repaso. No cambiarlo. */
   id: string
   en: string
+  /** La palabra sola. Sin esto, la frase no se puede enseñar sin traducir. */
+  etiqueta?: Etiqueta
   /** El rescate en español. Solo suena si José toca el botón de ayuda. */
   es: string
   /** La orden en inglés que dispara el movimiento en MOVE IT. */

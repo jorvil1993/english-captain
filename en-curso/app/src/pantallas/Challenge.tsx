@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { CROMOS } from '../datos/curso'
 import type { Frase, Unidad } from '../datos/tipos'
 import { decir, esperar } from '../audio/voz'
-import { bien, final } from '../audio/sonidos'
+import { bien, final, toque } from '../audio/sonidos'
 import { Tarjeta } from '../componentes/Tarjeta'
 import { Boton } from '../componentes/Boton'
 import { Marco } from '../componentes/Marco'
@@ -18,48 +18,32 @@ function mezclar<T>(xs: T[]): T[] {
   return a
 }
 
-/**
- * THE CHALLENGE — la comprensión, que es lo que de verdad se mide a esta edad.
- *
- * La voz dice una frase y José señala la imagen. Nada de producir, nada de
- * pronunciar: a los 4-5 años lo normal es un período silencioso largo, y muchos
- * niños desarrollan primero —o solo— habilidades receptivas (§1.9). Si entiende
- * y todavía no habla, va bien.
- *
- * Acá entra también el REPASO ESPACIADO: se cuelan frases de unidades
- * anteriores que hoy toca recuperar. Recuperar espaciadamente es lo que hace
- * que la frase siga ahí una semana después (§1.6).
- *
- * Y acá está la decisión más delicada de toda la app: JOSÉ NO PUEDE PERDER.
- * Odia perder —se enoja, llora, y le dura— y ese es justo el terreno donde hay
- * que entrenarlo, pero con papá en la cancha, no con una tablet a solas
- * (perfil §1). Así que no hay rival, no hay vidas, no hay "game over": corre
- * contra su propio récord, y si no lo mejora la app sencillamente no lo
- * menciona. Solo existe la felicitación cuando lo rompe.
- */
 export function Challenge({
   unidad,
   repaso,
-  paso,
   onListo,
   onResponder,
   onPanel,
+  onInicio,
 }: {
   unidad: Unidad
   repaso: Frase[]
-  paso: number
+  paso?: number
   onListo: () => void
   onResponder: (fraseId: string, acierto: boolean) => void
   onPanel: () => void
+  onInicio?: () => void
 }) {
-  const rondas = useMemo(() => mezclar([...unidad.frases.slice(0, 4), ...repaso]), [unidad, repaso])
-
+  const [rondas] = useState(() => mezclar([...unidad.frases.slice(0, 4), ...repaso]))
   const [i, setI] = useState(0)
   const [bloqueado, setBloqueado] = useState(true)
   const [correcta, setCorrecta] = useState<string | null>(null)
+  const [wobbleId, setWobbleId] = useState<string | null>(null)
+  const [guiando, setGuiando] = useState(false)
   const [terminado, setTerminado] = useState(false)
   const [record, setRecord] = useState(false)
   const inicio = useRef<number>(Date.now())
+  const timerInactividad = useRef<number | null>(null)
 
   const objetivo = rondas[i]
 
@@ -69,58 +53,83 @@ export function Challenge({
     return mezclar([objetivo, ...mezclar(otros).slice(0, 2)])
   }, [objetivo, unidad])
 
+  const reiniciarInactividad = (texto: string) => {
+    if (timerInactividad.current) window.clearTimeout(timerInactividad.current)
+    setGuiando(false)
+    timerInactividad.current = window.setTimeout(async () => {
+      setGuiando(true)
+      await decir(texto)
+    }, 4500)
+  }
+
   useEffect(() => {
     if (!objetivo) return
     let cancelado = false
     setBloqueado(true)
     setCorrecta(null)
+    setWobbleId(null)
+    setGuiando(false)
+
     void (async () => {
       await esperar(450)
       if (cancelado) return
       await decir(objetivo.en)
       if (cancelado) return
       setBloqueado(false)
+      reiniciarInactividad(objetivo.en)
     })()
+
     return () => {
       cancelado = true
+      if (timerInactividad.current) window.clearTimeout(timerInactividad.current)
     }
   }, [objetivo])
 
   const responder = async (elegida: Frase) => {
     if (bloqueado) return
+    if (timerInactividad.current) window.clearTimeout(timerInactividad.current)
+    setGuiando(false)
     setBloqueado(true)
+
     const acierta = elegida.id === objetivo.id
     onResponder(objetivo.id, acierta)
-    setCorrecta(objetivo.id)
+
     if (acierta) {
+      setCorrecta(objetivo.id)
       bien()
       await esperar(220)
       await decir('Yes!')
+      await esperar(450)
+      if (i + 1 >= rondas.length) {
+        const segundos = Math.round((Date.now() - inicio.current) / 1000)
+        const previo = Number(localStorage.getItem(CLAVE_RECORD) ?? '0')
+        const mejoro = previo === 0 || segundos < previo
+        if (mejoro) localStorage.setItem(CLAVE_RECORD, String(segundos))
+        setRecord(mejoro)
+        setTerminado(true)
+        final()
+        await decir(mejoro ? 'NEW RECORD! You are fast!' : 'You did it!')
+      } else {
+        setI(i + 1)
+      }
     } else {
-      await esperar(220)
+      // Regla Cero Frustración: wobble suave + auto-nombrado en inglés + re-guía
+      toque()
+      setWobbleId(elegida.id)
+      await decir(elegida.en)
+      await esperar(500)
+      setWobbleId(null)
       await decir(objetivo.en)
-    }
-    await esperar(450)
-    if (i + 1 >= rondas.length) {
-      const segundos = Math.round((Date.now() - inicio.current) / 1000)
-      const previo = Number(localStorage.getItem(CLAVE_RECORD) ?? '0')
-      const mejoro = previo === 0 || segundos < previo
-      if (mejoro) localStorage.setItem(CLAVE_RECORD, String(segundos))
-      setRecord(mejoro)
-      setTerminado(true)
-      final()
-      await decir(mejoro ? 'NEW RECORD! You are fast!' : 'You did it!')
-    } else {
-      setI(i + 1)
+      setBloqueado(false)
+      reiniciarInactividad(objetivo.en)
     }
   }
 
-  // El cromo del día: un jugador real, con su frase, como cierre del reto.
   const cromo = CROMOS[new Date().getDate() % CROMOS.length]
 
   if (terminado) {
     return (
-      <Marco paso={paso} total={6} ayudaEs={cromo.es} onPanel={onPanel}>
+      <Marco paso={rondas.length} total={rondas.length} ayudaEs={cromo.es} onPanel={onPanel} onInicio={onInicio}>
         <div className="pantalla">
           <Tarjeta img={cromo.img} emoji={cromo.emoji} grande onClick={() => void decir(cromo.en)} />
           <p className="frase">{cromo.en}</p>
@@ -135,7 +144,7 @@ export function Challenge({
 
   if (!objetivo) {
     return (
-      <Marco paso={paso} total={6} onPanel={onPanel}>
+      <Marco paso={rondas.length} total={rondas.length} onPanel={onPanel} onInicio={onInicio}>
         <div className="pantalla">
           <Boton invita onClick={onListo}>
             ▶
@@ -146,7 +155,7 @@ export function Challenge({
   }
 
   return (
-    <Marco paso={paso} total={6} ayudaEs={objetivo.es} onPanel={onPanel}>
+    <Marco paso={i} total={rondas.length} ayudaEs={objetivo.es} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
         <p className="frase">{objetivo.en}</p>
         <div className="fila">
@@ -156,11 +165,19 @@ export function Challenge({
               img={f.img}
               emoji={f.emoji}
               elegida={correcta === f.id}
+              wobble={wobbleId === f.id}
+              guiando={guiando && f.id === objetivo.id}
               onClick={bloqueado ? undefined : () => void responder(f)}
             />
           ))}
         </div>
-        <button className="boton fantasma" onClick={() => void decir(objetivo.en)}>
+        <button
+          className="boton fantasma"
+          onClick={() => {
+            void decir(objetivo.en)
+            reiniciarInactividad(objetivo.en)
+          }}
+        >
           🔊 again
         </button>
       </div>

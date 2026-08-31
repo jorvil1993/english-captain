@@ -58,6 +58,12 @@ estas, se para y se pregunta:
     neuronales de Microsoft, gratis y sin clave). Cinco voces distintas, porque
     el método SparkLing usa varios hablantes a propósito. Importa el corpus y
     la función de clave de la propia app: no hay listas duplicadas.
+  - `comprobar_frases.mjs` — busca la grieta que el generador no puede ver: una
+    frase escrita a mano dentro de una pantalla (`decir('...')`) que nadie
+    agregó al corpus. No aparece como pendiente en ningún lado y la termina
+    diciendo el sintetizador del sistema, con su inglés falso. Correrlo antes
+    de publicar. El 2026-08-31 encontró doce, entre ellas la bendición de la
+    noche entera; están declaradas en `datos/frases-sueltas.ts`.
 - `resultados/` — lo terminado.
 
 ## Contenido
@@ -68,6 +74,42 @@ dos preguntas, una canción, una misión) y sus prompts a `generar_imagenes.py`.
 Después de agregar contenido hay que correr `node ../artes/generar_voces.mjs`
 para que las frases nuevas tengan voz. Nada más: el repaso espaciado, la
 rotación de unidades y el panel de papás se acomodan solos.
+
+## Los mini juegos
+
+Son diez, en `en-curso/app/src/pantallas/minijuegos/`, y se dividen en dos
+familias que el menú muestra separadas:
+
+- **Tap & Play** (Antigravity) — se toca algo y pasa algo. Ritmo lento, sin
+  urgencia. Sus datos están en `datos/minijuegos.ts`.
+- **Move & Play** — el dedo hace un gesto sostenido. Sus datos están en
+  `datos/minijuegos-extra.ts` y su cañería común en `minijuegos/motor/`.
+
+| Juego | Gesto | Inglés | Fe |
+|---|---|---|---|
+| Trace the Holy Cross | trazar un camino | forehead · chest · shoulder | la Señal de la Cruz |
+| Loaves and Fishes | arrastrar y soltar | one…five · bread · fish | la multiplicación |
+| Guardian Angel Catch | perseguir con el dedo | left · right · catch | el Ángel de la Guarda |
+| Calm the Storm | agitar, y después quedarse quieto | storm · peace · be still | Jesús calma la tempestad |
+| Ring the Church Bells | tirar de la cuerda y repetir | big · middle · little · listen | las campanas llaman a Misa |
+
+Cada gesto entrena algo distinto a propósito: no hay dos juegos que se jueguen
+igual. El de la tormenta, además, entrena quedarse quieto, que para este niño
+vale más que el inglés que enseña.
+
+**La regla que gobierna los cinco de movimiento: lo que hace José siempre gana,
+y si la app estaba hablando, la app se calla.** Salió de probarlos con un
+puntero de verdad, no de leer el código: las primeras versiones se ponían
+"ocupadas" mientras narraban y descartaban lo que el niño hiciera entre tanto.
+En un juego de tocar casi no se nota; en uno de arrastrar, donde el dedo está
+apoyado todo el tiempo, la pantalla se quedaba muerta con el dedo encima. Está
+implementada en `minijuegos/motor/gestos.ts` (`useLocutor`, `useCola`) y no se
+rompe sin muy buena razón.
+
+Para agregar un juego de movimiento: un objeto en `LISTA_MINIJUEGOS_EXTRA`, sus
+frases en `LINEAS_MINIJUEGOS_EXTRA` (con la voz de cada una), un componente que
+use el motor, y la ruta en `App.tsx`. El menú y la generación de voces se
+acomodan solos.
 
 ## Publicación
 

@@ -5,32 +5,17 @@ import { Tarjeta } from '../componentes/Tarjeta'
 import { Boton } from '../componentes/Boton'
 import { Marco } from '../componentes/Marco'
 
-/**
- * TAKE IT HOME — la misión fuera de la pantalla.
- *
- * Es la actividad más importante de la sesión y la única que no ocurre en la
- * tablet. La app termina EMPUJÁNDOLO afuera: a decirle algo a mamá, a buscar
- * algo azul en su cuarto, a decir "thank you, God" en la cena.
- *
- * Dos razones. Una: la transferencia a la vida real es lo único que cuenta como
- * aprendizaje de verdad, y es exactamente lo que la pantalla hace peor por sí
- * sola (el "transfer deficit", §1.2). Dos: obliga a una conversación con papá o
- * mamá, que es el multiplicador más grande que existe (§1.2, §1.10) y la única
- * forma de que esto no sea una niñera electrónica.
- *
- * Acá el español SÍ se dice completo, sin que lo pida. Es la única pantalla
- * donde la misión tiene que quedar entendida sí o sí.
- */
 export function TakeItHome({
   unidad,
-  paso,
   onListo,
   onPanel,
+  onInicio,
 }: {
   unidad: Unidad
-  paso: number
+  paso?: number
   onListo: () => void
   onPanel: () => void
+  onInicio?: () => void
 }) {
   const [listo, setListo] = useState(false)
 
@@ -55,7 +40,7 @@ export function TakeItHome({
   }, [unidad])
 
   return (
-    <Marco paso={paso} total={6} ayudaEs={unidad.mision.es} onPanel={onPanel}>
+    <Marco paso={0} total={0} ayudaEs={unidad.mision.es} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
         <Tarjeta img={`mision-${unidad.id}`} emoji={unidad.mision.emoji} grande />
         <p className="frase">{unidad.mision.en}</p>

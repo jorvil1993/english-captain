@@ -1,12 +1,6 @@
 /**
- * Los sonidos de la app. Todos se sintetizan con WebAudio —cero archivos, cero
- * peso— y todos son POSITIVOS.
- *
- * No hay sonido de error, ni buzzer, ni nota triste, ni "uy, no". José no
- * tolera que se rían de él y su orgullo colérico convierte cualquier señal de
- * fallo en un portazo (perfil §1, "sensibilidad a la burla"). Cuando se
- * equivoca, la app no hace ningún ruido: simplemente vuelve a decir la frase
- * bien y sigue. Eso es todo el feedback negativo que existe acá.
+ * Los sonidos de la app. WebAudio + MP3s reales para instrumentos y animales.
+ * Cero sonidos de error o penalización.
  */
 
 let ctx: AudioContext | null = null
@@ -22,12 +16,12 @@ function contexto(): AudioContext | null {
   return ctx
 }
 
-function nota(frecuencia: number, comienzo: number, duracion: number, volumen = 0.18) {
+function nota(frecuencia: number, comienzo: number, duracion: number, volumen = 0.18, tipo: OscillatorType = 'sine') {
   const c = contexto()
   if (!c) return
   const osc = c.createOscillator()
   const gan = c.createGain()
-  osc.type = 'sine'
+  osc.type = tipo
   osc.frequency.value = frecuencia
   const t = c.currentTime + comienzo
   gan.gain.setValueAtTime(0, t)
@@ -53,7 +47,7 @@ export function toque() {
 /** Fin de la sesión: un acorde cálido y ya. */
 export function final() {
   nota(523.25, 0, 0.7, 0.12)
-  nota(659.25, 0, 0.7, 0.1)
+  nota(659.25, 0.1, 0.7, 0.1)
   nota(783.99, 0, 0.7, 0.09)
 }
 
@@ -61,4 +55,40 @@ export function final() {
 export function campana() {
   nota(880, 0, 1.4, 0.1)
   nota(1318.5, 0, 1.1, 0.05)
+}
+
+/** Campana de iglesia resonante (ding-dong). */
+export function campanaIglesia() {
+  nota(523.25, 0, 1.8, 0.2)
+  nota(1046.5, 0.02, 1.4, 0.12)
+  nota(1567.98, 0.04, 1.0, 0.08)
+}
+
+/** Pandereta / Tambourine: repique rítmico alegre. */
+export function pandereta() {
+  nota(1760, 0, 0.08, 0.15, 'triangle')
+  nota(2093, 0.02, 0.07, 0.12, 'triangle')
+  nota(2637, 0.04, 0.06, 0.1, 'sine')
+}
+
+/** Estrellitas brillantes / Bendición. */
+export function estrellitas() {
+  nota(659.25, 0, 0.12, 0.12)
+  nota(783.99, 0.08, 0.12, 0.12)
+  nota(987.77, 0.16, 0.14, 0.14)
+  nota(1318.5, 0.24, 0.35, 0.16)
+}
+
+/** Reproduce el efecto de sonido real del animal (MP3). */
+export function sonidoAnimal(animal: string): Promise<void> {
+  return new Promise((resolve) => {
+    try {
+      const audio = new Audio(`./audio/animal_${animal}.mp3`)
+      audio.onended = () => resolve()
+      audio.onerror = () => resolve()
+      void audio.play().catch(() => resolve())
+    } catch {
+      resolve()
+    }
+  })
 }

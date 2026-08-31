@@ -11,26 +11,16 @@ const FICHAS: { id: Actividad; img: string; emoji: string; en: string }[] = [
   { id: 'challenge', img: 'plan-challenge', emoji: '🏆', en: 'The challenge' },
 ]
 
-/**
- * EL PLAN. La pantalla más importante para el temperamento de José.
- *
- * Él es colérico primario: necesita mandar, necesita saber el plan y le da
- * ansiedad que se lo cambien de golpe (perfil §1). La respuesta de diseño no es
- * quitarle el control, es dárselo por adelantado y encauzado: ve las tres
- * cosas que hay que hacer y ELIGE el orden. La app no cede en QUÉ se hace —eso
- * está decidido— pero le entrega entero el CÓMO se ordena.
- *
- * Es exactamente el consejo que ya está en su perfil para prevenir berrinches:
- * "control sano y protagonismo canalizado antes de que lo tome por la fuerza".
- */
 export function Plan({
   hechas,
   onElegir,
   onPanel,
+  onInicio,
 }: {
   hechas: Actividad[]
   onElegir: (a: Actividad) => void
   onPanel: () => void
+  onInicio?: () => void
 }) {
   const pendientes = FICHAS.filter((f) => !hechas.includes(f.id))
 
@@ -39,16 +29,21 @@ export function Plan({
     void (async () => {
       await esperar(350)
       if (cancelado) return
-      await decir(pendientes.length === 1 ? 'And now, the last one!' : 'What do we do first?')
+      if (pendientes.length === 1) {
+        await decir('And now, the last one!')
+      } else if (hechas.length === 1) {
+        await decir('What is next, Captain?')
+      } else {
+        await decir('What do we do first?')
+      }
     })()
     return () => {
       cancelado = true
     }
-    // Solo al cambiar cuántas quedan, no en cada render.
-  }, [pendientes.length])
+  }, [hechas.length, pendientes.length])
 
   return (
-    <Marco paso={1 + hechas.length} total={6} onPanel={onPanel}>
+    <Marco paso={hechas.length} total={3} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
         <p className="frase-chica">You choose, Captain.</p>
         <div className="fila">

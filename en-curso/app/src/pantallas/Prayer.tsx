@@ -8,19 +8,17 @@ import { Marco } from '../componentes/Marco'
 import { esperar } from '../audio/voz'
 import { versoOracion } from '../animacion/movimiento'
 
-/**
- * La oración: 20 segundos, con gesto, siempre igual, sin exigencia.
- *
- * José no rechaza rezar — rechaza el formato largo, quieto y presionado
- * (perfil §1). Cuando la oración es breve, compartida y pegada a otra
- * actividad, entra: reza el rosario en el auto casi siempre. Esta pantalla
- * copia ese molde, no el de la misa.
- *
- * Por eso: no se le pide que repita, no se comprueba si rezó, no hay premio
- * por rezar. Solo suena, con una campanita y un silencio al final. Si él la
- * dice, la dice; si no, la oyó, que a esta edad ya es catequesis.
- */
-export function Prayer({ indice, onListo, onPanel }: { indice: number; onListo: () => void; onPanel: () => void }) {
+export function Prayer({
+  indice,
+  onListo,
+  onPanel,
+  onInicio,
+}: {
+  indice: number
+  onListo: () => void
+  onPanel: () => void
+  onInicio?: () => void
+}) {
   const oracion = ORACIONES[indice % ORACIONES.length]
   const { narrar, sigueVivo } = useNarrador()
   const [verso, setVerso] = useState(-1)
@@ -40,7 +38,6 @@ export function Prayer({ indice, onListo, onPanel }: { indice: number; onListo: 
         await narrar([oracion.versos[i]], 300)
       }
       if (cancelado || !sigueVivo()) return
-      // El silencio del final. No se llena con nada.
       await esperar(1600)
       if (cancelado) return
       setTermino(true)
@@ -51,7 +48,7 @@ export function Prayer({ indice, onListo, onPanel }: { indice: number; onListo: 
   }, [oracion, narrar, sigueVivo])
 
   return (
-    <Marco paso={0} total={6} onPanel={onPanel}>
+    <Marco paso={Math.max(0, verso)} total={oracion.versos.length} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
         <Tarjeta img={oracion.img} emoji={oracion.emoji} grande />
         <p className="frase" ref={linea}>

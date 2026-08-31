@@ -6,3 +6,11 @@ en-curso/app/*.tsbuildinfo
 # Intermedios de los generadores.
 en-curso/artes/__pycache__/
 en-curso/artes/_codex_salidas/
+
+# Skills de agentes instaladas con `npx skills add` (game-feel, game-ui-ux,
+# game-design-theory). Son herramientas de trabajo, no contenido del proyecto:
+# se reinstalan con el mismo comando y no tienen por qué viajar en el repo.
+.agents/
+skills-lock.json
+.claude/skills/
+.claude/settings.local.json

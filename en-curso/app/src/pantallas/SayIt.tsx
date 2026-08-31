@@ -9,30 +9,19 @@ import { Marco } from '../componentes/Marco'
 
 type Fase = 'oyendo' | 'listo' | 'grabando' | 'escuchando' | 'aplaudido'
 
-/**
- * SAY IT — José habla. Y nadie lo corrige.
- *
- * El micrófono graba y devuelve; no juzga. El reconocimiento automático del
- * habla no es fiable por debajo de los 6 años (§1.8), así que cualquier
- * "correcto/incorrecto" sería mentira técnica — y con este niño, además, una
- * puerta cerrada: no tolera que se rían de él.
- *
- * Nunca se le exige repetir. Si no dice nada, la pantalla avanza igual y con
- * el mismo aplauso. La presión frontal es lo que le hace taparse los oídos
- * (perfil §1); el reconocimiento es lo que lo engancha.
- */
 export function SayIt({
   unidad,
-  paso,
   onListo,
   onIntento,
   onPanel,
+  onInicio,
 }: {
   unidad: Unidad
-  paso: number
+  paso?: number
   onListo: () => void
   onIntento: () => void
   onPanel: () => void
+  onInicio?: () => void
 }) {
   const frases = unidad.frases.slice(0, 3)
   const [i, setI] = useState(0)
@@ -69,8 +58,6 @@ export function SayIt({
   const grabarloe = async () => {
     onIntento()
     if (!hayMicrofono()) {
-      // Sin micrófono la actividad sigue existiendo: la voz lo invita, él lo
-      // dice en voz alta y se le aplaude igual. Grabar es un extra, no el punto.
       await siguiente()
       return
     }
@@ -86,7 +73,7 @@ export function SayIt({
   }
 
   return (
-    <Marco paso={paso} total={6} ayudaEs={frase.es} onPanel={onPanel}>
+    <Marco paso={i} total={frases.length} ayudaEs={frase.es} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
         <Tarjeta img={frase.img} emoji={frase.emoji} grande onClick={() => void decir(frase.en)} />
         <p className="frase">{frase.en}</p>

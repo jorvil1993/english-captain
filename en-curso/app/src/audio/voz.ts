@@ -151,12 +151,26 @@ function sonarMp3(clave: string): Promise<void> {
   return new Promise((resolve) => {
     const a = new Audio(`./audio/${clave}.mp3`)
     reproduciendo = a
+    let cerrado = false
     const fin: Fin = () => {
-      reproduciendo = null
+      if (cerrado) return
+      cerrado = true
+      if (reproduciendo === a) reproduciendo = null
+      clearTimeout(reserva)
       resolve()
     }
     a.onended = fin
     a.onerror = fin
+
+    // RED DE SEGURIDAD, y no es teórica: si el mp3 se queda a medio cargar
+    // —wifi flojo, primera visita antes de que el service worker lo tenga
+    // cacheado— no llega ni `onended` ni `onerror`. La promesa no se resolvía
+    // nunca y la pantalla se congelaba sin botón que tocar: exactamente el
+    // "se escondió todo" que reportó Jorge el 2026-08-30 en "Here is the ball".
+    // Ocho segundos es muchísimo para una frase de dos: si no terminó, algo
+    // falló y la sesión tiene que seguir igual.
+    const reserva = setTimeout(fin, 8000)
+
     void a.play().catch(fin)
   })
 }

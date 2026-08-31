@@ -3,37 +3,20 @@ import { TODAS_LAS_FRASES, UNIDADES } from '../datos/curso'
 import type { Frase, Unidad } from '../datos/tipos'
 
 /**
- * El estado de José: qué sabe, qué toca repasar y si ya usó la app hoy.
+ * El estado de José: qué sabe, qué toca repasar, unidad activa y modo de uso.
  *
- * Vive entero en localStorage del aparato. No hay servidor, no hay cuenta, no
- * sale nada de la tablet.
- *
- * Dos motores importantes acá:
- *
- *  · REPASO ESPACIADO (§1.6). Cada frase tiene su propio calendario con
- *    intervalos que se expanden: 1, 2, 4, 8, 16 días. Al acertar, el intervalo
- *    crece; al fallar, vuelve al principio. Preescolares de 4-5 años retienen
- *    forma y significado una semana después cuando se les hace RECUPERAR la
- *    palabra espaciadamente, no cuando se les repite seguido.
- *
- *  · TOPE DIARIO. Una sesión por día y se acabó. No es una restricción
- *    técnica: es la decisión de diseño que hace que esta app se pueda dejar sin
- *    miedo (§1.10 y las 5 C de la AAP: "Crowding Out"). Si José pide más, la
- *    app no cede — y el que sostiene el límite es un aparato, no papá, que es
- *    justo lo que a esta familia le cuesta sostener (perfil §4).
+ * Vive entero en localStorage del aparato. 100% offline y privado.
  */
 
 const INTERVALOS = [1, 2, 4, 8, 16]
-const DIAS_POR_UNIDAD = 4 // la misma unidad varios días: la repetición es el método, no un bug
+const DIAS_POR_UNIDAD = 4
 const CLAVE = 'jose-english-v1'
 
 export type MemoriaFrase = {
   vistas: number
   aciertos: number
   fallos: number
-  /** Posición en INTERVALOS. */
   nivel: number
-  /** Fecha ISO (YYYY-MM-DD) en que toca volver a preguntarla. */
   proximo: string
 }
 
@@ -42,7 +25,6 @@ export type RegistroSesion = {
   unidad: string
   preguntas: number
   aciertos: number
-  /** Cuántas veces intentó decir algo en voz alta. La métrica de SparkLing. */
   intentosVoz: number
   misionCumplida: boolean
 }
@@ -54,6 +36,7 @@ type Guardado = {
   unidadIndice: number
   diasEnUnidad: number
   ultimoDia: string | null
+  modoLibreActivo: boolean
 }
 
 const INICIAL: Guardado = {
@@ -63,6 +46,7 @@ const INICIAL: Guardado = {
   unidadIndice: 0,
   diasEnUnidad: 0,
   ultimoDia: null,
+  modoLibreActivo: true, // Habilitado por defecto para dar flexibilidad en salidas y grupo de oración
 }
 
 export function hoyISO(): string {
@@ -92,17 +76,17 @@ function escribir(g: Guardado) {
   try {
     localStorage.setItem(CLAVE, JSON.stringify(g))
   } catch {
-    // Si el navegador bloquea el almacenamiento la app igual funciona; lo
-    // único que se pierde es el progreso. Nunca es motivo para no arrancar.
+    // Si el navegador bloquea el almacenamiento, no se rompe la sesión
   }
 }
 
 type Contexto = {
   nombre: string
   unidad: Unidad
-  /** Si ya hizo su sesión hoy. La app no da una segunda. */
+  unidadIndice: number
+  todasLasUnidades: Unidad[]
   yaJugoHoy: boolean
-  /** Frases de unidades anteriores que hoy toca recuperar. */
+  modoLibreActivo: boolean
   repaso: Frase[]
   sesiones: RegistroSesion[]
   memoria: Record<string, MemoriaFrase>
@@ -110,6 +94,8 @@ type Contexto = {
   cerrarSesion: (datos: { preguntas: number; aciertos: number; intentosVoz: number }) => void
   marcarMision: (fecha: string, cumplida: boolean) => void
   ponerNombre: (n: string) => void
+  fijarUnidadIndice: (idx: number) => void
+  fijarModoLibre: (activo: boolean) => void
   reiniciarDia: () => void
   borrarTodo: () => void
 }
@@ -123,8 +109,6 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
 
   const hoy = hoyISO()
 
-  // Al entrar un día nuevo avanzamos el contador de días en la unidad. La
-  // unidad cambia sola cada DIAS_POR_UNIDAD; nadie tiene que "pasar de nivel".
   useEffect(() => {
     setG((v) => {
       if (v.ultimoDia === hoy || v.ultimoDia === null) return v
@@ -145,7 +129,7 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
         const m = g.memoria[f.id]
         return m && m.proximo <= hoy
       })
-      .slice(0, 4) // nunca más de 4: el sanguíneo se dispersa
+      .slice(0, 4)
   }, [g.memoria, hoy, unidad])
 
   const registrarRespuesta = useCallback((fraseId: string, acierto: boolean) => {
@@ -189,7 +173,10 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
   const valor: Contexto = {
     nombre: g.nombre,
     unidad,
+    unidadIndice: g.unidadIndice,
+    todasLasUnidades: UNIDADES,
     yaJugoHoy: g.ultimoDia === hoy,
+    modoLibreActivo: g.modoLibreActivo ?? true,
     repaso,
     sesiones: g.sesiones,
     memoria: g.memoria,
@@ -197,6 +184,8 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
     cerrarSesion,
     marcarMision,
     ponerNombre: (n) => setG((v) => ({ ...v, nombre: n.trim() || 'José' })),
+    fijarUnidadIndice: (idx) => setG((v) => ({ ...v, unidadIndice: Math.max(0, Math.min(idx, UNIDADES.length - 1)), diasEnUnidad: 0 })),
+    fijarModoLibre: (activo) => setG((v) => ({ ...v, modoLibreActivo: activo })),
     reiniciarDia: () => setG((v) => ({ ...v, ultimoDia: null })),
     borrarTodo: () => setG(INICIAL),
   }
