@@ -22,9 +22,10 @@ import './motor/estilos.css'
  * él no puede tener una pantalla que le marque los errores.
  *
  * EL INGLÉS ES LA JUGADA. Cuando aparece una estrella lejos del ángel, el
- * entrenador dice "Go left!" o "Go right!" — y José tiene que moverse para
- * allá o la pierde. `left` y `right` no se explican: se obedecen, y por eso se
- * aprenden. Es Total Physical Response con premio inmediato (§1.4).
+ * entrenador vuelve a decir "Guide my steps today." mientras la estrella cae.
+ * La acción repite la frase que José acaba de aprender; no introduce
+ * left/right sin haberlos presentado antes. Es Total Physical Response con
+ * premio inmediato (§1.4).
  *
  * EL ÁNGEL VA SOLO POR EL EJE HORIZONTAL, a una altura fija. Si siguiera al
  * dedo en las dos direcciones bastaría con poner el dedo encima de la estrella
@@ -78,7 +79,7 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
   const fin = useRef(false)
 
   const { reiniciar: reiniciarAyuda } = useInactividad(6500, () => {
-    if (!fin.current) void voz.di('Move the angel with your finger!')
+    if (!fin.current) void voz.di('Guide my steps today.')
   })
 
   const guardarNodo = useCallback((id: number, el: HTMLDivElement | null) => {
@@ -95,14 +96,12 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
     setTerminado(true)
     fin.current = true
     paz()
-    setPie('All the stars are home! Amen!')
-    if (!(await voz.di('All the stars are home! Amen!'))) return
+    setPie('The angel is my friend.')
+    if (!(await voz.di('The angel is my friend.'))) return
     if (!(await voz.pausa(300))) return
-    if (!(await voz.di('My angel takes care of me.'))) return
+    if (!(await voz.di('Glory to God!'))) return
     if (!(await voz.pausa(250))) return
-    if (!(await voz.di('Ever this day be at my side!'))) return
-    if (!(await voz.pausa(500))) return
-    if (!(await voz.di('Good job! God loves you!'))) return
+    if (!(await voz.di('I am brave with God.'))) return
     if (!(await voz.pausa(700))) return
     onVolver()
   }, [onVolver, voz])
@@ -132,11 +131,11 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
       nacidas.current += 1
       setEnCaida((v) => [...v, { id, x }])
 
-      // La orden en inglés, solo cuando la estrella cae claramente a un lado:
-      // decir "go left" para algo que está enfrente enseñaría lo contrario.
+      // La orden nombra la acción que el juego está pidiendo, no vocabulario
+      // direccional que aún no se enseñó en esta unidad.
       const lejos = x - posAngel.current
       if (nacidas.current % 2 === 1 && Math.abs(lejos) > 22) {
-        void voz.di(lejos < 0 ? 'Go left!' : 'Go right!')
+        void voz.di('Guide my steps today.')
       }
       proximaEn.current = Math.max(1.15, 2.0 - recogidasRef.current * 0.09)
     }
@@ -161,11 +160,11 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
         if (n >= META) {
           void cerrar()
         } else if (n % 3 === 0) {
-          void voz.di('You caught it!')
+          void voz.di('I am brave with God.')
         } else if (n % 3 === 1 && n > 1) {
-          void voz.di('One more star!')
+          void voz.di('Guide my steps today.')
         } else if (n % 3 === 2) {
-          void voz.di('The angel is fast!')
+          void voz.di('Shine your light!')
         }
         continue
       }
@@ -178,7 +177,7 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
         // nadie juegue, un jardín sin tope sería un nodo nuevo cada segundo y
         // medio, para siempre. Veinticuatro flores ya se ven como un jardín.
         setFlores((v) => [...v, { id: e.id, x: e.x }].slice(-24))
-        if (e.id % 3 === 0) void voz.di('A little flower for God!')
+        if (e.id % 3 === 0) void voz.di('Shine your light!')
         continue
       }
 
@@ -204,11 +203,11 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
   useEffect(() => {
     void (async () => {
       if (!(await voz.pausa(350))) return
-      if (!(await voz.di('Angel of God, my guardian dear!'))) return
-      setPie('Move the angel with your finger!')
-      if (!(await voz.di('Move the angel with your finger!'))) return
-      if (!(await voz.di('Catch the falling stars!'))) return
-      setPie('Catch the star!')
+      if (!(await voz.di('My Guardian Angel is here.'))) return
+      setPie('Guide my steps today.')
+      if (!(await voz.di('Guide my steps today.'))) return
+      setPie('Shine your light!')
+      if (!(await voz.di('Shine your light!'))) return
       reiniciarAyuda()
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps

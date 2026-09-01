@@ -60,7 +60,7 @@ export function TableroVocabulario({
         <div className="fila" style={{ flexWrap: 'wrap', gap: 12, maxWidth: 640, marginTop: 8 }}>
           {unidad.frases.map((f) => (
             <div key={f.id} className="ficha" onClick={() => reproducir(f)} style={{ cursor: 'pointer' }}>
-              <Tarjeta img={f.img} emoji={f.emoji} elegida={fraseActiva?.id === f.id} />
+              <Tarjeta img={f.img} emoji={f.emoji} elegida={fraseActiva?.id === f.id} audio={f.en} />
               <span className="frase-chica" style={{ fontSize: 12, maxWidth: 110 }}>
                 {f.en}
               </span>

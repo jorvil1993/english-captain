@@ -1,23 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
 import { fraseDe } from '../datos/curso'
-import type { Unidad } from '../datos/tipos'
+import type { Frase, Unidad } from '../datos/tipos'
 import { useNarrador } from '../audio/narracion'
 import { bien, toque } from '../audio/sonidos'
 import { decir, esperar } from '../audio/voz'
 import { Tarjeta } from '../componentes/Tarjeta'
-import { Boton } from '../componentes/Boton'
 import { Marco } from '../componentes/Marco'
 
 type Fase = 'narrando' | 'sigue' | 'preguntando' | 'resolviendo'
 
 export function Story({
   unidad,
+  escenasPermitidas,
+  frasesDisponibles,
   onListo,
   onResponder,
   onPanel,
   onInicio,
 }: {
   unidad: Unidad
+  /** Solo el capítulo que puede comprender con lo aprendido hoy. */
+  escenasPermitidas?: number[]
+  /** Una pregunta solo se muestra si sus dos opciones ya se presentaron. */
+  frasesDisponibles?: Frase[]
   paso?: number
   total?: number
   onListo: () => void
@@ -33,8 +38,12 @@ export function Story({
   const [guiando, setGuiando] = useState(false)
   const timerInactividad = useRef<number | null>(null)
 
-  const escenas = unidad.cuento.escenas
+  const escenas = escenasPermitidas?.map((indice) => unidad.cuento.escenas[indice]).filter(Boolean) ?? unidad.cuento.escenas
   const escena = escenas[i]
+  const conocidas = new Set((frasesDisponibles ?? unidad.frases).map((frase) => frase.id))
+  const pregunta = escena?.pregunta && escena.pregunta.opciones.every((opcion) => conocidas.has(opcion.fraseId))
+    ? escena.pregunta
+    : undefined
 
   const reiniciarInactividad = (texto: string) => {
     if (timerInactividad.current) window.clearTimeout(timerInactividad.current)
@@ -59,14 +68,18 @@ export function Story({
       await narrar(escena.en)
       if (cancelado || !sigueVivo()) return
 
-      if (escena.pregunta) {
+      if (pregunta) {
         await esperar(200)
         if (cancelado) return
         setFase('preguntando')
-        await decir(escena.pregunta.en)
-        reiniciarInactividad(escena.pregunta.en)
+        await decir(pregunta.en)
+        reiniciarInactividad(pregunta.en)
       } else {
         setFase('sigue')
+        // Si no hay pregunta, no hay nada que el niño deba decidir. Dejamos
+        // tiempo para mirar y la historia continúa sin una flecha saltable.
+        await esperar(1800)
+        if (!cancelado && sigueVivo()) avanzar()
       }
     })()
 
@@ -74,7 +87,7 @@ export function Story({
       cancelado = true
       if (timerInactividad.current) window.clearTimeout(timerInactividad.current)
     }
-  }, [escena, narrar, sigueVivo])
+  }, [escena, pregunta, narrar, sigueVivo])
 
   const avanzar = () => {
     setFase('narrando')
@@ -85,20 +98,20 @@ export function Story({
   }
 
   const repetir = () => {
-    if (fase === 'preguntando' && escena?.pregunta) {
-      void decir(escena.pregunta.en)
-      reiniciarInactividad(escena.pregunta.en)
+    if (fase === 'preguntando' && pregunta) {
+      void decir(pregunta.en)
+      reiniciarInactividad(pregunta.en)
     } else if (escena) {
       void narrar(escena.en)
     }
   }
 
   const responder = async (fraseId: string, acierta: boolean) => {
-    if (fase !== 'preguntando' || !escena?.pregunta) return
+    if (fase !== 'preguntando' || !pregunta) return
     if (timerInactividad.current) window.clearTimeout(timerInactividad.current)
     setGuiando(false)
 
-    const buena = escena.pregunta.opciones.find((o) => o.correcta)
+    const buena = pregunta.opciones.find((o) => o.correcta)
     onResponder(fraseId, acierta)
 
     if (acierta && buena) {
@@ -116,31 +129,33 @@ export function Story({
       await decir(fraseDe(fraseId).en)
       await esperar(500)
       setWobbleId(null)
-      await decir(escena.pregunta.en)
-      reiniciarInactividad(escena.pregunta.en)
+      await decir(pregunta.en)
+      reiniciarInactividad(pregunta.en)
     }
   }
 
   if (!escena) {
     return (
       <Marco paso={escenas.length} total={escenas.length} onPanel={onPanel} onInicio={onInicio}>
-        <div className="pantalla">
-          <Boton invita onClick={onListo}>
-            ▶
-          </Boton>
-        </div>
+        <div className="pantalla"><p className="frase-chica">✨</p></div>
       </Marco>
     )
   }
 
-  const esPregunta = (fase === 'preguntando' || fase === 'resolviendo') && Boolean(escena.pregunta)
+  const esPregunta = (fase === 'preguntando' || fase === 'resolviendo') && Boolean(pregunta)
 
   return (
     <Marco paso={i} total={escenas.length} ayudaEs={escena.es} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
-        <Tarjeta img={escena.img} emoji={escena.emoji} grande onClick={repetir} />
+        <Tarjeta
+          img={escena.img}
+          emoji={escena.emoji}
+          grande
+          onClick={repetir}
+          audio={esPregunta && pregunta ? pregunta.en : escena.en.join(' ')}
+        />
 
-        {esPregunta && escena.pregunta ? (
+        {esPregunta && pregunta ? (
           <>
             <p
               className="frase"
@@ -148,10 +163,10 @@ export function Story({
               style={{ cursor: 'pointer' }}
               title="Toca para volver a escuchar"
             >
-              🔊 {escena.pregunta.en}
+              🔊 {pregunta.en}
             </p>
             <div className="fila">
-              {escena.pregunta.opciones.map((o) => {
+              {pregunta.opciones.map((o) => {
                 const f = fraseDe(o.fraseId)
                 return (
                   <Tarjeta
@@ -162,6 +177,7 @@ export function Story({
                     wobble={wobbleId === o.fraseId}
                     guiando={guiando && o.correcta}
                     onClick={fase === 'preguntando' ? () => void responder(o.fraseId, o.correcta) : undefined}
+                    audio={f.en}
                   />
                 )
               })}
@@ -179,11 +195,7 @@ export function Story({
             <p className="frase" onClick={repetir} style={{ cursor: 'pointer' }}>
               {escena.en.join(' ')}
             </p>
-            {fase === 'sigue' && (
-              <Boton invita onClick={avanzar}>
-                ▶
-              </Boton>
-            )}
+            {fase === 'sigue' && <p className="frase-chica">✨</p>}
           </>
         )}
       </div>

@@ -15,6 +15,14 @@ type FichaJuego = {
   img: string
 }
 
+/** Solo aparecen juegos que tienen una lección previa en `curriculo.ts`.
+ * Trace/Loaves/Storm siguen siendo prototipos internos hasta que exista su
+ * propia secuencia de vocabulario; no se le ofrecen al niño como opciones
+ * desconectadas para tocar al azar. */
+const JUEGOS_CON_VOCABULARIO = new Set<Elegible>([
+  'champions', 'altar', 'noah', 'nativity', 'creation', 'routine', 'angel', 'bells',
+])
+
 export function MinijuegosHub({
   onElegir,
   onVolver,
@@ -96,14 +104,14 @@ export function MinijuegosHub({
 
         <div style={{ width: '100%', overflowY: 'auto', paddingBottom: 16 }}>
           {renderizarGrupo(
-            'Tap & Play',
+            'Games from the lessons',
             '👆',
-            LISTA_MINIJUEGOS.map((m) => ({ id: m.id, titulo: m.titulo, emoji: m.emoji, img: m.img })),
+            LISTA_MINIJUEGOS.filter((m) => JUEGOS_CON_VOCABULARIO.has(m.id)).map((m) => ({ id: m.id, titulo: m.titulo, emoji: m.emoji, img: m.img })),
           )}
           {renderizarGrupo(
             'Move & Play',
             '💪',
-            LISTA_MINIJUEGOS_EXTRA.map((m) => ({ id: m.id, titulo: m.titulo, emoji: m.emoji, img: m.img })),
+            LISTA_MINIJUEGOS_EXTRA.filter((m) => JUEGOS_CON_VOCABULARIO.has(m.id)).map((m) => ({ id: m.id, titulo: m.titulo, emoji: m.emoji, img: m.img })),
           )}
         </div>
       </div>

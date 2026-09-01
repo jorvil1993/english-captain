@@ -3,7 +3,6 @@ import type { PlanDeOracion } from '../datos/oraciones-motor'
 import { useNarrador } from '../audio/narracion'
 import { campana } from '../audio/sonidos'
 import { Tarjeta } from '../componentes/Tarjeta'
-import { Boton } from '../componentes/Boton'
 import { Marco } from '../componentes/Marco'
 import { decir, esperar } from '../audio/voz'
 import { versoOracion } from '../animacion/movimiento'
@@ -71,6 +70,11 @@ export function Prayer({
       await esperar(1600)
       if (cancelado) return
       setTermino(true)
+      // La frase ya se mostró y se puede volver a oír con el parlante de la
+      // tarjeta. La ruta continúa sola, sin una flecha que José pueda tocar
+      // por accidente para escaparse de la actividad.
+      await esperar(1400)
+      if (!cancelado && sigueVivo()) onListo()
     })()
     return () => {
       cancelado = true
@@ -85,7 +89,12 @@ export function Prayer({
   return (
     <Marco paso={Math.max(0, pos)} total={secuencia.length} onPanel={onPanel}>
       <div className="pantalla">
-        <Tarjeta img={oracion.img} emoji={oracion.emoji} grande />
+        <Tarjeta
+          img={oracion.img}
+          emoji={oracion.emoji}
+          grande
+          audio={verso >= 0 ? oracion.versos[verso] : oracion.titulo}
+        />
         <p className="frase-chica" style={{ opacity: 0.7 }}>
           {oracion.titulo}
         </p>
@@ -93,11 +102,7 @@ export function Prayer({
           {verso >= 0 ? oracion.versos[verso] : ' '}
         </p>
         <p className="frase-chica">{oracion.gesto}</p>
-        {termino && (
-          <Boton invita onClick={onListo}>
-            ▶
-          </Boton>
-        )}
+        {termino && <p className="frase-chica">✨</p>}
       </div>
     </Marco>
   )

@@ -1,21 +1,24 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { decir, esperar } from '../../audio/voz'
-import { bien, estrellitas, sonidoAnimal, toque } from '../../audio/sonidos'
+import { bien, estrellitas, toque } from '../../audio/sonidos'
 import { Tarjeta } from '../../componentes/Tarjeta'
 import { Marco } from '../../componentes/Marco'
 
-type AnimalArca = {
+type PasoOveja = {
   id: string
-  nombre: string
+  frase: string
   orden: string
   emoji: string
   img: string
 }
 
-const ANIMALES: AnimalArca[] = [
-  { id: 'lion', nombre: 'Lion', orden: 'Find the lion!', emoji: '🦁', img: 'u5-no-fear' },
-  { id: 'sheep', nombre: 'Sheep', orden: 'Find the sheep!', emoji: '🐑', img: 'u2-sheep' },
-  { id: 'dove', nombre: 'Dove', orden: 'Find the dove!', emoji: '🕊️', img: 'u6-peace' },
+/** Este era un arca con lion/dove nuevos y sin vínculo con el cuento de la
+ * unidad. Ahora es la misma aventura del Buen Pastor: reconocer la oveja,
+ * seguir y celebrar que fue encontrada. Todas las frases ya se oyeron antes. */
+const PASOS: PasoOveja[] = [
+  { id: 'lost', frase: 'The sheep is lost.', orden: 'Find the sheep!', emoji: '🔍', img: 'u2-sheep' },
+  { id: 'follow', frase: 'Follow me.', orden: 'Follow the Shepherd!', emoji: '👣', img: 'u2-shepherd' },
+  { id: 'found', frase: 'He finds the sheep!', orden: 'Find the sheep!', emoji: '🤗', img: 'u2-sheep' },
 ]
 
 function mezclar<T>(xs: T[]): T[] {
@@ -38,10 +41,10 @@ export function NoahsPairMatch({ onVolver, onPanel, onInicio }: { onVolver: () =
   const arcaRef = useRef<HTMLDivElement>(null)
   const timerInactividad = useRef<number | null>(null)
 
-  const objetivo = ANIMALES[paso % ANIMALES.length]
+  const objetivo = PASOS[paso % PASOS.length]
 
   const opciones = useMemo(() => {
-    return mezclar(ANIMALES)
+    return mezclar(PASOS)
   }, [paso])
 
   const reiniciarInactividad = (texto: string) => {
@@ -76,28 +79,27 @@ export function NoahsPairMatch({ onVolver, onPanel, onInicio }: { onVolver: () =
     }
   }, [objetivo, paso])
 
-  const procesarSeleccion = async (item: AnimalArca) => {
+  const procesarSeleccion = async (item: PasoOveja) => {
     if (bloqueado) return
     if (timerInactividad.current) window.clearTimeout(timerInactividad.current)
     setGuiando(false)
     setBloqueado(true)
 
-    // Secuencia acústica natural: Sonido Real MP3 ➔ Nombre claro en inglés ("Lion!") ➔ Sonido Real MP3
-    await sonidoAnimal(item.id)
-    await decir(`${item.nombre}!`)
-    await sonidoAnimal(item.id)
+    // No se nombra un animal ajeno: se repite la frase exacta que el niño
+    // acaba de practicar y su imagen limpia.
+    await decir(item.frase)
 
     if (item.id === objetivo.id) {
       setElegido(item.id)
       bien()
       await esperar(300)
-      if (paso + 1 < ANIMALES.length) {
+      if (paso + 1 < PASOS.length) {
         setPaso(paso + 1)
       } else {
         estrellitas()
-        await decir('Rainbow! Red, yellow, green, blue!')
+        await decir('He finds the sheep!')
         await esperar(400)
-        await decir('All safe in the Ark! Good job!')
+        await decir('I love you.')
         await esperar(500)
         onVolver()
       }
@@ -125,7 +127,7 @@ export function NoahsPairMatch({ onVolver, onPanel, onInicio }: { onVolver: () =
     setPosicionArrastre({ x: e.clientX, y: e.clientY })
   }
 
-  const soltarArrastre = (an: AnimalArca, e: React.PointerEvent) => {
+  const soltarArrastre = (an: PasoOveja, e: React.PointerEvent) => {
     if (!arrastrando) return
     const dropX = e.clientX
     const dropY = e.clientY
@@ -151,15 +153,16 @@ export function NoahsPairMatch({ onVolver, onPanel, onInicio }: { onVolver: () =
   }
 
   return (
-    <Marco paso={paso} total={ANIMALES.length} onPanel={onPanel} onInicio={onInicio}>
+    <Marco paso={paso} total={PASOS.length} onPanel={onPanel} onInicio={onInicio}>
       <div
         className="pantalla"
         onPointerMove={moverArrastre}
         style={{ touchAction: 'none' }}
       >
-        <p className="frase">Noah's Ark</p>
+        <p className="frase">Help the Lost Sheep</p>
 
-        {/* Barco Arca de Noé con Ilustración, Silueta receptora y Arcoíris */}
+        {/* La casa del Pastor es el destino: no mezclamos el Arca de Noé con
+            el cuento de la oveja perdida. */}
         <div
           ref={arcaRef}
           style={{
@@ -177,17 +180,17 @@ export function NoahsPairMatch({ onVolver, onPanel, onInicio }: { onVolver: () =
           }}
         >
           <div style={{ width: 80, height: 80, marginBottom: 4 }}>
-            <Tarjeta img="noah-ark" emoji="🚢" />
+            <Tarjeta img="u2-shepherd" emoji="🏠" audio={objetivo.orden} />
           </div>
           <p className="frase" style={{ fontSize: 'clamp(17px, 3.2vmin, 22px)', margin: 0 }}>
             {objetivo.orden}
           </p>
           <p className="frase-chica" style={{ fontSize: 13, opacity: 0.75, marginTop: 2 }}>
-            Drag or tap the animal to the Ark!
+            Tap the picture that helps the sheep get home!
           </p>
         </div>
 
-        {/* Fila de opciones de animales con soporte Drag & Drop */}
+        {/* Fila de pasos del cuento con soporte Drag & Drop */}
         <div className="fila" style={{ marginTop: 8 }}>
           {opciones.map((an) => {
             const esElArrastrado = arrastrando === an.id
@@ -212,9 +215,10 @@ export function NoahsPairMatch({ onVolver, onPanel, onInicio }: { onVolver: () =
                   elegida={elegido === an.id}
                   wobble={wobbleId === an.id}
                   guiando={guiando && an.id === objetivo.id}
+                  audio={an.frase}
                 />
                 <span className="frase-chica" style={{ fontSize: 13, fontWeight: 700 }}>
-                  {an.nombre}
+                  {an.frase}
                 </span>
               </div>
             )

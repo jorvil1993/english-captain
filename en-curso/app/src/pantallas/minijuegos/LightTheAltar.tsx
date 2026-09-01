@@ -14,9 +14,9 @@ type VelaAltar = {
 }
 
 const VELAS: VelaAltar[] = [
-  { id: 'candle-1', nombre: 'First Candle', orden: 'Light the candle!', sonido: 'Light! Shine bright!', emoji: '🕯️', img: 'u5-light' },
-  { id: 'candle-2', nombre: 'Second Candle', orden: 'Light another candle!', sonido: 'Fire! Warm and bright!', emoji: '🕯️', img: 'u5-light' },
-  { id: 'candle-3', nombre: 'Third Candle', orden: 'Light the altar candle!', sonido: 'Let your light shine!', emoji: '🕯️', img: 'u5-light' },
+  // Una sola vela: a esta edad el objetivo es comprender candle → altar →
+  // encender, no contar tres objetos iguales ni tocar por tocar.
+  { id: 'candle', nombre: 'Candle', orden: 'Light the candle!', sonido: 'Here is the candle.', emoji: '🕯️', img: 'u6-candle' },
 ]
 
 export function LightTheAltar({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
@@ -42,7 +42,11 @@ export function LightTheAltar({ onVolver, onPanel, onInicio }: { onVolver: () =>
     void (async () => {
       await esperar(300)
       if (cancelado) return
-      await decir('Let your light shine! Light the candle!')
+      await decir('Here is the candle.')
+      if (cancelado) return
+      await decir('Look at the holy altar.')
+      if (cancelado) return
+      await decir('Light the candle!')
       if (cancelado) return
       setBloqueado(false)
       reiniciarInactividad('Light the candle!')
@@ -75,7 +79,7 @@ export function LightTheAltar({ onVolver, onPanel, onInicio }: { onVolver: () =>
       onVolver()
     } else {
       setBloqueado(false)
-      reiniciarInactividad('Light another candle!')
+      reiniciarInactividad('Light the candle!')
     }
   }
 
@@ -131,19 +135,19 @@ export function LightTheAltar({ onVolver, onPanel, onInicio }: { onVolver: () =>
         >
           {/* Ilustración de la Escena del Altar */}
           <div style={{ width: 84, height: 84, marginBottom: 4 }}>
-            <Tarjeta img="altar-scene" emoji="✝️" />
+            <Tarjeta img="altar-scene" emoji="✝️" audio="Look at the holy altar." />
           </div>
 
           <p className="frase" style={{ fontSize: 'clamp(17px, 3.2vmin, 22px)', margin: 0 }}>
-            {terminado ? 'Thank you, Jesus!' : 'Let your light shine!'}
+            {terminado ? 'Thank you, Jesus!' : 'Look at the holy altar.'}
           </p>
 
           <p className="frase-chica" style={{ fontSize: 13, opacity: 0.75, marginTop: 4 }}>
-            Drag the flame 🔥 or tap each candle!
+            Drag the flame 🔥 to the candle!
           </p>
         </div>
 
-        {/* Las 3 Velas INDIVIDUALES en Primer Plano */}
+        {/* La vela sola aparece en primer plano antes de volver al altar. */}
         <div className="fila" style={{ marginTop: 8 }}>
           {VELAS.map((v, i) => {
             const prendida = encendidas.includes(v.id)
@@ -164,14 +168,15 @@ export function LightTheAltar({ onVolver, onPanel, onInicio }: { onVolver: () =>
                   }}
                 >
                   <Tarjeta
-                    img="u5-light"
+                    img={v.img}
                     emoji={prendida ? '🔥' : '🕯️'}
                     elegida={prendida}
                     onClick={prendida || bloqueado ? undefined : () => void encender(v)}
+                    audio={v.orden}
                   />
                 </div>
                 <span className="frase-chica" style={{ fontSize: 13, fontWeight: 700 }}>
-                  {prendida ? '✨ Shining!' : `Candle ${i + 1}`}
+                  {prendida ? '✨ Shining!' : v.nombre}
                 </span>
               </div>
             )

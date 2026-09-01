@@ -32,7 +32,7 @@ const cuentoU1: Cuento = {
       img: 'u1-c2', emoji: '⚽', en: ['Here is the ball.'], es: 'Aquí está la pelota.',
       pregunta: { en: 'Where is the ball?', opciones: [{ fraseId: 'u1-ball', correcta: true }, { fraseId: 'u1-jump', correcta: false }] },
     },
-    { img: 'u1-c3', emoji: '🏃', en: ['Run, José! Run!', 'Jump!'], es: '¡Corre, José, corre! ¡Salta!' },
+    { img: 'u1-c3', emoji: '🏃', en: ['Run, José! Run!', 'Jump!', 'Stop!'], es: '¡Corre, José, corre! ¡Salta! ¡Para!' },
     {
       img: 'u1-c4', emoji: '🥅', en: ['Kick the ball!', 'GOAL!'], es: '¡Patea la pelota! ¡Gol!',
       pregunta: { en: 'Where is the goal?', opciones: [{ fraseId: 'u1-goal', correcta: true }, { fraseId: 'u1-stop', correcta: false }] },
@@ -118,7 +118,7 @@ const cuentoU3: Cuento = {
     },
     { img: 'u3-c5', emoji: '🌳', en: ['I see the green trees and flowers.', 'The world is beautiful.'], es: 'Veo los árboles verdes y flores. El mundo es hermoso.' },
     {
-      img: 'u3-c6', emoji: '🙏', en: ['God made it all for us.', 'José says: Thank you, God!'], es: 'Dios hizo todo para nosotros. José dice: ¡Gracias, Dios!',
+      img: 'u3-c6', emoji: '🙏', en: ['God made it all for us.', 'Everything is good.', 'José says: Thank you, God!'], es: 'Dios hizo todo para nosotros. Todo es bueno. José dice: ¡Gracias, Dios!',
       pregunta: { en: 'Show me: Thank you, God!', opciones: [{ fraseId: 'u3-thank-god', correcta: true }, { fraseId: 'u3-all-good', correcta: false }] },
     },
   ],
@@ -134,7 +134,7 @@ const cancionU3: Cancion = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const frasesU4: Frase[] = [
-  { id: 'u4-jesus', en: 'Jesus is the Son of God.', es: 'Jesús es el Hijo de Dios.', ordenEn: 'Bow to Jesus!', gesto: 'Inclina la cabeza con reverencia.', img: 'u4-jesus', emoji: '👶', hilo: 'fe' },
+  { id: 'u4-jesus', en: 'Jesus is the Son of God.', es: 'Jesús es el Hijo de Dios.', ordenEn: 'Show me Jesus!', gesto: 'Inclina la cabeza con reverencia.', img: 'u4-jesus', emoji: '👶', hilo: 'fe' },
   { id: 'u4-mary', en: 'Mary is the Mother of Jesus.', es: 'María es la Madre de Jesús.', ordenEn: 'Show me Mary!', gesto: 'Manos juntas con dulzura.', img: 'u4-mary', emoji: '🌹', hilo: 'fe' },
   { id: 'u4-joseph', en: 'Saint Joseph is strong.', es: 'San José es fuerte y bueno.', ordenEn: 'Show me Saint Joseph!', gesto: 'Brazos fuertes y sonríe.', img: 'u4-joseph', emoji: '🪵', hilo: 'fe' },
   { id: 'u4-family', en: 'They are the Holy Family.', es: 'Ellos son la Sagrada Familia.', ordenEn: 'Give a big hug!', gesto: 'Abraza fuerte con los dos brazos.', img: 'u4-family', emoji: '👨‍👩‍👦', hilo: 'fe' },
@@ -198,9 +198,9 @@ const cuentoU5: Cuento = {
       img: 'u5-c4', emoji: '💪', en: ['With God and my angel,', 'I am brave with God!'], es: 'Con Dios y mi ángel, ¡soy valiente con Dios!',
       pregunta: { en: 'Show me: I am brave!', opciones: [{ fraseId: 'u5-brave', correcta: true }, { fraseId: 'u5-friend', correcta: false }] },
     },
-    { img: 'u5-c5', emoji: '👣', en: ['The angel walks beside José every day.', 'Guide my steps today.'], es: 'El ángel camina junto a José todos los días. Guía mis pasos hoy.' },
+    { img: 'u5-c5', emoji: '👣', en: ['The angel walks beside José every day.', 'Shine your light!', 'Guide my steps today.'], es: 'El ángel camina junto a José todos los días. ¡Brilla tu luz! Guía mis pasos hoy.' },
     {
-      img: 'u5-c6', emoji: '⭐', en: ['Together we say:', 'Glory to God!'], es: 'Juntos decimos: ¡Gloria a Dios!',
+      img: 'u5-c6', emoji: '⭐', en: ['The angel is my friend.', 'Together we say: Glory to God!'], es: 'El ángel es mi amigo. Juntos decimos: ¡Gloria a Dios!',
       pregunta: { en: 'Show me: Glory to God!', opciones: [{ fraseId: 'u5-glory-god', correcta: true }, { fraseId: 'u5-no-fear', correcta: false }] },
     },
   ],
@@ -217,6 +217,9 @@ const cancionU5: Cancion = {
 
 const frasesU6: Frase[] = [
   { id: 'u6-church', en: 'This is the Church.', es: 'Esta es la Iglesia.', ordenEn: 'Show me the Church!', gesto: 'Junta las puntas de los dedos como tejado.', img: 'u6-church', emoji: '⛪', hilo: 'fe' },
+  // Primero se ve UNA vela sin altar, cruz ni decoración. Recién en la
+  // lección siguiente se une a "altar" y se usa en el juego de encenderla.
+  { id: 'u6-candle', en: 'Here is the candle.', es: 'Aquí está la vela.', ordenEn: 'Show me the candle!', gesto: 'Haz una llamita suave con una mano.', img: 'u6-candle', emoji: '🕯️', hilo: 'fe' },
   { id: 'u6-altar', en: 'Look at the holy altar.', es: 'Mira el santo altar.', ordenEn: 'Look at the altar!', gesto: 'Manos abiertas hacia adelante con respeto.', img: 'u6-altar', emoji: '🕯️', hilo: 'fe' },
   { id: 'u6-cross', en: 'I see the holy cross.', es: 'Veo la santa cruz.', ordenEn: 'Make the Sign of the Cross!', gesto: 'Haz la señal de la cruz.', img: 'u6-cross', emoji: '✝️', hilo: 'fe' },
   { id: 'u6-bible', en: 'The Bible is the Word of God.', es: 'La Biblia es la Palabra de Dios.', ordenEn: 'Open the holy Book!', gesto: 'Abre las palmas juntas como un libro.', img: 'u6-bible', emoji: '📖', hilo: 'fe' },
@@ -236,10 +239,10 @@ const cuentoU6: Cuento = {
     },
     { img: 'u6-c3', emoji: '✝️', en: ['José makes the Sign of the Cross.', 'I see the holy cross.'], es: 'José hace la señal de la cruz. Veo la santa cruz.' },
     {
-      img: 'u6-c4', emoji: '📖', en: ['The priest reads the holy book.', 'The Bible is the Word of God.'], es: 'El sacerdote lee el libro sagrado. La Biblia es la Palabra de Dios.',
+      img: 'u6-c4', emoji: '📖', en: ['The priest reads the holy book.', 'The Bible is the Word of God.', 'Jesus gives us the Bread of Life.'], es: 'El sacerdote lee el libro sagrado. La Biblia es la Palabra de Dios. Jesús nos da el Pan de Vida.',
       pregunta: { en: 'Show me the Bible!', opciones: [{ fraseId: 'u6-bible', correcta: true }, { fraseId: 'u6-altar', correcta: false }] },
     },
-    { img: 'u6-c5', emoji: '🕯️', en: ['We look at the holy altar with reverence.'], es: 'Miramos el santo altar con reverencia.' },
+    { img: 'u6-c5', emoji: '🕯️', en: ['Here is the candle on the holy altar.', 'The candle shines.'], es: 'Aquí está la vela sobre el santo altar. La vela brilla.' },
     {
       img: 'u6-c6', emoji: '🕊️', en: ['We turn to our brothers and say:', 'Peace be with you!'], es: 'Nos volvemos hacia nuestros hermanos y decimos: ¡La paz esté contigo!',
       pregunta: { en: 'Show me: Peace be with you!', opciones: [{ fraseId: 'u6-peace', correcta: true }, { fraseId: 'u6-cross', correcta: false }] },
@@ -272,7 +275,7 @@ const cuentoU7: Cuento = {
   escenas: [
     { img: 'u7-c1', emoji: '🌅', en: ['The sun is up.', 'Good morning, José!'], es: 'Salió el sol. ¡Buenos días, José!' },
     {
-      img: 'u7-c2', emoji: '🙂', en: ['Good morning, mom and dad!', 'How are you?'], es: '¡Buenos días, mamá y papá! ¿Cómo están?',
+      img: 'u7-c2', emoji: '🙂', en: ['Good morning, mom and dad!', 'How are you?', 'I am happy!'], es: '¡Buenos días, mamá y papá! ¿Cómo están? ¡Estoy feliz!',
       pregunta: { en: 'Show me: Good morning!', opciones: [{ fraseId: 'u7-good-morning', correcta: true }, { fraseId: 'u7-good-night', correcta: false }] },
     },
     { img: 'u7-c3', emoji: '🥛', en: ['Breakfast!', 'Milk, please.', 'Thank you!'], es: '¡El desayuno! Leche, por favor. ¡Gracias!' },

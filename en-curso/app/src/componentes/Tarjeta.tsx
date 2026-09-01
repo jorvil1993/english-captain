@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import * as sonidos from '../audio/sonidos'
+import { decir } from '../audio/voz'
 import { celebrar, entrarTarjeta, respirar, senalar } from '../animacion/movimiento'
 
 /**
@@ -18,6 +19,7 @@ export function Tarjeta({
   wobble = false,
   guiando = false,
   onClick,
+  audio,
 }: {
   img: string
   emoji: string
@@ -27,6 +29,8 @@ export function Tarjeta({
   wobble?: boolean
   guiando?: boolean
   onClick?: () => void
+  /** Frase exacta que el niño puede volver a oír sin cambiar de pantalla. */
+  audio?: string
 }) {
   const [sinImagen, setSinImagen] = useState(false)
   const caja = useRef<HTMLDivElement>(null)
@@ -70,9 +74,26 @@ export function Tarjeta({
               sonidos.toque()
               onClick()
             }
-          : undefined
+        : undefined
       }
     >
+      {audio && (
+        <button
+          className="tarjeta-escuchar"
+          type="button"
+          aria-label="Escuchar de nuevo"
+          title="Escuchar de nuevo"
+          onClick={(e) => {
+            // El parlante solo repite: nunca activa la tarjeta ni permite
+            // saltar una actividad por tocarlo muchas veces.
+            e.stopPropagation()
+            sonidos.toque()
+            void decir(audio)
+          }}
+        >
+          🔊
+        </button>
+      )}
       {sinImagen ? (
         <span className="emoji">{emoji}</span>
       ) : (

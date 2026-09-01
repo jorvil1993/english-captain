@@ -30,13 +30,18 @@ export function planDeOracionDeHoy(params: {
   memoria: Record<string, MemoriaFrase>
   hoy: string
 }): PlanDeOracion {
-  const oracion = ORACIONES[params.oracionIndice % ORACIONES.length]
+  // La oración no rota todavía: el primer hilo espiritual de José es el Ave
+  // María. Cambiar de oración antes de poder reconocer sus frases rompería la
+  // continuidad que necesita un niño que aún no lee.
+  const oracion = ORACIONES.find((item) => item.id === 'o-hail-mary') ?? ORACIONES[params.oracionIndice % ORACIONES.length]
   const total = oracion.versos.length
   const enseniados = Math.min(params.oracionVersoIndice, total)
 
-  if (params.oracionVersoIndice === total) {
-    // Día de graduación: se reza entera, de corrido, como celebración.
-    return { oracion, versosRepaso: Array.from({ length: total }, (_, i) => i), versoNuevo: null }
+  if (params.oracionVersoIndice >= total) {
+    // La celebración también conserva el tamaño de una lección. Repetir la
+    // oración completa de ocho frases de corrido sería demasiado para él;
+    // repasamos solo los dos últimos fragmentos ya dominados.
+    return { oracion, versosRepaso: [total - 2, total - 1], versoNuevo: null }
   }
 
   const versoNuevo = enseniados < total ? enseniados : null

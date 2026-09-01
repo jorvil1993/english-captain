@@ -14,10 +14,12 @@ type ElementoCreacion = {
 }
 
 const ELEMENTOS: ElementoCreacion[] = [
-  { id: 'sun', nombre: 'Sun', sonido: 'God made the golden sun!', emoji: '☀️', animacion: '☀️ 🕊️ 🕊️', img: 'u3-sun' },
-  { id: 'water', nombre: 'Water', sonido: 'Water! Splash splash!', emoji: '🌊', animacion: '🌊 🐟 🐠', img: 'u3-water' },
-  { id: 'tree', nombre: 'Tree', sonido: 'Green trees and sweet fruits!', emoji: '🌳', animacion: '🌳 🍎 🍃', img: 'u3-tree' },
-  { id: 'flowers', nombre: 'Flowers', sonido: 'Beautiful colorful flowers!', emoji: '🌸', animacion: '🌸 🌺 🌻', img: 'u3-flowers' },
+  // Las mismas cuatro frases llegan primero como tarjetas aisladas y escenas
+  // del cuento; aquí ya no aparecen flower/fish/fruits sin preparación.
+  { id: 'sun', nombre: 'Sun', sonido: 'God made the sun.', emoji: '☀️', animacion: '☀️', img: 'u3-sun' },
+  { id: 'water', nombre: 'Water', sonido: 'Thank you for the water.', emoji: '💧', animacion: '💧', img: 'u3-water' },
+  { id: 'trees', nombre: 'Trees', sonido: 'I see the green trees.', emoji: '🌳', animacion: '🌳', img: 'u3-trees' },
+  { id: 'birds', nombre: 'Birds', sonido: 'The birds sing to God.', emoji: '🐦', animacion: '🐦', img: 'u3-birds' },
 ]
 
 export function CreationTapBloom({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
@@ -54,9 +56,9 @@ export function CreationTapBloom({ onVolver, onPanel, onInicio }: { onVolver: ()
       setTerminado(true)
       bien()
       estrellitas()
-      await decir('God saw that it was good! Amen!')
+      await decir('The world is beautiful.')
       await esperar(500)
-      await decir('Good job! God loves you!')
+      await decir('Thank you, God!')
       await esperar(500)
       onVolver()
     } else {
@@ -91,7 +93,7 @@ export function CreationTapBloom({ onVolver, onPanel, onInicio }: { onVolver: ()
         >
           {/* Ilustración de la creación */}
           <div style={{ width: 80, height: 80, marginBottom: 6 }}>
-            <Tarjeta img="u3-beautiful" emoji="🌎" />
+            <Tarjeta img="u3-beautiful" emoji="🌎" audio={activo?.sonido ?? 'God made the world! Tap to create!'} />
           </div>
 
           <p className="frase" style={{ fontSize: 'clamp(17px, 3.2vmin, 22px)', margin: 0 }}>
@@ -115,6 +117,7 @@ export function CreationTapBloom({ onVolver, onPanel, onInicio }: { onVolver: ()
                   elegida={activo?.id === el.id}
                   hecha={descubierto}
                   onClick={() => void tocarElemento(el)}
+                  audio={el.sonido}
                 />
                 <span className="frase-chica" style={{ fontSize: 13, fontWeight: 700 }}>
                   {el.nombre}

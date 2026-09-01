@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { ORACIONES, TODAS_LAS_FRASES, UNIDADES } from '../datos/curso'
+import { cantidadLecciones } from '../datos/curriculo'
 import type { Frase, Oracion, Unidad } from '../datos/tipos'
 import { idVerso } from '../datos/oraciones-motor'
 
@@ -10,7 +11,6 @@ import { idVerso } from '../datos/oraciones-motor'
  */
 
 const INTERVALOS = [1, 2, 4, 8, 16]
-const DIAS_POR_UNIDAD = 4
 const CLAVE = 'jose-english-v1'
 
 export type MemoriaFrase = {
@@ -42,6 +42,8 @@ type Guardado = {
   ultimaRotacion: string | null
   oracionIndice: number
   oracionVersoIndice: number
+  /** Progreso exclusivo de Ave María; no se mezcla con el rincón libre. */
+  aveMariaVersoIndice: number
 }
 
 const INICIAL: Guardado = {
@@ -56,6 +58,7 @@ const INICIAL: Guardado = {
   ultimaRotacion: null,
   oracionIndice: 0,
   oracionVersoIndice: 0,
+  aveMariaVersoIndice: 0,
 }
 
 export function hoyISO(): string {
@@ -93,6 +96,7 @@ type Contexto = {
   nombre: string
   unidad: Unidad
   unidadIndice: number
+  diasEnUnidad: number
   todasLasUnidades: Unidad[]
   yaJugoHoy: boolean
   modoLibreActivo: boolean
@@ -102,6 +106,7 @@ type Contexto = {
   diaRecorridoIndice: number
   oracionIndice: number
   oracionVersoIndice: number
+  aveMariaVersoIndice: number
   oracionActual: Oracion
   registrarRespuesta: (fraseId: string, acierto: boolean) => void
   registrarVerso: (oracionId: string, versoIdx: number) => void
@@ -123,42 +128,6 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
   useEffect(() => escribir(g), [g])
 
   const hoy = hoyISO()
-
-  useEffect(() => {
-    setG((v) => {
-      if (v.ultimoDia === hoy || v.ultimoDia === null) return v
-      const dias = v.diasEnUnidad + 1
-      if (dias >= DIAS_POR_UNIDAD) {
-        return { ...v, diasEnUnidad: 0, unidadIndice: (v.unidadIndice + 1) % UNIDADES.length }
-      }
-      return { ...v, diasEnUnidad: dias }
-    })
-  }, [hoy])
-
-  // Rota el minijuego/bloque de variedad del día y avanza la oración un
-  // verso por día. `ultimaRotacion` (a diferencia del efecto de unidadIndice
-  // de arriba) hace el avance idempotente ante recargas: acá rota a diario,
-  // así que sumar de más en cada recarga sí sería visible.
-  useEffect(() => {
-    setG((v) => {
-      if (v.ultimaRotacion === hoy) return v
-      if (v.ultimaRotacion === null) return { ...v, ultimaRotacion: hoy }
-      const actual = ORACIONES[v.oracionIndice % ORACIONES.length]
-      let oracionIndice = v.oracionIndice
-      let oracionVersoIndice = v.oracionVersoIndice + 1
-      if (oracionVersoIndice > actual.versos.length) {
-        oracionIndice = (oracionIndice + 1) % ORACIONES.length
-        oracionVersoIndice = 0
-      }
-      return {
-        ...v,
-        diaRecorridoIndice: v.diaRecorridoIndice + 1,
-        ultimaRotacion: hoy,
-        oracionIndice,
-        oracionVersoIndice,
-      }
-    })
-  }, [hoy])
 
   const unidad = UNIDADES[g.unidadIndice] ?? UNIDADES[0]
   const oracionActual = ORACIONES[g.oracionIndice % ORACIONES.length] ?? ORACIONES[0]
@@ -198,14 +167,29 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
   }, [registrarRespuesta])
 
   const cerrarSesion = useCallback((datos: { preguntas: number; aciertos: number; intentosVoz: number }) => {
-    setG((v) => ({
-      ...v,
-      ultimoDia: hoy,
-      sesiones: [
-        ...v.sesiones.filter((s) => s.fecha !== hoy),
-        { fecha: hoy, unidad: unidad.id, misionCumplida: false, ...datos },
-      ].slice(-120),
-    }))
+    setG((v) => {
+      // `TakeItHome` puede recibir dos toques o re-renderizarse durante el
+      // cierre; una misma sesión no debe avanzar dos lecciones.
+      if (v.ultimoDia === hoy) return v
+
+      const siguienteDia = v.diasEnUnidad + 1
+      const terminaUnidad = siguienteDia >= cantidadLecciones(unidad.id)
+      const aveMaria = ORACIONES.find((oracion) => oracion.id === 'o-hail-mary') ?? ORACIONES[0]
+
+      return {
+        ...v,
+        ultimoDia: hoy,
+        ultimaRotacion: hoy,
+        diaRecorridoIndice: v.diaRecorridoIndice + 1,
+        aveMariaVersoIndice: Math.min((v.aveMariaVersoIndice ?? 0) + 1, aveMaria.versos.length),
+        diasEnUnidad: terminaUnidad ? 0 : siguienteDia,
+        unidadIndice: terminaUnidad ? (v.unidadIndice + 1) % UNIDADES.length : v.unidadIndice,
+        sesiones: [
+          ...v.sesiones.filter((s) => s.fecha !== hoy),
+          { fecha: hoy, unidad: unidad.id, misionCumplida: false, ...datos },
+        ].slice(-120),
+      }
+    })
   }, [hoy, unidad.id])
 
   const marcarMision = useCallback((fecha: string, cumplida: boolean) => {
@@ -219,6 +203,7 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
     nombre: g.nombre,
     unidad,
     unidadIndice: g.unidadIndice,
+    diasEnUnidad: g.diasEnUnidad,
     todasLasUnidades: UNIDADES,
     yaJugoHoy: g.ultimoDia === hoy,
     modoLibreActivo: g.modoLibreActivo ?? true,
@@ -228,6 +213,7 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
     diaRecorridoIndice: g.diaRecorridoIndice,
     oracionIndice: g.oracionIndice,
     oracionVersoIndice: g.oracionVersoIndice,
+    aveMariaVersoIndice: g.aveMariaVersoIndice ?? 0,
     oracionActual,
     registrarRespuesta,
     registrarVerso,

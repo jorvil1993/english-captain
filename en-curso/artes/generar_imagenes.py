@@ -44,10 +44,12 @@ ESTILO = (
 )
 
 JOSE = (
-    "The boy is Jose: a cheerful 5-year-old Bolivian boy, light brown skin, short "
-    "straight dark brown hair, big dark brown eyes, round cheeks, wearing a red and "
-    "white striped soccer jersey, dark blue shorts and white sneakers. He is drawn "
-    "exactly the same way in every illustration."
+    "The boy is Jose: a cheerful 5-year-old child with fair, light skin with warm "
+    "peach undertones, short straight dark-brown hair, big dark-brown eyes and round "
+    "cheeks. He wears a red-and-white striped soccer jersey, dark-blue shorts and "
+    "white sneakers. Keep these exact facial features, skin tone and clothes the same "
+    "in every illustration. Do not use cultural costume, rural clothing, ethnic "
+    "stereotypes or caricature to define him."
 )
 
 SAGRADO = (
@@ -108,15 +110,15 @@ PIEZAS: list[tuple[str, str, bool]] = [
                   "handshake, soft warm light.", False),
 
     # ── Unidad 2 · The Lost Sheep (SAGRADAS) ────────────────────────────────
-    ("u2-shepherd", f"{SAGRADO} The Good Shepherd: a young shepherd in a simple blue and "
-                    "cream robe standing on a green hill among his sheep, a shepherd's staff "
-                    "in his hand, gentle and loving face, warm golden light.", True),
+    ("u2-shepherd", f"{SAGRADO} The Good Shepherd alone, full body, a young shepherd in a "
+                    "simple blue and cream robe holding one wooden staff, gentle loving face, "
+                    "plain warm cream background. No sheep, no landscape, no other objects.", True),
     ("u2-sheep", "One small fluffy white lamb standing on green grass, looking up, soft and "
                  "gentle, warm light.", False),
-    ("u2-my-name", f"{SAGRADO} The Good Shepherd kneels down to the level of one single lamb "
-                   "and looks straight into its eyes, calling it, tender and personal.", True),
-    ("u2-come", f"{SAGRADO} The Good Shepherd stands with one hand extended forward in a "
-                "welcoming inviting gesture, sheep walking toward him.", True),
+    ("u2-my-name", f"{JOSE} He points gently to his own chest with one hand, clear friendly "
+                   "portrait, plain warm cream background. No other people, no animals, no objects.", False),
+    ("u2-come", f"{SAGRADO} The Good Shepherd alone, one hand extended in a clear welcoming "
+                "come-here gesture, plain warm cream background. No sheep, no landscape, no other objects.", True),
     ("u2-follow", "A path of small footprints going up a green hill toward a warm golden "
                   "light, a few sheep walking along the path.", False),
     ("u2-lost", "One small white lamb alone among grey rocks at dusk, looking around, small "
@@ -149,14 +151,14 @@ PIEZAS: list[tuple[str, str, bool]] = [
                  "warm sunlight reflecting on the ripples, fresh and clean.", False),
     ("u3-trees", "Three lush green leafy trees standing on a small grassy hill with colorful "
                  "wildflowers at their base, gentle breeze.", False),
-    ("u3-birds", "Two little colorful songbirds perched on a blooming branch, singing "
-                 "joyfully with tiny musical notes floating in the warm air.", False),
+    ("u3-birds", "One small colorful songbird, side view, perched alone on one thin plain "
+                "branch, warm cream background. No nest, no flowers, no musical notes, no other animals.", False),
     ("u3-beautiful", "A colorful meadow with flowers, butterflies and a rainbow in the soft "
                      "distance, radiant and peaceful.", False),
     ("u3-thank-god", f"{JOSE} He stands with his hands folded in prayer, looking up at the "
                      "sky with a grateful happy smile, warm light.", False),
-    ("u3-all-good", "A bright green apple, a flower and a shining sun grouped harmoniously, "
-                    "symbolizing goodness in creation.", False),
+    ("u3-all-good", f"{JOSE} He gives one clear thumbs-up with a happy calm smile, waist-up "
+                    "portrait, plain warm cream background. No other objects.", False),
     ("u3-c1", "A luminous warm golden light spreading over quiet mountains and green hills at dawn.", False),
     ("u3-c2", f"{JOSE} He looks up at a starry night sky with wonder, pointing at a bright star.", False),
     ("u3-c3", "A wide blue ocean with gentle waves under a warm sunny sky, dolphins leaping softly.", False),
@@ -166,12 +168,12 @@ PIEZAS: list[tuple[str, str, bool]] = [
     ("mision-u3", "A small child and father looking up together at the blue sky and sun.", False),
 
     # ── Unidad 4 · The Holy Family ──────────────────────────────────────────
-    ("u4-jesus", f"{SAGRADO} Baby Jesus in a simple wooden crib with soft straw, glowing "
-                  "with gentle divine warmth, serene and holy.", True),
-    ("u4-mary", f"{SAGRADO} The Virgin Mary in a soft blue mantle, looking down with infinite "
-                 "motherly tenderness and love, holding white lilies.", True),
-    ("u4-joseph", f"{SAGRADO} Saint Joseph holding a carpenter's tool and a flowering staff, "
-                   "gentle, strong, protective and noble face.", True),
+    ("u4-jesus", f"{SAGRADO} Baby Jesus alone, serene face, simple cream swaddle, centered "
+                  "portrait on a plain warm cream background. No crib, no straw, no other people or objects.", True),
+    ("u4-mary", f"{SAGRADO} The Virgin Mary alone, gentle serene waist-up portrait, soft blue "
+                 "mantle, plain warm cream background. No lilies, no baby, no other people or objects.", True),
+    ("u4-joseph", f"{SAGRADO} Saint Joseph alone, gentle strong waist-up portrait in a simple "
+                   "brown robe, plain warm cream background. No tools, no staff, no other people or objects.", True),
     ("u4-family", f"{SAGRADO} The Holy Family: Mary, Joseph and little boy Jesus holding hands "
                    "together in a loving circle in Nazareth.", True),
     ("u4-home", "A cozy warm stone house in Nazareth with flowers in the window and a wooden "
@@ -198,7 +200,8 @@ PIEZAS: list[tuple[str, str, bool]] = [
                  "warm golden light around him.", False),
     ("u5-no-fear", "A little child looking calmly at shadows that transform into soft warm light, "
                    "peaceful and secure.", False),
-    ("u5-light", "A single burning candle flame glowing brightly in a cozy warm golden lantern.", False),
+    ("u5-light", "One single upright ivory candle with one small warm flame, centered on a plain "
+                 "warm cream background. No lantern, no holder, no altar, no hands, no other objects.", False),
     ("u5-guide", "Two glowing footprints of light leading safely along a peaceful path through a green forest.", False),
     ("u5-friend", f"{JOSE} He walks happily on grass beside the translucent glowing form of his Guardian Angel.", False),
     ("u5-glory-god", "A choir of gentle little angels with golden halos rejoicing in the clouds with trumpets and harps.", True),
@@ -213,6 +216,8 @@ PIEZAS: list[tuple[str, str, bool]] = [
     # ── Unidad 6 · The House of God ─────────────────────────────────────────
     ("u6-church", "A beautiful, welcoming Catholic parish church with a cross on the steeple, "
                   "surrounded by green trees and flowers.", False),
+    ("u6-candle", "One single upright ivory church candle with one small warm flame, centered on a "
+                  "plain warm cream background. No altar, no cross, no holder, no hands, no other objects.", False),
     ("u6-altar", f"{SAGRADO} A reverent church altar covered in a clean white cloth, two "
                   "burning candles and a golden crucifix centered.", True),
     ("u6-cross", "A simple noble wooden crucifix with a golden halo behind it, peaceful and sacred.", True),
@@ -286,6 +291,56 @@ PIEZAS: list[tuple[str, str, bool]] = [
                      "no buildings. The whole centre is open sky with nothing in it.", False),
 ]
 
+# Las tarjetas de vocabulario no son ilustraciones decorativas: José debe poder
+# señalar lo que acaba de oír sin tener que elegir entre detalles secundarios.
+# Estas sustituciones permanecen aquí para que una generación futura conserve
+# exactamente la misma regla pedagógica que las imágenes instaladas en la app.
+REGLA_TARJETA_SIMPLE = (
+    "One clear visual idea only, large and centered on a plain warm cream background. "
+    "No secondary objects, scenery, decorative elements or extra characters."
+)
+
+TARJETAS_SIMPLIFICADAS: dict[str, str] = {
+    "u2-shepherd": f"{SAGRADO} Jesus, the Good Shepherd, alone, kind face, simple cream robe, "
+                   "soft blue mantle and one plain wooden shepherd staff. No sheep.",
+    "u2-my-name": f"{JOSE} He points gently to his own chest with one hand.",
+    "u2-come": f"{SAGRADO} Jesus alone, making one clear welcoming come-here gesture with an open hand. No sheep or staff.",
+    "u2-follow": f"{JOSE} Side view, taking one clear forward walking step, following only three small plain footprints.",
+    "u3-sun": "One friendly golden sun with simple long rays and no face or clouds.",
+    "u3-stars": "Three small identical golden stars against a simple deep navy night sky. No moon or buildings.",
+    "u3-trees": "Three identical simple green leafy trees, evenly spaced. No flowers, water, birds or landscape.",
+    "u3-birds": "One small colourful songbird, side view, perched alone on one thin plain branch. No leaves or nest.",
+    "u3-beautiful": "One single large colourful flower with a calm beautiful shape. No other plants, rainbow, animals or landscape.",
+    "u3-thank-god": f"{JOSE} Hands gently folded in prayer, looking slightly upward with a grateful smile.",
+    "u3-all-good": f"{JOSE} One clear thumbs-up with a calm happy smile.",
+    "u4-home": "One simple cosy little house, front view, with one door and two windows.",
+    "u4-bless": "One simple cosy little house, front view, softly surrounded by a gentle golden glow.",
+    "u5-brave": f"{JOSE} Standing tall and firm with both hands on his hips and a calm brave smile. No costume or shield.",
+    "u5-no-fear": f"{JOSE} Standing calmly with one open palm gently forward and a peaceful brave smile.",
+    "u5-light": "One single upright ivory candle with one small warm flame. No holder, altar or lantern.",
+    "u5-guide": "Exactly three small glowing golden footprints in a simple row. No path, shoes or landscape.",
+    "u5-glory-god": "One large radiant golden five-pointed star with a soft gentle glow.",
+    "u6-church": "One small welcoming Catholic church, front view, with one tiny simple cross as part of its roof. No bell, trees or people.",
+    "u6-candle": "One single upright ivory church candle with one small warm flame. No altar, cross, holder or hands.",
+    "u6-altar": "One simple church altar, front view, covered with a plain white cloth. No cross, candles, Bible or flowers.",
+    "u6-cross": "One simple upright wooden cross. No Jesus figure, flowers, halo or decoration.",
+    "u6-bible": "One closed dark-blue Bible with one small plain golden cross on its cover and no written words.",
+    "u6-bell": "One single golden church bell, front view, with its small top loop. No tower or rope.",
+    "u6-quiet": f"{JOSE} Standing quietly with one index finger gently against his lips and a calm listening face.",
+    "u6-bread": "One simple round loaf of bread. No plate, table, hands, crumbs or other food.",
+    "u6-peace": "One simple white dove with wings gently open. No olive branch, clouds, sky or other birds.",
+    "u7-good-morning": f"{JOSE} Giving one cheerful high wave with a bright morning smile.",
+    "u7-good-night": f"{JOSE} Eyes gently closed, both hands softly together against one cheek in a clear sleepy good-night gesture.",
+    "u7-im-sorry": f"{JOSE} One hand over his heart, head slightly lowered, with a gentle sincere sorry expression.",
+}
+
+ESCENAS_MINIMAS: dict[str, str] = {
+    "u3-c3": "A simple calm blue ocean with three soft rolling waves. No dolphins, fish, boats, sun or clouds.",
+    "u5-c3": f"{JOSE} Standing alone, calm and brave, with a simple deep-blue evening gradient behind him. No house, family, landscape or animals.",
+    "u5-c4": f"{JOSE} Standing tall and firm with both hands on his hips and a calm brave smile. No costume, shield or background.",
+    "u7-c3": f"{JOSE} sits at a small plain breakfast table with his mother and father. One clear glass of milk is the only food or object on the table.",
+}
+
 
 def ruta(clave: str, sagrada: bool) -> Path:
     return (REVISAR if sagrada else DESTINO) / f"{clave}.jpg"
@@ -294,7 +349,12 @@ def ruta(clave: str, sagrada: bool) -> Path:
 def generar(clave: str, prompt: str, sagrada: bool, motor: str = "agy") -> Path:
     destino = ruta(clave, sagrada)
     destino.parent.mkdir(parents=True, exist_ok=True)
-    completo = f"{prompt}\n\n{ESTILO}"
+    if clave in TARJETAS_SIMPLIFICADAS:
+        prompt = TARJETAS_SIMPLIFICADAS[clave]
+        completo = f"{prompt}\n\n{REGLA_TARJETA_SIMPLE}\n\n{ESTILO}"
+    else:
+        prompt = ESCENAS_MINIMAS.get(clave, prompt)
+        completo = f"{prompt}\n\n{ESTILO}"
     if a11_agy is None:
         raise RuntimeError("Los módulos de arte no están disponibles en este entorno.")
     modulo = a12_codex if motor == "codex" else a11_agy

@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { CROMOS } from '../datos/curso'
-import type { Frase, Unidad } from '../datos/tipos'
+import type { Frase } from '../datos/tipos'
 import { decir, esperar } from '../audio/voz'
 import { bien, final, toque } from '../audio/sonidos'
 import { Tarjeta } from '../componentes/Tarjeta'
-import { Boton } from '../componentes/Boton'
 import { Marco } from '../componentes/Marco'
 
 const CLAVE_RECORD = 'jose-english-record'
@@ -19,14 +18,15 @@ function mezclar<T>(xs: T[]): T[] {
 }
 
 export function Challenge({
-  unidad,
+  frases,
   repaso,
   onListo,
   onResponder,
   onPanel,
   onInicio,
 }: {
-  unidad: Unidad
+  /** Solo se pregunta lo presentado durante esta lección (o un repaso ya conocido). */
+  frases: Frase[]
   repaso: Frase[]
   paso?: number
   onListo: () => void
@@ -34,7 +34,7 @@ export function Challenge({
   onPanel: () => void
   onInicio?: () => void
 }) {
-  const [rondas] = useState(() => mezclar([...unidad.frases.slice(0, 4), ...repaso]))
+  const [rondas] = useState(() => mezclar([...frases, ...repaso]))
   const [i, setI] = useState(0)
   const [bloqueado, setBloqueado] = useState(true)
   const [correcta, setCorrecta] = useState<string | null>(null)
@@ -49,9 +49,10 @@ export function Challenge({
 
   const opciones = useMemo(() => {
     if (!objetivo) return []
-    const otros = unidad.frases.filter((f) => f.id !== objetivo.id)
+    const disponibles = [...frases, ...repaso]
+    const otros = disponibles.filter((f, indice, lista) => f.id !== objetivo.id && lista.findIndex((item) => item.id === f.id) === indice)
     return mezclar([objetivo, ...mezclar(otros).slice(0, 2)])
-  }, [objetivo, unidad])
+  }, [frases, objetivo, repaso])
 
   const reiniciarInactividad = (texto: string) => {
     if (timerInactividad.current) window.clearTimeout(timerInactividad.current)
@@ -109,6 +110,8 @@ export function Challenge({
         setTerminado(true)
         final()
         await decir(mejoro ? 'NEW RECORD! You are fast!' : 'You did it!')
+        await esperar(1200)
+        onListo()
       } else {
         setI(i + 1)
       }
@@ -131,12 +134,10 @@ export function Challenge({
     return (
       <Marco paso={rondas.length} total={rondas.length} ayudaEs={cromo.es} onPanel={onPanel} onInicio={onInicio}>
         <div className="pantalla">
-          <Tarjeta img={cromo.img} emoji={cromo.emoji} grande onClick={() => void decir(cromo.en)} />
+          <Tarjeta img={cromo.img} emoji={cromo.emoji} grande onClick={() => void decir(cromo.en)} audio={cromo.en} />
           <p className="frase">{cromo.en}</p>
           {record && <p className="frase-chica">🏆 NEW RECORD</p>}
-          <Boton invita onClick={onListo}>
-            ▶
-          </Boton>
+          <p className="frase-chica">✨</p>
         </div>
       </Marco>
     )
@@ -146,9 +147,7 @@ export function Challenge({
     return (
       <Marco paso={rondas.length} total={rondas.length} onPanel={onPanel} onInicio={onInicio}>
         <div className="pantalla">
-          <Boton invita onClick={onListo}>
-            ▶
-          </Boton>
+          <p className="frase-chica">✨</p>
         </div>
       </Marco>
     )
@@ -168,6 +167,7 @@ export function Challenge({
               wobble={wobbleId === f.id}
               guiando={guiando && f.id === objetivo.id}
               onClick={bloqueado ? undefined : () => void responder(f)}
+              audio={f.en}
             />
           ))}
         </div>

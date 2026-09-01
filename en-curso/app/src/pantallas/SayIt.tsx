@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Unidad } from '../datos/tipos'
+import type { Frase } from '../datos/tipos'
 import { decir, esperar } from '../audio/voz'
 import { bien } from '../audio/sonidos'
 import { grabar, guardarGrabacion, hayMicrofono, reproducir } from '../audio/grabaciones'
@@ -10,20 +10,19 @@ import { Marco } from '../componentes/Marco'
 type Fase = 'oyendo' | 'listo' | 'grabando' | 'escuchando' | 'aplaudido'
 
 export function SayIt({
-  unidad,
+  frases,
   onListo,
   onIntento,
   onPanel,
   onInicio,
 }: {
-  unidad: Unidad
+  frases: Frase[]
   paso?: number
   onListo: () => void
   onIntento: () => void
   onPanel: () => void
   onInicio?: () => void
 }) {
-  const frases = unidad.frases.slice(0, 3)
   const [i, setI] = useState(0)
   const [fase, setFase] = useState<Fase>('oyendo')
   const frase = frases[i]
@@ -75,7 +74,7 @@ export function SayIt({
   return (
     <Marco paso={i} total={frases.length} ayudaEs={frase.es} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
-        <Tarjeta img={frase.img} emoji={frase.emoji} grande onClick={() => void decir(frase.en)} />
+        <Tarjeta img={frase.img} emoji={frase.emoji} grande onClick={() => void decir(frase.en)} audio={frase.en} />
         <p className="frase">{frase.en}</p>
 
         {fase === 'listo' && (
@@ -87,11 +86,6 @@ export function SayIt({
         {fase === 'escuchando' && <p className="frase-chica">👂 That is you!</p>}
         {fase === 'aplaudido' && <p className="frase-chica">👏 👏 👏</p>}
 
-        {(fase === 'listo' || fase === 'grabando') && (
-          <button className="boton fantasma" onClick={() => void siguiente()}>
-            saltar
-          </button>
-        )}
       </div>
     </Marco>
   )

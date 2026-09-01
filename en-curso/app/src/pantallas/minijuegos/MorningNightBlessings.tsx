@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { decir, esperar } from '../../audio/voz'
 import { bien, campana, estrellitas, toque } from '../../audio/sonidos'
 import { Tarjeta } from '../../componentes/Tarjeta'
@@ -20,7 +20,7 @@ export function MorningNightBlessings({
    *  (Modo Calma), el comportamiento es exactamente el de antes. */
   onListo?: () => void
 }) {
-  const [modo, setModo] = useState<ModoBendicion>('menu')
+  const [modo, setModo] = useState<ModoBendicion>(() => (onListo ? 'morning' : 'menu'))
   const [cortinaAbierta, setCortinaAbierta] = useState(false)
   const [cobijado, setCobijado] = useState(false)
   const [bloqueado, setBloqueado] = useState(false)
@@ -44,7 +44,9 @@ export function MorningNightBlessings({
   const iniciarMorning = async () => {
     setModo('morning')
     setCortinaAbierta(false)
-    await decir('Good morning, God! Open the window!')
+    // En la ruta diaria reutiliza el saludo que acabamos de enseñar, no una
+    // oración nueva que compite con el vocabulario de la unidad.
+    await decir('Good morning!')
   }
 
   const abrirVentana = async () => {
@@ -52,12 +54,17 @@ export function MorningNightBlessings({
     setBloqueado(true)
     toque()
     setCortinaAbierta(true)
-    await decir('Sun! Good morning, world! Thank you, Jesus!')
+    await decir('Good morning!')
     await esperar(400)
     estrellitas()
-    await decir('Bless my day! Amen!')
+    await decir('Thank you, God!')
     await esperar(500)
-    setBloqueado(false)
+    if (onListo) {
+      await esperar(700)
+      onListo()
+    } else {
+      setBloqueado(false)
+    }
   }
 
   const iniciarNight = async () => {
@@ -65,6 +72,13 @@ export function MorningNightBlessings({
     setCobijado(false)
     await decir('Good night, Jesus! Look at the stars!')
   }
+
+  useEffect(() => {
+    if (!onListo) return
+    void iniciarMorning()
+    // Se presenta una sola vez al entrar al recorrido diario.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const arropar = async () => {
     if (bloqueado) return
@@ -77,7 +91,12 @@ export function MorningNightBlessings({
     estrellitas()
     await decir('Good night, little Captain! God bless you! Amen!')
     await esperar(500)
-    setBloqueado(false)
+    if (onListo) {
+      await esperar(700)
+      onListo()
+    } else {
+      setBloqueado(false)
+    }
   }
 
   if (modo === 'menu') {
@@ -90,7 +109,7 @@ export function MorningNightBlessings({
           <div className="fila">
             {!completados.has('morning') && (
               <div className="ficha">
-                <Tarjeta img="u3-sun" emoji="☀️" onClick={() => void iniciarMorning()} />
+                <Tarjeta img="u3-sun" emoji="☀️" onClick={() => void iniciarMorning()} audio="Good morning, God! Open the window!" />
                 <span className="frase-chica" style={{ fontWeight: 700 }}>
                   Morning Blessing ☀️
                 </span>
@@ -98,7 +117,7 @@ export function MorningNightBlessings({
             )}
             {!completados.has('night') && (
               <div className="ficha">
-                <Tarjeta img="u5-angel" emoji="🌙" onClick={() => void iniciarNight()} />
+                <Tarjeta img="u5-angel" emoji="🌙" onClick={() => void iniciarNight()} audio="Good night, Jesus! Look at the stars!" />
                 <span className="frase-chica" style={{ fontWeight: 700 }}>
                   Night Prayer 🌙
                 </span>
@@ -140,17 +159,23 @@ export function MorningNightBlessings({
               }}
             >
               <div style={{ width: 84, height: 84, marginBottom: 6 }}>
-                <Tarjeta img={cortinaAbierta ? 'u3-sun' : 'u5-angel'} emoji={cortinaAbierta ? '☀️' : '🪟'} />
+                <Tarjeta
+                  img={cortinaAbierta ? 'u3-sun' : 'u5-angel'}
+                  emoji={cortinaAbierta ? '☀️' : '🪟'}
+                  audio={cortinaAbierta ? 'Thank you, God!' : 'Good morning!'}
+                />
               </div>
 
               <p className="frase" style={{ fontSize: 'clamp(17px, 3.2vmin, 22px)', margin: 0 }}>
-                {cortinaAbierta ? '☀️ Good morning, God!' : 'Tap to open the window! 🪟'}
+                {cortinaAbierta ? '☀️ Good morning!' : 'Tap to open the window! 🪟'}
               </p>
             </div>
 
-            <Boton invita onClick={() => terminarSub('morning')} style={{ marginTop: 12 }}>
-              ✔ Amen!
-            </Boton>
+            {!onListo && (
+              <Boton invita onClick={() => terminarSub('morning')} style={{ marginTop: 12 }}>
+                ✔ Amen!
+              </Boton>
+            )}
           </>
         ) : (
           <>
@@ -178,7 +203,7 @@ export function MorningNightBlessings({
               }}
             >
               <div style={{ width: 84, height: 84, marginBottom: 6 }}>
-                <Tarjeta img="u5-angel" emoji="👼" />
+                <Tarjeta img="u5-angel" emoji="👼" audio="Angel of God, protect me through the night!" />
               </div>
 
               <p className="frase" style={{ color: '#fef08a', fontSize: 'clamp(17px, 3.2vmin, 22px)', margin: 0 }}>
@@ -186,9 +211,11 @@ export function MorningNightBlessings({
               </p>
             </div>
 
-            <Boton invita onClick={() => terminarSub('night')} style={{ marginTop: 12 }}>
-              ✔ Amen!
-            </Boton>
+            {!onListo && (
+              <Boton invita onClick={() => terminarSub('night')} style={{ marginTop: 12 }}>
+                ✔ Amen!
+              </Boton>
+            )}
           </>
         )}
       </div>

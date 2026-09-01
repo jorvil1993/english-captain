@@ -69,4 +69,12 @@ export const FRASES_SUELTAS: Linea[] = [
 
   // Light the Altar
   { texto: 'Let your light shine! Light the candle!', voz: 'oracion' },
+  // Estas líneas viven en el arreglo dinámico de velas, no como llamadas
+  // directas a `decir(...)`; por eso el comprobador anterior no las veía y
+  // terminaban en la voz robótica del dispositivo.
+  { texto: 'Light the candle!', voz: 'coach' },
+  { texto: 'Light! Shine bright!', voz: 'nino' },
+  { texto: 'Light another candle!', voz: 'coach' },
+  { texto: 'Fire! Warm and bright!', voz: 'nino' },
+  { texto: 'Light the altar candle!', voz: 'coach' },
 ]

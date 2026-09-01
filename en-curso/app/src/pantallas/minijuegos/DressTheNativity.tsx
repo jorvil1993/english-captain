@@ -14,10 +14,9 @@ type FiguraPesebre = {
 }
 
 const FIGURAS: FiguraPesebre[] = [
-  { id: 'mary', nombre: 'Mother Mary', orden: 'Place Mother Mary!', sonido: 'Mother Mary!', emoji: '🌹', img: 'u4-mary' },
-  { id: 'joseph', nombre: 'Saint Joseph', orden: 'Place Saint Joseph!', sonido: 'Saint Joseph!', emoji: '🪵', img: 'u4-joseph' },
-  { id: 'jesus', nombre: 'Baby Jesus', orden: 'Place Baby Jesus in the manger!', sonido: 'Baby Jesus!', emoji: '👶', img: 'u4-jesus' },
-  { id: 'star', nombre: 'Big Star', orden: 'Put the star in the sky!', sonido: 'Big shining star!', emoji: '⭐', img: 'u3-stars' },
+  { id: 'mary', nombre: 'Mary is the Mother of Jesus.', orden: 'Show me Mary!', sonido: 'Mary is the Mother of Jesus.', emoji: '🌹', img: 'u4-mary' },
+  { id: 'joseph', nombre: 'Saint Joseph is strong.', orden: 'Show me Saint Joseph!', sonido: 'Saint Joseph is strong.', emoji: '🪵', img: 'u4-joseph' },
+  { id: 'jesus', nombre: 'Jesus is the Son of God.', orden: 'Show me Jesus!', sonido: 'Jesus is the Son of God.', emoji: '👶', img: 'u4-jesus' },
 ]
 
 export function DressTheNativity({ onVolver, onPanel, onInicio }: { onVolver: () => void; onPanel: () => void; onInicio?: () => void }) {
@@ -75,7 +74,7 @@ export function DressTheNativity({ onVolver, onPanel, onInicio }: { onVolver: ()
       } else {
         setTerminado(true)
         estrellitas()
-        await decir('Welcome, Baby Jesus! Glory to God!')
+        await decir('They are the Holy Family.')
         await esperar(500)
         await decir('Good job! God loves you!')
         await esperar(500)
@@ -157,20 +156,6 @@ export function DressTheNativity({ onVolver, onPanel, onInicio }: { onVolver: ()
             transform: arrastrando ? 'scale(1.03)' : 'scale(1)',
           }}
         >
-          {/* Estrella brillante arriba */}
-          <div
-            style={{
-              width: 68,
-              height: 68,
-              marginBottom: 8,
-              opacity: colocadas.includes('star') ? 1 : 0.3,
-              transform: colocadas.includes('star') ? 'scale(1.1)' : 'scale(0.9)',
-              transition: 'all 300ms ease',
-            }}
-          >
-            <Tarjeta img="u3-stars" emoji="⭐" />
-          </div>
-
           {/* Figuras dentro del establo: María, Jesús y José */}
           <div
             style={{
@@ -189,7 +174,7 @@ export function DressTheNativity({ onVolver, onPanel, onInicio }: { onVolver: ()
                 transition: 'all 300ms ease',
               }}
             >
-              <Tarjeta img="u4-mary" emoji="🌹" />
+              <Tarjeta img="u4-mary" emoji="🌹" audio="Mother Mary!" />
             </div>
             <div
               style={{
@@ -200,7 +185,7 @@ export function DressTheNativity({ onVolver, onPanel, onInicio }: { onVolver: ()
                 transition: 'all 300ms ease',
               }}
             >
-              <Tarjeta img="u4-jesus" emoji="👶" />
+              <Tarjeta img="u4-jesus" emoji="👶" audio="Baby Jesus!" />
             </div>
             <div
               style={{
@@ -211,7 +196,7 @@ export function DressTheNativity({ onVolver, onPanel, onInicio }: { onVolver: ()
                 transition: 'all 300ms ease',
               }}
             >
-              <Tarjeta img="u4-joseph" emoji="🪵" />
+              <Tarjeta img="u4-joseph" emoji="🪵" audio="Saint Joseph!" />
             </div>
           </div>
 
@@ -245,6 +230,7 @@ export function DressTheNativity({ onVolver, onPanel, onInicio }: { onVolver: ()
                   img={f.img}
                   emoji={f.emoji}
                   hecha={colocada}
+                  audio={f.nombre}
                 />
                 <span className="frase-chica" style={{ fontSize: 13, fontWeight: 700 }}>
                   {f.nombre}

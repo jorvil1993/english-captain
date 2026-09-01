@@ -27,10 +27,10 @@ export const LISTA_MINIJUEGOS: MinijuegoInfo[] = [
   },
   {
     id: 'noah',
-    titulo: "Noah's Pair Match",
-    emoji: '🚢',
-    img: 'noah-ark',
-    descripcion: 'Guía a los animales al Arca de Noé.',
+    titulo: 'Help the Lost Sheep',
+    emoji: '🐑',
+    img: 'u2-sheep',
+    descripcion: 'Encuentra, sigue y lleva a casa a la oveja del cuento.',
   },
   {
     id: 'nativity',
@@ -66,19 +66,10 @@ export const FRASES_MINIJUEGOS = [
   'Let your light shine!',
   'Thank you, Jesus! Amen!',
 
-  // 2. Noah's Pair Match
-  "Noah's Pair Match",
-  'Find the lion!',
+  // 2. Help the Lost Sheep
+  'Help the Lost Sheep',
   'Find the sheep!',
-  'Find the dove!',
-  'Find the elephant!',
-  'Lion! Roar!',
-  'Sheep! Baa!',
-  'Dove! Coo-coo!',
-  'Elephant! Pawoo!',
-  'The dove flies high!',
-  'Rainbow! Red, yellow, green, blue!',
-  'All safe in the Ark! Good job!',
+  'Follow the Shepherd!',
 
   // 3. Dress the Nativity
   'Dress the Nativity',

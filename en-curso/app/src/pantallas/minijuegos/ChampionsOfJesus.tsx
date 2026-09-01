@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { decir, esperar } from '../../audio/voz'
 import { bien, estrellitas, golCelebracion, patadaBalon, toque } from '../../audio/sonidos'
 import { Tarjeta } from '../../componentes/Tarjeta'
@@ -71,7 +71,9 @@ export function ChampionsOfJesus({
    *  (Modo Calma) el comportamiento es exactamente el de antes. */
   onListo?: () => void
 }) {
-  const [modo, setModo] = useState<ModoFutbol>('menu')
+  // En el recorrido diario hay una sola actividad: patear y comprobar que la
+  // pelota entra. Los demás modos permanecen para el juego libre acompañado.
+  const [modo, setModo] = useState<ModoFutbol>(() => (onListo ? 'penal' : 'menu'))
   const [paso, setPaso] = useState(0)
   const [bloqueado, setBloqueado] = useState(false)
   const [balonEnArco, setBalonEnArco] = useState(false)
@@ -80,7 +82,18 @@ export function ChampionsOfJesus({
 
   const jugadorObjetivo = JUGADORES[paso % 3] // Para modo pases (Messi, Mbappé, Lamine)
 
+  useEffect(() => {
+    if (!onListo || modo !== 'penal' || balonEnArco) return
+    void decir('Kick the ball!')
+  }, [onListo, modo, balonEnArco])
+
   const marcarCompletado = (sub: SubModo) => {
+    if (onListo) {
+      // Un juego completado lleva a la siguiente parada; no fuerza dos
+      // submodos que no corresponden a la palabra que acaba de practicar.
+      onListo()
+      return
+    }
     setCompletados((prev) => {
       const next = new Set(prev)
       next.add(sub)
@@ -95,7 +108,7 @@ export function ChampionsOfJesus({
     setModo('penal')
     setBalonEnArco(false)
     setCelebrandoGol(false)
-    await decir('Shoot and score! Kick the ball!')
+    await decir('Kick the ball!')
   }
 
   // 2. Iniciar Modo Pases (Pass to Friends)
@@ -122,10 +135,10 @@ export function ChampionsOfJesus({
     await esperar(350)
     golCelebracion()
     setCelebrandoGol(true)
-    await decir('GOAL! Thank you, God!')
+    await decir('Goal!')
     await esperar(600)
     estrellitas()
-    await decir('Great kick, Captain José! Glory to God!')
+    await decir('Goal!')
     await esperar(800)
     setBloqueado(false)
 
@@ -210,7 +223,7 @@ export function ChampionsOfJesus({
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
               >
                 <div style={{ width: 88, height: 88 }}>
-                  <Tarjeta img="c-messi" emoji="🔟" />
+              <Tarjeta img="c-messi" emoji="🔟" audio="Kick the ball!" />
                 </div>
                 <span className="frase-chica" style={{ fontSize: 13, fontWeight: 800, marginTop: 4, textAlign: 'center' }}>
                   Shoot & Score! 🥅
@@ -225,7 +238,7 @@ export function ChampionsOfJesus({
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
               >
                 <div style={{ width: 88, height: 88 }}>
-                  <Tarjeta img="c-yamal" emoji="⚡" />
+                  <Tarjeta img="c-yamal" emoji="⚡" audio="We play together with Jesus! Pass to Messi!" />
                 </div>
                 <span className="frase-chica" style={{ fontSize: 13, fontWeight: 800, marginTop: 4, textAlign: 'center' }}>
                   Team Passing 👟
@@ -240,7 +253,7 @@ export function ChampionsOfJesus({
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
               >
                 <div style={{ width: 88, height: 88 }}>
-                  <Tarjeta img="c-dibu" emoji="🧤" />
+                  <Tarjeta img="c-dibu" emoji="🧤" audio="Dibu saves the ball! Be strong and brave!" />
                 </div>
                 <span className="frase-chica" style={{ fontSize: 13, fontWeight: 800, marginTop: 4, textAlign: 'center' }}>
                   Dibu Saves! 🛡️
@@ -295,26 +308,29 @@ export function ChampionsOfJesus({
               }}
             />
 
-            {/* Dibu en el arco */}
+            {/* Cuando hay gol, el arquero se lanza tarde y queda claramente
+                lejos del balón: la imagen y la celebración dicen lo mismo. */}
             <div
               style={{
                 width: 72,
                 height: 72,
-                transform: celebrandoGol ? 'translateY(10px) scale(0.95)' : 'translateY(0)',
-                transition: 'transform 300ms ease',
+                transform: balonEnArco ? 'translateX(-112px) translateY(36px) rotate(-24deg) scale(0.86)' : 'translateY(0)',
+                transition: 'transform 460ms cubic-bezier(0.2, 0.8, 0.2, 1)',
               }}
             >
-              <Tarjeta img="c-dibu" emoji="🧤" />
+              <Tarjeta img="c-dibu" emoji="🧤" audio="Kick the ball!" />
             </div>
 
-            {/* Balón dentro del arco tras el disparo */}
+            {/* Balón dentro de la red, lejos del arquero: visualmente es gol
+                antes de que la voz diga GOAL. */}
             {balonEnArco && (
               <div
                 style={{
                   position: 'absolute',
-                  bottom: 20,
+                  right: '16%',
+                  top: '34%',
                   fontSize: 38,
-                  animation: 'pulsoGuia 1s infinite alternate',
+                  animation: 'golEntra 520ms cubic-bezier(0.16, 1, 0.3, 1) both, pulsoGuia 1s 520ms infinite alternate',
                 }}
               >
                 ⚽
@@ -399,6 +415,7 @@ export function ChampionsOfJesus({
                       img={j.img}
                       emoji={j.emoji}
                       guiando={esObjetivo}
+                      audio={j.orden}
                     />
                   </div>
                   <span className="frase-chica" style={{ fontWeight: 800 }}>
@@ -441,7 +458,7 @@ export function ChampionsOfJesus({
           }}
         >
           <div style={{ width: 100, height: 100, marginBottom: 8 }}>
-            <Tarjeta img="c-dibu" emoji="🧤" />
+            <Tarjeta img="c-dibu" emoji="🧤" audio="Dibu saves the ball!" />
           </div>
 
           <p className="frase" style={{ fontSize: 'clamp(16px, 3.2vmin, 20px)', margin: 0 }}>
