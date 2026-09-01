@@ -36,7 +36,6 @@ export function App() {
     oracionIndice,
     aveMariaVersoIndice,
     memoria,
-    yaJugoHoy,
   } = useSesion()
 
   const [empezado, setEmpezado] = useState(false)
@@ -63,14 +62,31 @@ export function App() {
   const [recorrido, setRecorrido] = useState<ItemRecorrido[] | null>(null)
   const [planOracion, setPlanOracion] = useState<PlanDeOracion | null>(null)
   const [leccion, setLeccion] = useState<LeccionCurricular | null>(null)
+  const [continuando, setContinuando] = useState(false)
 
-  const empezar = () => {
+  const prepararSiguienteLeccion = () => {
     const leccionDeEstaSesion = leccionDeHoy(unidad.id, diasEnUnidad)
     setLeccion(leccionDeEstaSesion)
     setRecorrido(generarRecorridoDeHoy(leccionDeEstaSesion))
     setPlanOracion(planDeOracionDeHoy({ oracionIndice, oracionVersoIndice: aveMariaVersoIndice, memoria, hoy: hoyISO() }))
+    setCursor(0)
     setEmpezado(true)
   }
+
+  const empezar = () => prepararSiguienteLeccion()
+
+  // Una lección termina con una misión, no con un candado. Cuando José quiere
+  // seguir, la memoria ya se guardó y este efecto prepara inmediatamente el
+  // siguiente tramo de la misma línea: nuevas palabras mientras queden y
+  // después repaso espaciado del ciclo completo.
+  useEffect(() => {
+    if (!continuando) return
+    prepararSiguienteLeccion()
+    setContinuando(false)
+    // `continuando` se activa junto con el guardado en TakeItHome. React
+    // entrega aquí los valores ya actualizados de unidad, lección y oración.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [continuando, unidad.id, diasEnUnidad, aveMariaVersoIndice])
 
   const pedirPanel = () => setMostrarCompuerta(true)
   const aprobarPanel = () => {
@@ -154,8 +170,12 @@ export function App() {
             unidad={unidad}
             mision={fraseMision ? { en: fraseMision.ordenEn, es: fraseMision.es, emoji: fraseMision.emoji, img: fraseMision.img } : undefined}
             onListo={() => {
-              cerrarSesion({ ...marcador })
-              onListo()
+              const datosDeEstaLeccion = { ...marcador }
+              marcador.preguntas = 0
+              marcador.aciertos = 0
+              marcador.intentosVoz = 0
+              cerrarSesion(datosDeEstaLeccion)
+              setContinuando(true)
             }}
             onPanel={pedirPanel}
           />
@@ -206,19 +226,17 @@ export function App() {
       return <Papas onSalir={() => setPanel(false)} onEntrarModoCalma={() => { setPanel(false); setModoCalma('rincon') }} />
     }
 
-    if (yaJugoHoy) {
-      if (modoCalma !== 'cerrado') return renderModoCalma()
-      // Después de terminar, la pantalla no ofrece un menú nuevo al niño:
-      // los cuentos y juegos libres quedan en el panel de papá/mamá.
-      return <Stop />
-    }
+    // El rincón sigue disponible si un adulto lo abre para un grupo de oración
+    // o un rato tranquilo; no es una salida que el recorrido de José le pida
+    // elegir ni una consecuencia de haber terminado una lección.
+    if (modoCalma !== 'cerrado') return renderModoCalma()
 
     if (!empezado || !recorrido || !planOracion || !leccion) {
       return <Bienvenida onEmpezar={empezar} onPanel={pedirPanel} />
     }
 
     const item = recorrido[cursor]
-    if (!item) return <Stop />
+    if (!item) return <Stop onContinuar={prepararSiguienteLeccion} />
 
     return renderParada(item.parada, avanzar)
   }

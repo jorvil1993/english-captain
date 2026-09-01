@@ -27,7 +27,6 @@ const INTERFAZ: Linea[] = [
   { texto: 'Your turn!', voz: 'maestra' },
   { texto: 'Your mission!', voz: 'maestra' },
   { texto: 'Great job, Captain!', voz: 'maestra' },
-  { texto: 'See you tomorrow!', voz: 'maestra' },
   { texto: 'Yes!', voz: 'nino' },
   { texto: 'Bravo!', voz: 'nino' },
   { texto: 'You did it!', voz: 'nino' },

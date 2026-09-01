@@ -26,9 +26,7 @@ export function Papas({ onSalir, onEntrarModoCalma }: { onSalir: () => void; onE
     fijarUnidadIndice,
     fijarOracionIndice,
     fijarModoLibre,
-    reiniciarDia,
     borrarTodo,
-    yaJugoHoy,
   } = useSesion()
 
   const [confirmarBorrado, setConfirmarBorrado] = useState(false)
@@ -43,7 +41,8 @@ export function Papas({ onSalir, onEntrarModoCalma }: { onSalir: () => void; onE
   }, [])
 
   const hoy = hoyISO()
-  const sesionHoy = sesiones.find((s) => s.fecha === hoy)
+  const sesionesHoy = sesiones.filter((s) => s.fecha === hoy)
+  const misionHoyCumplida = sesionesHoy.some((s) => s.misionCumplida)
 
   const ultimas = sesiones.slice(-14)
   const preguntas = ultimas.reduce((a, s) => a + s.preguntas, 0)
@@ -70,7 +69,7 @@ export function Papas({ onSalir, onEntrarModoCalma }: { onSalir: () => void; onE
 
         <h2>Control de Unidades y Modo</h2>
         <div style={{ background: 'var(--blanco)', padding: 16, borderRadius: 16, marginBottom: 16 }}>
-          <p style={{ margin: '0 0 8px 0', fontWeight: 'bold' }}>Cambiar unidad activa para la misión diaria:</p>
+          <p style={{ margin: '0 0 8px 0', fontWeight: 'bold' }}>Cambiar desde qué unidad continúa el recorrido:</p>
           <select
             value={unidadIndice}
             onChange={(e) => fijarUnidadIndice(Number(e.target.value))}
@@ -147,18 +146,18 @@ export function Papas({ onSalir, onEntrarModoCalma }: { onSalir: () => void; onE
         <p>
           <b>{unidad.mision.es}</b>
         </p>
-        {sesionHoy ? (
+        {sesionesHoy.length > 0 ? (
           <label style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: 15 }}>
             <input
               type="checkbox"
-              checked={sesionHoy.misionCumplida}
+              checked={misionHoyCumplida}
               onChange={(e) => marcarMision(hoy, e.target.checked)}
               style={{ width: 22, height: 22 }}
             />
-            La cumplió hoy
+            La cumplió hoy · {sesionesHoy.length} lección{sesionesHoy.length === 1 ? '' : 'es'} practicada{sesionesHoy.length === 1 ? '' : 's'}
           </label>
         ) : (
-          <p>Todavía no hizo la sesión de hoy.</p>
+          <p>Todavía no practicó hoy.</p>
         )}
 
         <h2>El momento papá (3 minutos en familia)</h2>
@@ -210,8 +209,8 @@ export function Papas({ onSalir, onEntrarModoCalma }: { onSalir: () => void; onE
             </tr>
           </thead>
           <tbody>
-            {[...sesiones].reverse().slice(0, 12).map((s) => (
-              <tr key={s.fecha}>
+            {[...sesiones].reverse().slice(0, 12).map((s, indice) => (
+              <tr key={s.id ?? `${s.fecha}-${indice}`}>
                 <td>{s.fecha}</td>
                 <td>{s.unidad}</td>
                 <td>{s.preguntas ? `${Math.round((s.aciertos / s.preguntas) * 100)}%` : '—'}</td>
@@ -237,14 +236,6 @@ export function Papas({ onSalir, onEntrarModoCalma }: { onSalir: () => void; onE
           />{' '}
           <span style={{ fontSize: 13 }}>(la voz lo llama por su nombre)</span>
         </p>
-
-        {yaJugoHoy && (
-          <p>
-            <button className="boton fantasma" onClick={reiniciarDia}>
-              Permitir otra sesión de Misión Diaria hoy
-            </button>
-          </p>
-        )}
 
         <p>
           {confirmarBorrado ? (

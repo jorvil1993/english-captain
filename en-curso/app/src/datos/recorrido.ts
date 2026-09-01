@@ -41,7 +41,6 @@ export function generarRecorridoDeHoy(leccion: LeccionCurricular): ItemRecorrido
     { modo: 'fijo', parada: { tipo: 'challenge' } },
     { modo: 'fijo', parada: { tipo: 'sayit' } },
     { modo: 'fijo', parada: { tipo: 'takehome' } },
-    { modo: 'fijo', parada: { tipo: 'stop' } },
   ]
 }
 

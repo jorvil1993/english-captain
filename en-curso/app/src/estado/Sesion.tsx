@@ -22,6 +22,8 @@ export type MemoriaFrase = {
 }
 
 export type RegistroSesion = {
+  /** Identificador de cada tramo. Puede haber varias lecciones el mismo día. */
+  id: string
   fecha: string
   unidad: string
   preguntas: number
@@ -36,7 +38,6 @@ type Guardado = {
   sesiones: RegistroSesion[]
   unidadIndice: number
   diasEnUnidad: number
-  ultimoDia: string | null
   modoLibreActivo: boolean
   diaRecorridoIndice: number
   ultimaRotacion: string | null
@@ -52,7 +53,6 @@ const INICIAL: Guardado = {
   sesiones: [],
   unidadIndice: 0,
   diasEnUnidad: 0,
-  ultimoDia: null,
   modoLibreActivo: true, // Habilitado por defecto para dar flexibilidad en salidas y grupo de oración
   diaRecorridoIndice: 0,
   ultimaRotacion: null,
@@ -98,7 +98,6 @@ type Contexto = {
   unidadIndice: number
   diasEnUnidad: number
   todasLasUnidades: Unidad[]
-  yaJugoHoy: boolean
   modoLibreActivo: boolean
   repaso: Frase[]
   sesiones: RegistroSesion[]
@@ -116,7 +115,6 @@ type Contexto = {
   fijarUnidadIndice: (idx: number) => void
   fijarOracionIndice: (idx: number) => void
   fijarModoLibre: (activo: boolean) => void
-  reiniciarDia: () => void
   borrarTodo: () => void
 }
 
@@ -168,25 +166,22 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
 
   const cerrarSesion = useCallback((datos: { preguntas: number; aciertos: number; intentosVoz: number }) => {
     setG((v) => {
-      // `TakeItHome` puede recibir dos toques o re-renderizarse durante el
-      // cierre; una misma sesión no debe avanzar dos lecciones.
-      if (v.ultimoDia === hoy) return v
-
       const siguienteDia = v.diasEnUnidad + 1
       const terminaUnidad = siguienteDia >= cantidadLecciones(unidad.id)
       const aveMaria = ORACIONES.find((oracion) => oracion.id === 'o-hail-mary') ?? ORACIONES[0]
 
       return {
         ...v,
-        ultimoDia: hoy,
         ultimaRotacion: hoy,
         diaRecorridoIndice: v.diaRecorridoIndice + 1,
         aveMariaVersoIndice: Math.min((v.aveMariaVersoIndice ?? 0) + 1, aveMaria.versos.length),
         diasEnUnidad: terminaUnidad ? 0 : siguienteDia,
         unidadIndice: terminaUnidad ? (v.unidadIndice + 1) % UNIDADES.length : v.unidadIndice,
         sesiones: [
-          ...v.sesiones.filter((s) => s.fecha !== hoy),
-          { fecha: hoy, unidad: unidad.id, misionCumplida: false, ...datos },
+          // Una tarde larga puede tener muchas lecciones. Cada una cuenta:
+          // el progreso es una línea continua, no un único tramo por día.
+          ...v.sesiones,
+          { id: `${hoy}-${Date.now()}-${v.diaRecorridoIndice}`, fecha: hoy, unidad: unidad.id, misionCumplida: false, ...datos },
         ].slice(-120),
       }
     })
@@ -205,7 +200,6 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
     unidadIndice: g.unidadIndice,
     diasEnUnidad: g.diasEnUnidad,
     todasLasUnidades: UNIDADES,
-    yaJugoHoy: g.ultimoDia === hoy,
     modoLibreActivo: g.modoLibreActivo ?? true,
     repaso,
     sesiones: g.sesiones,
@@ -223,7 +217,6 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
     fijarUnidadIndice: (idx) => setG((v) => ({ ...v, unidadIndice: Math.max(0, Math.min(idx, UNIDADES.length - 1)), diasEnUnidad: 0 })),
     fijarOracionIndice: (idx) => setG((v) => ({ ...v, oracionIndice: Math.max(0, Math.min(idx, ORACIONES.length - 1)), oracionVersoIndice: 0 })),
     fijarModoLibre: (activo) => setG((v) => ({ ...v, modoLibreActivo: activo })),
-    reiniciarDia: () => setG((v) => ({ ...v, ultimoDia: null })),
     borrarTodo: () => setG(INICIAL),
   }
 
