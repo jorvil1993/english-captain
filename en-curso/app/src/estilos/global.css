@@ -103,6 +103,17 @@ body {
   max-width: 30ch;
 }
 
+/* La señal de la tarjeta no es texto que haya que leer: es un gesto grande
+   que aparece mientras la imagen iluminada espera un toque. Antes era una
+   manito pequeña, fácil de no ver; ahora el autoavance evita que esa señal
+   sea un requisito para continuar. */
+.guia-toque {
+  min-height: 1.5em;
+  font-size: clamp(30px, 6vmin, 52px);
+  line-height: 1;
+  color: var(--oro-oscuro);
+}
+
 /* ── Tarjeta con imagen ─────────────────────────────────────────────────── */
 
 .tarjeta {
