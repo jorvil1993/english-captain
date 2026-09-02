@@ -91,6 +91,19 @@ export type Frase = {
   /** Lo que se ve mientras la imagen no está generada. */
   emoji: string
   hilo: Hilo
+  /**
+   * Eco corto en voz de niño ("Red!", "Three!"). El método SparkLing usa
+   * varios hablantes a propósito (§1.7): la maestra nombra, el niño repite.
+   * Se genera con la voz Ana; ver `corpus.ts` y `PalabrasDelDia`.
+   */
+  eco?: string
+  /**
+   * Imagen que se muestra un segundo y medio cuando José acierta esta frase,
+   * mientras la voz cuenta. Es cerrar el lazo símbolo→cantidad en los
+   * números (la cifra `3` ↔ tres pelotas), no un premio: solo la llevan las
+   * frases donde ese refuerzo enseña algo.
+   */
+  refuerzoImg?: string
 }
 
 export type Opcion = {

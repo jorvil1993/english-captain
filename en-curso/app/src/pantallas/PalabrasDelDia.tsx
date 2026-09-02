@@ -73,6 +73,14 @@ export function PalabrasDelDia({
       if (cancelado || pasando.current) return
       await decir(frase.en)
       if (cancelado || pasando.current) return
+      // El eco en voz de niño: la maestra nombró, ahora "José" lo repite. Es
+      // el método de varios hablantes de SparkLing (§1.7), no un adorno.
+      if (frase.eco) {
+        await esperar(250)
+        if (cancelado || pasando.current) return
+        await decir(frase.eco)
+        if (cancelado || pasando.current) return
+      }
       await esperar(650)
       if (cancelado || pasando.current) return
       setBloqueado(false)

@@ -92,6 +92,8 @@ export function corpus(): Linea[] {
     lineas.push({ texto: f.ordenEn, voz: 'coach' })
     lineas.push({ texto: `Yes! ${f.en}`, voz: 'maestra' })
     lineas.push({ texto: `es:${f.es}`, voz: 'espanol' })
+    // El eco de la palabra sola en voz de niño: la maestra nombra, José repite.
+    if (f.eco) lineas.push({ texto: f.eco, voz: 'nino' })
   }
 
   for (const u of UNIDADES) {

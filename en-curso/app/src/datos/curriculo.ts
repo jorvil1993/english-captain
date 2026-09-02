@@ -77,6 +77,34 @@ const lecciones: LeccionCurricular[] = [
   { id: 'u7-2', unidadId: 'u7', fraseIds: ['u7-im-happy', 'u7-please'], escenas: [1, 2] },
   { id: 'u7-3', unidadId: 'u7', fraseIds: ['u7-thank-you', 'u7-im-sorry'], escenas: [2, 3, 4] },
   { id: 'u7-4', unidadId: 'u7', fraseIds: ['u7-i-love-you-all', 'u7-good-night'], escenas: [5] },
+
+  // U8 · Colours — cada pregunta del cuento enfrenta dos colores ya vistos.
+  { id: 'u8-1', unidadId: 'u8', fraseIds: ['u8-red', 'u8-blue'], escenas: [0, 1] },
+  { id: 'u8-2', unidadId: 'u8', fraseIds: ['u8-yellow', 'u8-green'], escenas: [2, 4] },
+  { id: 'u8-3', unidadId: 'u8', fraseIds: ['u8-orange', 'u8-purple'], escenas: [3, 4] },
+  { id: 'u8-4', unidadId: 'u8', fraseIds: ['u8-black', 'u8-white'], escenas: [4, 5] },
+
+  // U9 · One to Ten — se cuenta de dos en dos; la pregunta llega recién
+  // cuando sus dos números ya se presentaron.
+  { id: 'u9-1', unidadId: 'u9', fraseIds: ['u9-1', 'u9-2'], escenas: [0] },
+  { id: 'u9-2', unidadId: 'u9', fraseIds: ['u9-3', 'u9-4'], escenas: [0, 1] },
+  { id: 'u9-3', unidadId: 'u9', fraseIds: ['u9-5', 'u9-6'], escenas: [1, 2] },
+  { id: 'u9-4', unidadId: 'u9', fraseIds: ['u9-7', 'u9-8'], escenas: [2, 3] },
+  { id: 'u9-5', unidadId: 'u9', fraseIds: ['u9-9', 'u9-10'], escenas: [4, 5] },
+
+  // U10 · My Body — TPR: cada frase se enseña haciendo el gesto.
+  { id: 'u10-1', unidadId: 'u10', fraseIds: ['u10-head', 'u10-hair'], escenas: [0, 1] },
+  { id: 'u10-2', unidadId: 'u10', fraseIds: ['u10-eyes', 'u10-ears'], escenas: [1, 2] },
+  { id: 'u10-3', unidadId: 'u10', fraseIds: ['u10-hand', 'u10-foot'], escenas: [3, 4] },
+  { id: 'u10-4', unidadId: 'u10', fraseIds: ['u10-nose', 'u10-mouth'], escenas: [4, 5] },
+
+  // U11 · A Day at Home — 6 lecciones de dos, un día de la mañana a la noche.
+  { id: 'u11-1', unidadId: 'u11', fraseIds: ['u11-bed', 'u11-window'], escenas: [0] },
+  { id: 'u11-2', unidadId: 'u11', fraseIds: ['u11-shirt', 'u11-shoes'], escenas: [0, 1] },
+  { id: 'u11-3', unidadId: 'u11', fraseIds: ['u11-jacket', 'u11-hat'], escenas: [4] },
+  { id: 'u11-4', unidadId: 'u11', fraseIds: ['u11-apple', 'u11-banana'], escenas: [2] },
+  { id: 'u11-5', unidadId: 'u11', fraseIds: ['u11-egg', 'u11-rice'], escenas: [2, 3] },
+  { id: 'u11-6', unidadId: 'u11', fraseIds: ['u11-chair', 'u11-door'], escenas: [4, 5] },
 ]
 
 export function leccionesDeUnidad(unidadId: string): LeccionCurricular[] {

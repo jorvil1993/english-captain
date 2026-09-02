@@ -58,6 +58,19 @@ SAGRADO = (
     "expressions, no cartoon exaggeration, no silly or comical features."
 )
 
+# José con piel clara. Los 121 cuentos originales lo pintaron más tostado; a
+# partir de las unidades U8-U11 (colores, números, cuerpo, casa) se usa este
+# retrato, que es el que pidió Jorge. Cuando se regeneren los cuentos viejos,
+# esto reemplaza a JOSE.
+JOSE_CLARO = (
+    "The boy is José: a cheerful 5-year-old child with light fair skin and a pale "
+    "light complexion (clearly light-skinned, not tanned or dark), short straight "
+    "dark-brown hair, big dark-brown eyes and round cheeks. He wears a red-and-white "
+    "striped soccer jersey, dark-blue shorts and white sneakers. Keep these exact "
+    "features, skin tone and clothes the same in every illustration. Do not use "
+    "cultural costume, rural clothing, ethnic stereotypes or caricature to define him."
+)
+
 
 # (clave, prompt, es_sagrada)
 PIEZAS: list[tuple[str, str, bool]] = [
@@ -289,6 +302,82 @@ PIEZAS: list[tuple[str, str, bool]] = [
                      "clouds near the top corners, and a strip of green meadow along the very "
                      "bottom edge with tiny daisies. Completely empty: no people, no animals, "
                      "no buildings. The whole centre is open sky with nothing in it.", False),
+
+    # ── Vida diaria · tarjetas de vocabulario (globos y cuerpo) ─────────────
+    ("v-color-black", "A single smooth round party balloon in deep pure BLACK, one short "
+                      "curly string, one soft grey highlight. The balloon is the only object, "
+                      "plain warm cream background.", False),
+    ("v-color-white", "A single smooth round party balloon in clean WHITE with a thin grey "
+                      "outline so it reads against the cream, one short curly string, one soft "
+                      "highlight. The balloon is the only object, plain warm cream background.", False),
+    ("v-body-mouth", f"{JOSE_CLARO} Close crop of José's face; he points with one finger at his "
+                     "own open MOUTH; playful smile; plain warm cream background, nothing else.", False),
+    ("v-body-hair", f"{JOSE_CLARO} Close head-and-shoulders crop of José running one hand through "
+                    "his own HAIR; calm friendly smile; plain warm cream background, nothing else.", False),
+
+    # ── Unidad 8 · God's Colours ───────────────────────────────────────────
+    ("u8-c1", f"{JOSE_CLARO} He stands at a bedroom window he has just opened, soft morning light "
+              "and a gentle rainbow of colour streaming in, looking out with wonder and a happy smile.", False),
+    ("u8-c2", f"{JOSE_CLARO} Close view of him on green grass in his red-and-white striped jersey, "
+              "holding a red soccer ball, a clear blue sky behind him.", False),
+    ("u8-c3", "A sunny meadow: bright green grass in the foreground and a big warm yellow sun in a "
+              "pale blue sky. No people.", False),
+    ("u8-c4", "One orange fruit and one purple flower resting together on green grass, close and "
+              "simple, warm light. No people.", False),
+    ("u8-c5", "A joyful swirl of soft paint strokes in red, blue, yellow and green on a warm cream "
+              "ground, like a painter's palette, cheerful and calm. No people.", False),
+    ("u8-c6", "A calm deep blue-black night sky with one single bright white star shining, the "
+              "rooftop of a small quiet house along the bottom edge.", False),
+    ("mision-u8", "A small child's hand pointing at a blue cup in a cozy bedroom, warm lamp light, "
+                  "gentle and simple.", False),
+
+    # ── Unidad 9 · Counting the Team ───────────────────────────────────────
+    ("u9-c1", "A single soccer ball resting on bright green grass in warm morning light, an empty "
+              "friendly neighbourhood field behind. No people.", False),
+    ("u9-c2", f"{JOSE_CLARO} Three happy little boys run together across a grassy field toward the "
+              "viewer, José among them in his striped jersey, joyful.", False),
+    ("u9-c3", "Six cheerful children in simple soccer clothes standing together on a green field, "
+              "smiling, ready to play.", False),
+    ("u9-c4", "An open canvas sports bag on the grass with several soccer balls spilling out of it, "
+              "warm light. No people.", False),
+    ("u9-c5", f"{JOSE_CLARO} A group of ten cheerful children stand shoulder to shoulder on a green "
+              "field with arms raised, celebrating together, José in the middle.", False),
+    ("u9-c6", f"{JOSE_CLARO} He is about to kick a soccer ball on the grass, his friends softly "
+              "blurred behind him, golden late-afternoon light, full of energy.", False),
+    ("mision-u9", "A father and his young son sitting together counting on their fingers, warm and "
+                  "playful, cozy living room.", False),
+
+    # ── Unidad 10 · Good Morning, Body! ────────────────────────────────────
+    ("u10-c1", f"{JOSE_CLARO} He sits up in his small bed just after waking, stretching both arms "
+               "above his head with a big yawn and a sleepy smile, soft morning light.", False),
+    ("u10-c2", f"{JOSE_CLARO} Close head-and-shoulders view of him touching the top of his own head "
+               "with both flat hands, calm friendly smile.", False),
+    ("u10-c3", f"{JOSE_CLARO} Close view of him with his eyes wide open and both hands cupped behind "
+               "his ears, listening, delighted expression.", False),
+    ("u10-c4", f"{JOSE_CLARO} He is mid-clap with both hands together and one foot stamping the "
+               "ground, full of morning energy, joyful.", False),
+    ("u10-c5", f"{JOSE_CLARO} Close view of him touching the tip of his nose with one finger, mouth "
+               "open wide as if saying 'aaah', playful.", False),
+    ("u10-c6", f"{JOSE_CLARO} He stands tall and ready with arms open and a warm golden glow around "
+               "him, grateful happy face.", False),
+    ("mision-u10", "A mother and her young son playing a pointing game, both touching their noses "
+                   "and laughing, cozy home.", False),
+
+    # ── Unidad 11 · A Day at Home ──────────────────────────────────────────
+    ("u11-c1", f"{JOSE_CLARO} He gets out of his small bed in the morning and reaches to open a "
+               "bedroom window, warm sunlight pouring in, cheerful.", False),
+    ("u11-c2", f"{JOSE_CLARO} He pulls a t-shirt over his head, sitting on his bedroom floor, one "
+               "white sneaker already on and the other beside him, focused and happy.", False),
+    ("u11-c3", f"{JOSE_CLARO} He sits on a wooden chair at a small table with a red apple and a "
+               "yellow banana in front of him, bright morning kitchen, happy.", False),
+    ("u11-c4", "A simple plate with one boiled egg and a small mound of white rice on a wooden "
+               "table, a child's spoon beside it, warm light. No people.", False),
+    ("u11-c5", f"{JOSE_CLARO} He stands at the front door of a cozy house wearing a green jacket "
+               "and a tan sun hat, one hand on the round door handle, ready to go out, cheerful.", False),
+    ("u11-c6", f"{JOSE_CLARO} He climbs into his small bed at night, a crescent moon in the window, "
+               "warm lamp light, sleepy and content.", False),
+    ("mision-u11", "A young child proudly dressed by himself in a shirt, shorts and shoes, standing "
+                   "with hands on hips and a big proud smile, cozy bedroom.", False),
 ]
 
 # Las tarjetas de vocabulario no son ilustraciones decorativas: José debe poder

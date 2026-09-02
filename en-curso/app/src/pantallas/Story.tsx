@@ -36,6 +36,9 @@ export function Story({
   const [correcta, setCorrecta] = useState<string | null>(null)
   const [wobbleId, setWobbleId] = useState<string | null>(null)
   const [guiando, setGuiando] = useState(false)
+  /** La imagen de conteo (los `v-count-*`) que aparece un instante tras acertar
+   *  un número: cierra el lazo cifra ↔ cantidad. No es un premio. */
+  const [refuerzo, setRefuerzo] = useState<string | null>(null)
   const timerInactividad = useRef<number | null>(null)
 
   const escenas = escenasPermitidas?.map((indice) => unidad.cuento.escenas[indice]).filter(Boolean) ?? unidad.cuento.escenas
@@ -61,6 +64,7 @@ export function Story({
     setCorrecta(null)
     setWobbleId(null)
     setGuiando(false)
+    setRefuerzo(null)
 
     void (async () => {
       await esperar(300)
@@ -119,7 +123,15 @@ export function Story({
       setCorrecta(buena.fraseId)
       bien()
       await esperar(250)
-      await decir(`Yes! ${fraseDe(buena.fraseId).en}`)
+      const fBuena = fraseDe(buena.fraseId)
+      await decir(`Yes! ${fBuena.en}`)
+      if (fBuena.refuerzoImg) {
+        setRefuerzo(fBuena.refuerzoImg)
+        await esperar(200)
+        if (fBuena.eco) await decir(fBuena.eco)
+        await esperar(900)
+        setRefuerzo(null)
+      }
       await esperar(500)
       avanzar()
     } else {
@@ -146,6 +158,19 @@ export function Story({
 
   return (
     <Marco paso={i} total={escenas.length} ayudaEs={escena.es} onPanel={onPanel} onInicio={onInicio}>
+      {refuerzo && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 60,
+            display: 'grid', placeItems: 'center',
+            background: 'var(--fondo, #faf4e9)',
+          }}
+        >
+          <div style={{ width: 'min(72vw, 340px)' }}>
+            <Tarjeta img={refuerzo} emoji="⚽" grande />
+          </div>
+        </div>
+      )}
       <div className="pantalla">
         <Tarjeta
           img={escena.img}

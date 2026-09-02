@@ -42,6 +42,8 @@ export function Challenge({
   const [guiando, setGuiando] = useState(false)
   const [terminado, setTerminado] = useState(false)
   const [record, setRecord] = useState(false)
+  /** Imagen de conteo tras acertar un número: cifra ↔ cantidad, no premio. */
+  const [refuerzo, setRefuerzo] = useState<string | null>(null)
   const inicio = useRef<number>(Date.now())
   const timerInactividad = useRef<number | null>(null)
 
@@ -70,6 +72,7 @@ export function Challenge({
     setCorrecta(null)
     setWobbleId(null)
     setGuiando(false)
+    setRefuerzo(null)
 
     void (async () => {
       await esperar(450)
@@ -100,6 +103,13 @@ export function Challenge({
       bien()
       await esperar(220)
       await decir('Yes!')
+      if (objetivo.refuerzoImg) {
+        setRefuerzo(objetivo.refuerzoImg)
+        await esperar(200)
+        if (objetivo.eco) await decir(objetivo.eco)
+        await esperar(900)
+        setRefuerzo(null)
+      }
       await esperar(450)
       if (i + 1 >= rondas.length) {
         const segundos = Math.round((Date.now() - inicio.current) / 1000)
@@ -155,6 +165,19 @@ export function Challenge({
 
   return (
     <Marco paso={i} total={rondas.length} ayudaEs={objetivo.es} onPanel={onPanel} onInicio={onInicio}>
+      {refuerzo && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 60,
+            display: 'grid', placeItems: 'center',
+            background: 'var(--fondo, #faf4e9)',
+          }}
+        >
+          <div style={{ width: 'min(72vw, 340px)' }}>
+            <Tarjeta img={refuerzo} emoji="⚽" grande />
+          </div>
+        </div>
+      )}
       <div className="pantalla">
         <p className="frase">{objetivo.en}</p>
         <div className="fila">

@@ -294,6 +294,190 @@ const cancionU7: Cancion = {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// UNIDAD 8 · COLOURS · gratitud y asombro por lo que Dios pintó
+// ─────────────────────────────────────────────────────────────────────────────
+// El hilo "vida diaria" de la investigación (§"Los tres hilos") pedía colores,
+// números, cuerpo y casa, y hasta acá casi no existían. `eco` es la palabra
+// sola en voz de niño: la maestra nombra, José repite (método SparkLing, §1.7).
+
+const frasesU8: Frase[] = [
+  { id: 'u8-red', en: 'The ball is red.', es: 'La pelota es roja.', ordenEn: 'Show me something red!', gesto: 'Señala algo rojo en la pantalla o en el cuarto.', img: 'v-color-red', emoji: '🔴', hilo: 'vida', eco: 'Red!' },
+  { id: 'u8-blue', en: 'The sky is blue.', es: 'El cielo es azul.', ordenEn: 'Show me something blue!', gesto: 'Señala algo azul.', img: 'v-color-blue', emoji: '🔵', hilo: 'vida', eco: 'Blue!' },
+  { id: 'u8-yellow', en: 'The sun is yellow.', es: 'El sol es amarillo.', ordenEn: 'Show me something yellow!', gesto: 'Señala algo amarillo.', img: 'v-color-yellow', emoji: '🟡', hilo: 'vida', eco: 'Yellow!' },
+  { id: 'u8-green', en: 'The grass is green.', es: 'El pasto es verde.', ordenEn: 'Show me something green!', gesto: 'Señala algo verde.', img: 'v-color-green', emoji: '🟢', hilo: 'vida', eco: 'Green!' },
+  { id: 'u8-orange', en: 'The orange is orange.', es: 'La naranja es de color naranja.', ordenEn: 'Show me something orange!', gesto: 'Señala algo naranja.', img: 'v-color-orange', emoji: '🟠', hilo: 'vida', eco: 'Orange!' },
+  { id: 'u8-purple', en: 'The flower is purple.', es: 'La flor es morada.', ordenEn: 'Show me something purple!', gesto: 'Señala algo morado.', img: 'v-color-purple', emoji: '🟣', hilo: 'vida', eco: 'Purple!' },
+  { id: 'u8-black', en: 'The night is black.', es: 'La noche es negra.', ordenEn: 'Show me something black!', gesto: 'Señala algo negro.', img: 'v-color-black', emoji: '⚫', hilo: 'vida', eco: 'Black!' },
+  { id: 'u8-white', en: 'The cloud is white.', es: 'La nube es blanca.', ordenEn: 'Show me something white!', gesto: 'Señala algo blanco.', img: 'v-color-white', emoji: '⚪', hilo: 'vida', eco: 'White!' },
+]
+
+const cuentoU8: Cuento = {
+  titulo: "God's Colours",
+  escenas: [
+    { img: 'u8-c1', emoji: '🌈', en: ['José opens the window.', 'God made a world full of colours!'], es: 'José abre la ventana. ¡Dios hizo un mundo lleno de colores!' },
+    {
+      img: 'u8-c2', emoji: '🔴', en: ['My jersey is red and white.', 'The ball is red.', 'The sky is blue.'], es: 'Mi camiseta es roja y blanca. La pelota es roja. El cielo es azul.',
+      pregunta: { en: 'Show me something red!', opciones: [{ fraseId: 'u8-red', correcta: true }, { fraseId: 'u8-blue', correcta: false }] },
+    },
+    {
+      img: 'u8-c3', emoji: '🟢', en: ['The grass is green.', 'The sun is yellow.'], es: 'El pasto es verde. El sol es amarillo.',
+      pregunta: { en: 'Show me something green!', opciones: [{ fraseId: 'u8-green', correcta: true }, { fraseId: 'u8-yellow', correcta: false }] },
+    },
+    {
+      img: 'u8-c4', emoji: '🟣', en: ['An orange is orange.', 'A flower is purple.'], es: 'Una naranja es de color naranja. Una flor es morada.',
+      pregunta: { en: 'Show me something purple!', opciones: [{ fraseId: 'u8-purple', correcta: true }, { fraseId: 'u8-orange', correcta: false }] },
+    },
+    { img: 'u8-c5', emoji: '🎨', en: ['So many colours!', 'Red, blue, yellow, green.', 'God is a wonderful painter.'], es: '¡Cuántos colores! Rojo, azul, amarillo, verde. Dios es un pintor maravilloso.' },
+    {
+      img: 'u8-c6', emoji: '⭐', en: ['Now the sky is black.', 'One white star shines.', 'Thank you, God, for all the colours!'], es: 'Ahora el cielo es negro. Brilla una estrella blanca. ¡Gracias, Dios, por todos los colores!',
+      pregunta: { en: 'Show me something white!', opciones: [{ fraseId: 'u8-white', correcta: true }, { fraseId: 'u8-black', correcta: false }] },
+    },
+  ],
+}
+
+const cancionU8: Cancion = {
+  titulo: 'Colours Everywhere',
+  versos: ['Red and yellow,', 'green and blue,', 'God made colours', 'just for you!', 'Orange, purple,', 'black and white —', 'all the colours', 'shining bright!'],
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UNIDAD 9 · ONE TO TEN · dominio propio (contar despacio y con calma)
+// ─────────────────────────────────────────────────────────────────────────────
+// La cifra es la tarjeta (José ya lee números); `refuerzoImg` muestra esa
+// cantidad en pelotas al acertar, para cerrar el lazo símbolo→cantidad. No es
+// un premio (§1.3): es contenido, y solo aparece en los números.
+
+const frasesU9: Frase[] = [
+  { id: 'u9-1', en: 'One.', es: 'Uno.', ordenEn: 'Show me one finger!', gesto: 'Muestra un dedo.', img: 'v-num-1', emoji: '1️⃣', hilo: 'vida', eco: 'One!', refuerzoImg: 'v-count-1' },
+  { id: 'u9-2', en: 'Two.', es: 'Dos.', ordenEn: 'Show me two fingers!', gesto: 'Muestra dos dedos.', img: 'v-num-2', emoji: '2️⃣', hilo: 'vida', eco: 'Two!', refuerzoImg: 'v-count-2' },
+  { id: 'u9-3', en: 'Three.', es: 'Tres.', ordenEn: 'Show me three fingers!', gesto: 'Muestra tres dedos.', img: 'v-num-3', emoji: '3️⃣', hilo: 'vida', eco: 'Three!', refuerzoImg: 'v-count-3' },
+  { id: 'u9-4', en: 'Four.', es: 'Cuatro.', ordenEn: 'Show me four fingers!', gesto: 'Muestra cuatro dedos.', img: 'v-num-4', emoji: '4️⃣', hilo: 'vida', eco: 'Four!', refuerzoImg: 'v-count-4' },
+  { id: 'u9-5', en: 'Five.', es: 'Cinco.', ordenEn: 'Show me five fingers!', gesto: 'Muestra la mano abierta, cinco dedos.', img: 'v-num-5', emoji: '5️⃣', hilo: 'vida', eco: 'Five!', refuerzoImg: 'v-count-5' },
+  { id: 'u9-6', en: 'Six.', es: 'Seis.', ordenEn: 'Show me six fingers!', gesto: 'Cinco dedos de una mano y uno de la otra.', img: 'v-num-6', emoji: '6️⃣', hilo: 'vida', eco: 'Six!', refuerzoImg: 'v-count-6' },
+  { id: 'u9-7', en: 'Seven.', es: 'Siete.', ordenEn: 'Show me seven fingers!', gesto: 'Cinco dedos y dos de la otra mano.', img: 'v-num-7', emoji: '7️⃣', hilo: 'vida', eco: 'Seven!', refuerzoImg: 'v-count-7' },
+  { id: 'u9-8', en: 'Eight.', es: 'Ocho.', ordenEn: 'Show me eight fingers!', gesto: 'Cinco dedos y tres de la otra mano.', img: 'v-num-8', emoji: '8️⃣', hilo: 'vida', eco: 'Eight!', refuerzoImg: 'v-count-8' },
+  { id: 'u9-9', en: 'Nine.', es: 'Nueve.', ordenEn: 'Show me nine fingers!', gesto: 'Cinco dedos y cuatro de la otra mano.', img: 'v-num-9', emoji: '9️⃣', hilo: 'vida', eco: 'Nine!', refuerzoImg: 'v-count-9' },
+  { id: 'u9-10', en: 'Ten.', es: 'Diez.', ordenEn: 'Show me ten fingers!', gesto: 'Muestra las dos manos abiertas, diez dedos.', img: 'v-num-10', emoji: '🔟', hilo: 'vida', eco: 'Ten!', refuerzoImg: 'v-count-10' },
+]
+
+const cuentoU9: Cuento = {
+  titulo: 'Counting the Team',
+  escenas: [
+    { img: 'u9-c1', emoji: '⚽', en: ['One ball on the green grass.', 'Time to play!'], es: 'Una pelota en el pasto verde. ¡Hora de jugar!' },
+    {
+      img: 'u9-c2', emoji: '🧒', en: ['One, two, three friends run to play.', 'Three friends!'], es: 'Uno, dos, tres amigos vienen corriendo a jugar. ¡Tres amigos!',
+      pregunta: { en: 'Show me three!', opciones: [{ fraseId: 'u9-3', correcta: true }, { fraseId: 'u9-1', correcta: false }] },
+    },
+    { img: 'u9-c3', emoji: '👥', en: ['Four, five, six!', 'Six players on the field.'], es: '¡Cuatro, cinco, seis! Seis jugadores en la cancha.' },
+    {
+      img: 'u9-c4', emoji: '🎒', en: ['Seven, eight balls in the big bag.'], es: 'Siete, ocho pelotas en la bolsa grande.',
+      pregunta: { en: 'Show me eight!', opciones: [{ fraseId: 'u9-8', correcta: true }, { fraseId: 'u9-5', correcta: false }] },
+    },
+    {
+      img: 'u9-c5', emoji: '🙌', en: ['Nine, ten!', 'Ten friends, all here!'], es: '¡Nueve, diez! ¡Diez amigos, todos aquí!',
+      pregunta: { en: 'Show me ten!', opciones: [{ fraseId: 'u9-10', correcta: true }, { fraseId: 'u9-9', correcta: false }] },
+    },
+    { img: 'u9-c6', emoji: '⚽', en: ['We are ten.', 'Thank you, God, for my friends.', 'Now — kick the ball!'], es: 'Somos diez. Gracias, Dios, por mis amigos. Y ahora, ¡patea la pelota!' },
+  ],
+}
+
+const cancionU9: Cancion = {
+  titulo: 'Count with Me',
+  versos: ['One, two, three,', 'four, five, six,', 'seven, eight,', 'nine and ten!', 'God gave me friends', 'to play again!'],
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UNIDAD 10 · MY BODY · gratitud (el cuerpo es un regalo) y TPR puro
+// ─────────────────────────────────────────────────────────────────────────────
+// `ordenEn` es una orden de cuerpo de verdad: se enseña haciéndola, no
+// señalándola (§1.4, Total Physical Response — su canal más fuerte).
+
+const frasesU10: Frase[] = [
+  { id: 'u10-head', en: 'This is my head.', es: 'Esta es mi cabeza.', ordenEn: 'Touch your head!', gesto: 'Tócate la cabeza con las dos manos.', img: 'v-body-head', emoji: '🧑', hilo: 'vida', eco: 'Head!' },
+  { id: 'u10-hair', en: 'This is my hair.', es: 'Este es mi pelo.', ordenEn: 'Touch your hair!', gesto: 'Pásate la mano por el pelo.', img: 'v-body-hair', emoji: '💇', hilo: 'vida', eco: 'Hair!' },
+  { id: 'u10-eyes', en: 'These are my eyes.', es: 'Estos son mis ojos.', ordenEn: 'Close your eyes!', gesto: 'Cierra los ojos y vuelve a abrirlos.', img: 'v-body-eyes', emoji: '👀', hilo: 'vida', eco: 'Eyes!' },
+  { id: 'u10-ears', en: 'These are my ears.', es: 'Estas son mis orejas.', ordenEn: 'Cover your ears!', gesto: 'Tápate las dos orejas con las manos.', img: 'v-body-ears', emoji: '👂', hilo: 'vida', eco: 'Ears!' },
+  { id: 'u10-hand', en: 'These are my hands.', es: 'Estas son mis manos.', ordenEn: 'Clap your hands!', gesto: 'Aplaude tres veces.', img: 'v-body-hand', emoji: '✋', hilo: 'vida', eco: 'Hands!' },
+  { id: 'u10-foot', en: 'This is my foot.', es: 'Este es mi pie.', ordenEn: 'Stamp your foot!', gesto: 'Da un pisotón fuerte en el suelo.', img: 'v-body-foot', emoji: '🦶', hilo: 'vida', eco: 'Foot!' },
+  { id: 'u10-nose', en: 'This is my nose.', es: 'Esta es mi nariz.', ordenEn: 'Touch your nose!', gesto: 'Tócate la punta de la nariz.', img: 'v-body-nose', emoji: '👃', hilo: 'vida', eco: 'Nose!' },
+  { id: 'u10-mouth', en: 'This is my mouth.', es: 'Esta es mi boca.', ordenEn: 'Open your mouth!', gesto: 'Abre grande la boca y vuelve a cerrarla.', img: 'v-body-mouth', emoji: '👄', hilo: 'vida', eco: 'Mouth!' },
+]
+
+const cuentoU10: Cuento = {
+  titulo: 'Good Morning, Body!',
+  escenas: [
+    { img: 'u10-c1', emoji: '🌅', en: ['Good morning!', 'José wakes up his body.'], es: '¡Buenos días! José despierta a su cuerpo.' },
+    {
+      img: 'u10-c2', emoji: '🧑', en: ['I touch my head.', 'I touch my hair.'], es: 'Me toco la cabeza. Me toco el pelo.',
+      pregunta: { en: 'Show me the head!', opciones: [{ fraseId: 'u10-head', correcta: true }, { fraseId: 'u10-hair', correcta: false }] },
+    },
+    {
+      img: 'u10-c3', emoji: '👀', en: ['I open my eyes. I can see!', 'I cover my ears. Now I hear!'], es: 'Abro los ojos. ¡Puedo ver! Me tapo las orejas. ¡Ahora escucho!',
+      pregunta: { en: 'Show me the eyes!', opciones: [{ fraseId: 'u10-eyes', correcta: true }, { fraseId: 'u10-ears', correcta: false }] },
+    },
+    { img: 'u10-c4', emoji: '👏', en: ['I clap my hands.', 'I stamp my foot!'], es: 'Aplaudo con las manos. ¡Doy un pisotón con el pie!' },
+    {
+      img: 'u10-c5', emoji: '👃', en: ['I touch my nose.', 'I open my mouth. Aaah!'], es: 'Me toco la nariz. Abro la boca. ¡Aaah!',
+      pregunta: { en: 'Show me the nose!', opciones: [{ fraseId: 'u10-nose', correcta: true }, { fraseId: 'u10-mouth', correcta: false }] },
+    },
+    { img: 'u10-c6', emoji: '🙏', en: ['Thank you, God, for my body!', 'Head, hands and feet — ready for the day!'], es: '¡Gracias, Dios, por mi cuerpo! Cabeza, manos y pies: ¡listo para el día!' },
+  ],
+}
+
+const cancionU10: Cancion = {
+  titulo: 'Head, Hands and Feet',
+  versos: ['Head and hands,', 'feet and nose,', 'this is how', 'my body goes!', 'Eyes to see,', 'ears to hear —', 'thank you, God,', 'you made me dear!'],
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UNIDAD 11 · A DAY AT HOME · obediencia (la rutina, ayudar en casa)
+// ─────────────────────────────────────────────────────────────────────────────
+// 12 frases (ropa, comida, casa) en 6 lecciones de dos: un día entero tiene
+// más de ocho cosas, pero la exposición diaria sigue siendo dos frases nuevas,
+// que es lo que pide la evidencia.
+
+const frasesU11: Frase[] = [
+  { id: 'u11-bed', en: 'Here is my bed.', es: 'Aquí está mi cama.', ordenEn: 'Show me the bed!', gesto: 'Junta las manos contra la mejilla como durmiendo.', img: 'v-home-bed', emoji: '🛏️', hilo: 'vida', eco: 'Bed!' },
+  { id: 'u11-window', en: 'Here is the window.', es: 'Aquí está la ventana.', ordenEn: 'Open the window!', gesto: 'Haz el gesto de abrir una ventana hacia los lados.', img: 'v-home-window', emoji: '🪟', hilo: 'vida', eco: 'Window!' },
+  { id: 'u11-shirt', en: 'This is my shirt.', es: 'Esta es mi camiseta.', ordenEn: 'Put on your shirt!', gesto: 'Haz el gesto de ponerte una camiseta por la cabeza.', img: 'v-wear-shirt', emoji: '👕', hilo: 'vida', eco: 'Shirt!' },
+  { id: 'u11-shoes', en: 'These are my shoes.', es: 'Estos son mis zapatos.', ordenEn: 'Put on your shoes!', gesto: 'Da golpecitos con los pies como calzándote.', img: 'v-wear-shoes', emoji: '👟', hilo: 'vida', eco: 'Shoes!' },
+  { id: 'u11-jacket', en: 'This is my jacket.', es: 'Esta es mi chaqueta.', ordenEn: 'Put on your jacket!', gesto: 'Haz el gesto de meter los brazos en una chaqueta.', img: 'v-wear-jacket', emoji: '🧥', hilo: 'vida', eco: 'Jacket!' },
+  { id: 'u11-hat', en: 'This is my hat.', es: 'Este es mi sombrero.', ordenEn: 'Put on your hat!', gesto: 'Ponte un sombrero imaginario en la cabeza.', img: 'v-wear-hat', emoji: '🧢', hilo: 'vida', eco: 'Hat!' },
+  { id: 'u11-apple', en: 'This is an apple.', es: 'Esto es una manzana.', ordenEn: 'Eat the apple!', gesto: 'Haz como que muerdes una manzana.', img: 'v-food-apple', emoji: '🍎', hilo: 'vida', eco: 'Apple!' },
+  { id: 'u11-banana', en: 'This is a banana.', es: 'Esto es un plátano.', ordenEn: 'Eat the banana!', gesto: 'Haz como que pelas un plátano y lo comes.', img: 'v-food-banana', emoji: '🍌', hilo: 'vida', eco: 'Banana!' },
+  { id: 'u11-egg', en: 'This is an egg.', es: 'Esto es un huevo.', ordenEn: 'Show me the egg!', gesto: 'Forma un huevo redondo con las dos manos.', img: 'v-food-egg', emoji: '🥚', hilo: 'vida', eco: 'Egg!' },
+  { id: 'u11-rice', en: 'This is rice.', es: 'Esto es arroz.', ordenEn: 'Eat the rice!', gesto: 'Haz como que comes arroz con una cuchara.', img: 'v-food-rice', emoji: '🍚', hilo: 'vida', eco: 'Rice!' },
+  { id: 'u11-chair', en: 'Here is the chair.', es: 'Aquí está la silla.', ordenEn: 'Sit on the chair!', gesto: 'Siéntate y vuelve a pararte.', img: 'v-home-chair', emoji: '🪑', hilo: 'vida', eco: 'Chair!' },
+  { id: 'u11-door', en: 'Here is the door.', es: 'Aquí está la puerta.', ordenEn: 'Open the door!', gesto: 'Haz el gesto de girar un picaporte y abrir la puerta.', img: 'v-home-door', emoji: '🚪', hilo: 'vida', eco: 'Door!' },
+]
+
+const cuentoU11: Cuento = {
+  titulo: 'A Day at Home',
+  escenas: [
+    { img: 'u11-c1', emoji: '🌅', en: ['Good morning!', 'I get up from my bed.', 'I open the window. Hello, sun!'], es: '¡Buenos días! Me levanto de la cama. Abro la ventana. ¡Hola, sol!' },
+    {
+      img: 'u11-c2', emoji: '👕', en: ['I put on my shirt.', 'I put on my shoes.'], es: 'Me pongo la camiseta. Me pongo los zapatos.',
+      pregunta: { en: 'Show me the shoes!', opciones: [{ fraseId: 'u11-shoes', correcta: true }, { fraseId: 'u11-shirt', correcta: false }] },
+    },
+    {
+      img: 'u11-c3', emoji: '🍎', en: ['Breakfast time!', 'I sit on the chair.', 'An apple and a banana.'], es: '¡Hora del desayuno! Me siento en la silla. Una manzana y un plátano.',
+      pregunta: { en: 'Show me the apple!', opciones: [{ fraseId: 'u11-apple', correcta: true }, { fraseId: 'u11-banana', correcta: false }] },
+    },
+    { img: 'u11-c4', emoji: '🍚', en: ['An egg and some rice too.', 'Yummy! Thank you, Mum!'], es: 'También un huevo y un poco de arroz. ¡Rico! ¡Gracias, mamá!' },
+    { img: 'u11-c5', emoji: '🧥', en: ['Time to go out.', 'I put on my jacket and my hat.', 'I open the door.'], es: 'Hora de salir. Me pongo la chaqueta y el sombrero. Abro la puerta.' },
+    {
+      img: 'u11-c6', emoji: '🌙', en: ['Home again.', 'Good night!', 'I go to my bed.'], es: 'De vuelta en casa. ¡Buenas noches! Me voy a mi cama.',
+      pregunta: { en: 'Show me the bed!', opciones: [{ fraseId: 'u11-bed', correcta: true }, { fraseId: 'u11-chair', correcta: false }] },
+    },
+  ],
+}
+
+const cancionU11: Cancion = {
+  titulo: 'This Is the Way',
+  versos: ['This is the way', 'I put on my shirt,', 'put on my shoes,', 'and open the door.', 'This is the way', 'I eat my food,', 'and go to my bed', 'to sleep once more!'],
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // TODAS LAS UNIDADES
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -332,6 +516,26 @@ export const UNIDADES: Unidad[] = [
     id: 'u7', numero: 7, titulo: 'A Day with Mom & Dad — Cortesía y perdón', hilo: 'vida', virtud: 'obediencia',
     frases: frasesU7, cuento: cuentoU7, cancion: cancionU7,
     mision: { en: "Say 'good morning' with a big smile.", es: "Mañana saluda con 'good morning' y una sonrisa.", emoji: '🌅' },
+  },
+  {
+    id: 'u8', numero: 8, titulo: 'Colours — los colores que Dios pintó', hilo: 'vida', virtud: 'gratitud',
+    frases: frasesU8, cuento: cuentoU8, cancion: cancionU8,
+    mision: { en: "Find something blue in your room and say 'blue' to Mum or Dad.", es: "Busca algo azul en tu cuarto y dile 'blue' a mamá o a papá.", emoji: '🔵' },
+  },
+  {
+    id: 'u9', numero: 9, titulo: 'One to Ten — contar del uno al diez', hilo: 'vida', virtud: 'dominio',
+    frases: frasesU9, cuento: cuentoU9, cancion: cancionU9,
+    mision: { en: 'Count to ten out loud with Dad, in English.', es: 'Cuenta hasta diez en voz alta con papá, en inglés.', emoji: '🔟' },
+  },
+  {
+    id: 'u10', numero: 10, titulo: 'My Body — las partes del cuerpo', hilo: 'vida', virtud: 'gratitud',
+    frases: frasesU10, cuento: cuentoU10, cancion: cancionU10,
+    mision: { en: "Play 'Simon says: touch your nose' with Mum.", es: "Juega a 'Simón dice: tócate la nariz' con mamá.", emoji: '👆' },
+  },
+  {
+    id: 'u11', numero: 11, titulo: 'A Day at Home — la rutina de la casa', hilo: 'vida', virtud: 'obediencia',
+    frases: frasesU11, cuento: cuentoU11, cancion: cancionU11,
+    mision: { en: 'Get dressed by yourself and say each thing in English.', es: 'Vístete solo y di cada prenda en inglés.', emoji: '👕' },
   },
 ]
 
