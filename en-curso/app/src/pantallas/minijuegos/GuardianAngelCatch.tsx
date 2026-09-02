@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Marco } from '../../componentes/Marco'
 import { florecer, paz, recoger } from '../../audio/sonidos-extra'
-import { acercar, limitar, useBucle, useGestoContinuo, useInactividad, useLocutor } from './motor/gestos'
+import { acercar, limitar, useBucle, useCola, useGestoContinuo, useInactividad, useLocutor } from './motor/gestos'
 import { Fondo } from './motor/Fondo'
 import './motor/estilos.css'
 
@@ -59,6 +59,11 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
   const escena = useRef<HTMLDivElement>(null)
   const angel = useRef<HTMLDivElement>(null)
   const voz = useLocutor()
+  // La misma regla que los otros cuatro juegos de movimiento (ver
+  // `CalmTheStorm`): la voz de las capturas se ENCOLA en vez de dispararse
+  // suelta, así una ráfaga de estrellas no se corta a sí misma. Y la
+  // presentación y la despedida abren serie propia con `voz.nueva()`.
+  const cola = useCola(voz)
 
   const [recogidas, setRecogidas] = useState(0)
   const [flores, setFlores] = useState<{ id: number; x: number }[]>([])
@@ -76,10 +81,15 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
   const contador = useRef(0)
   const recogidasRef = useRef(0)
   const nacidas = useRef(0)
+  const florecidas = useRef(0)
   const fin = useRef(false)
+  /** La app está en un tramo narrado (presentación o despedida): nada de
+   *  chatarra de voz encima. No frena el juego, solo la voz. */
+  const ocupado = useRef(false)
 
   const { reiniciar: reiniciarAyuda } = useInactividad(6500, () => {
-    if (!fin.current) void voz.di('Guide my steps today.')
+    if (fin.current || ocupado.current || cola.hablando()) return
+    void voz.di('Guide my steps today.')
   })
 
   const guardarNodo = useCallback((id: number, el: HTMLDivElement | null) => {
@@ -93,18 +103,23 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
     // esta guarda, la novena volvería a cerrar el juego y José oiría la
     // despedida dos veces, encimada.
     if (fin.current) return
-    setTerminado(true)
     fin.current = true
+    // Tira lo que quede en la cola y abre serie propia: la despedida no la
+    // puede pisar ninguna frase de captura que estuviera esperando turno.
+    cola.vaciar()
+    const s = voz.nueva()
+    ocupado.current = true
+    setTerminado(true)
     paz()
     setPie('The angel is my friend.')
-    if (!(await voz.di('The angel is my friend.'))) return
-    if (!(await voz.pausa(300))) return
-    if (!(await voz.di('Glory to God!'))) return
-    if (!(await voz.pausa(250))) return
-    if (!(await voz.di('I am brave with God.'))) return
-    if (!(await voz.pausa(700))) return
+    if (!(await voz.di('The angel is my friend.', s))) return
+    if (!(await voz.pausa(300, s))) return
+    if (!(await voz.di('Glory to God!', s))) return
+    if (!(await voz.pausa(250, s))) return
+    if (!(await voz.di('I am brave with God.', s))) return
+    if (!(await voz.pausa(700, s))) return
     onVolver()
-  }, [onVolver, voz])
+  }, [cola, onVolver, voz])
 
   useBucle((dt) => {
     if (fin.current) return
@@ -132,10 +147,11 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
       setEnCaida((v) => [...v, { id, x }])
 
       // La orden nombra la acción que el juego está pidiendo, no vocabulario
-      // direccional que aún no se enseñó en esta unidad.
+      // direccional que aún no se enseñó en esta unidad. Va a la cola: si ya
+      // hay algo sonando, espera su turno en vez de cortarlo.
       const lejos = x - posAngel.current
-      if (nacidas.current % 2 === 1 && Math.abs(lejos) > 22) {
-        void voz.di('Guide my steps today.')
+      if (!ocupado.current && nacidas.current % 3 === 1 && Math.abs(lejos) > 22) {
+        cola.encolar('Guide my steps today.')
       }
       proximaEn.current = Math.max(1.15, 2.0 - recogidasRef.current * 0.09)
     }
@@ -151,6 +167,10 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
       const alAlcance = Math.abs(e.x - posAngel.current) <= ALCANCE_X
 
       if (aLaAltura && alAlcance) {
+        // Recoger una estrella suena (recoger()) y suma; NO dispara una frase
+        // cada vez. Un niño rápido junta las ocho en seis segundos y ocho
+        // frases cortándose entre sí eran justo el "repite como loca y se
+        // entrecorta". Solo habla una vez, a mitad de camino, y por la cola.
         recoger()
         recogidasRef.current += 1
         const n = recogidasRef.current
@@ -159,12 +179,8 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
         reiniciarAyuda()
         if (n >= META) {
           void cerrar()
-        } else if (n % 3 === 0) {
-          void voz.di('I am brave with God.')
-        } else if (n % 3 === 1 && n > 1) {
-          void voz.di('Guide my steps today.')
-        } else if (n % 3 === 2) {
-          void voz.di('Shine your light!')
+        } else if (n === Math.ceil(META / 2) && !ocupado.current) {
+          cola.encolar('Shine your light!')
         }
         continue
       }
@@ -172,12 +188,15 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
       if (e.y >= SUELO) {
         // No se perdió: floreció.
         florecer()
+        florecidas.current += 1
         setEnCaida((v) => v.filter((s) => s.id !== e.id))
         // Solo las últimas: si la tablet se queda abierta media hora sin que
         // nadie juegue, un jardín sin tope sería un nodo nuevo cada segundo y
         // medio, para siempre. Veinticuatro flores ya se ven como un jardín.
         setFlores((v) => [...v, { id: e.id, x: e.x }].slice(-24))
-        if (e.id % 3 === 0) void voz.di('Shine your light!')
+        if (!ocupado.current && florecidas.current % 3 === 1) {
+          cola.encolar('A little flower for God!')
+        }
         continue
       }
 
@@ -202,12 +221,15 @@ export function GuardianAngelCatch({ onVolver, onPanel, onInicio }: { onVolver: 
 
   useEffect(() => {
     void (async () => {
-      if (!(await voz.pausa(350))) return
-      if (!(await voz.di('My Guardian Angel is here.'))) return
+      const s = voz.nueva()
+      ocupado.current = true
+      if (!(await voz.pausa(350, s))) return
+      if (!(await voz.di('My Guardian Angel is here.', s))) return
       setPie('Guide my steps today.')
-      if (!(await voz.di('Guide my steps today.'))) return
+      if (!(await voz.di('Guide my steps today.', s))) return
       setPie('Shine your light!')
-      if (!(await voz.di('Shine your light!'))) return
+      if (!(await voz.di('Shine your light!', s))) return
+      ocupado.current = false
       reiniciarAyuda()
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
