@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { UNIDADES } from '../datos/curso'
 import type { Unidad } from '../datos/tipos'
 import { Story } from './Story'

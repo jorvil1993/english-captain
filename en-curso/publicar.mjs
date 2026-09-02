@@ -38,6 +38,7 @@ const URL_PAGINA = `https://${USUARIO}.github.io/${REPO}/`
 // npm es un .cmd y Node 20+ se niega a lanzarlo sin shell. Llamar al binario
 // directo evita el shell y sus problemas de comillas.
 const VITE = join(APP, 'node_modules', 'vite', 'bin', 'vite.js')
+const TSC = join(APP, 'node_modules', 'typescript', 'bin', 'tsc')
 
 function correr(cmd, args, cwd) {
   return execFileSync(cmd, args, { cwd, encoding: 'utf-8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
@@ -52,21 +53,29 @@ function existeRepo() {
   }
 }
 
-console.log('1. Compilando…')
+// Puertas antes de compilar: un tsc roto, un currículo inválido o una frase que
+// la app diría sin mp3 grabado no deben poder subir. `correr` lanza excepción si
+// el comando sale con código distinto de 0, así que cualquiera de estos aborta.
+console.log('1. Verificando (tipos, currículo, voces)…')
+correr(process.execPath, [TSC, '--noEmit'], APP)
+correr(process.execPath, [join(AQUI, 'artes', 'verificar_curriculo.mjs')], AQUI)
+correr(process.execPath, [join(AQUI, 'artes', 'comprobar_frases.mjs')], AQUI)
+
+console.log('2. Compilando…')
 correr(process.execPath, [VITE, 'build'], APP)
 
 if (!existeRepo()) {
-  console.log('2. Creando el repositorio…')
+  console.log('3. Creando el repositorio…')
   correr('gh', [
     'repo', 'create', `${USUARIO}/${REPO}`,
     '--public',
     '--description', 'App de inglés para un niño de 5 años. Sin internet, sin anuncios, sin datos.',
   ])
 } else {
-  console.log('2. El repositorio ya existía.')
+  console.log('3. El repositorio ya existía.')
 }
 
-console.log('3. Preparando el contenido…')
+console.log('4. Preparando el contenido…')
 const trabajo = mkdtempSync(join(tmpdir(), 'publicar-'))
 try {
   correr('git', ['clone', '--depth', '1', URL_REPO, trabajo])
@@ -103,7 +112,7 @@ try {
   }
 
   if (huboCambios) {
-    console.log('4. Subiendo…')
+    console.log('5. Subiendo…')
     // La identidad se pone SOLO para este commit, no en la configuración
     // global de la máquina. Y con el correo noreply de GitHub: el repositorio
     // es público y el correo real no tiene por qué quedar en el historial.
@@ -114,13 +123,13 @@ try {
     ], trabajo)
     correr('git', ['push', 'origin', 'HEAD'], trabajo)
   } else {
-    console.log('4. Nada cambió desde la última publicación.')
+    console.log('5. Nada cambió desde la última publicación.')
   }
 } finally {
   rmSync(trabajo, { recursive: true, force: true })
 }
 
-console.log('5. Encendiendo GitHub Pages…')
+console.log('6. Encendiendo GitHub Pages…')
 try {
   correr('gh', [
     'api', '--method', 'POST', `repos/${USUARIO}/${REPO}/pages`,

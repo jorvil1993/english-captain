@@ -77,21 +77,29 @@ rotación de unidades y el panel de papás se acomodan solos.
 
 ## Los mini juegos
 
-Son diez, en `en-curso/app/src/pantallas/minijuegos/`, y se dividen en dos
-familias que el menú muestra separadas:
+Son once, en `en-curso/app/src/pantallas/minijuegos/`, y se dividen en dos
+familias:
 
 - **Tap & Play** (Antigravity) — se toca algo y pasa algo. Ritmo lento, sin
-  urgencia. Sus datos están en `datos/minijuegos.ts`.
-- **Move & Play** — el dedo hace un gesto sostenido. Sus datos están en
-  `datos/minijuegos-extra.ts` y su cañería común en `minijuegos/motor/`.
+  urgencia. Son seis. Sus datos están en `datos/minijuegos.ts`.
+- **Move & Play** — el dedo hace un gesto sostenido. Son cinco. Sus datos están
+  en `datos/minijuegos-extra.ts` y su cañería común en `minijuegos/motor/`.
+
+No hay menú de juego libre: cada minijuego aparece **dentro del recorrido
+diario**, en la lección que se lo asigna en `datos/curriculo.ts` (campo `juego`,
+con el vocabulario ya visto que va a repasar). Un ciclo completo del currículo
+pasa por los once.
 
 | Juego | Gesto | Inglés | Fe |
 |---|---|---|---|
 | Trace the Holy Cross | trazar un camino | forehead · chest · shoulder | la Señal de la Cruz |
-| Loaves and Fishes | arrastrar y soltar | one…five · bread · fish | la multiplicación |
+| Loaves and Fishes | arrastrar y soltar | one…five · bread · fish | los panes y los peces |
 | Guardian Angel Catch | perseguir con el dedo | left · right · catch | el Ángel de la Guarda |
 | Calm the Storm | agitar, y después quedarse quieto | storm · peace · be still | Jesús calma la tempestad |
 | Ring the Church Bells | tirar de la cuerda y repetir | big · middle · little · listen | las campanas llaman a Misa |
+
+(La tabla es la familia Move & Play. Trace, Loaves y Storm entran en el
+recorrido por U6, U6 y U5 respectivamente.)
 
 Cada gesto entrena algo distinto a propósito: no hay dos juegos que se jueguen
 igual. El de la tormenta, además, entrena quedarse quieto, que para este niño
@@ -108,8 +116,9 @@ rompe sin muy buena razón.
 
 Para agregar un juego de movimiento: un objeto en `LISTA_MINIJUEGOS_EXTRA`, sus
 frases en `LINEAS_MINIJUEGOS_EXTRA` (con la voz de cada una), un componente que
-use el motor, y la ruta en `App.tsx`. El menú y la generación de voces se
-acomodan solos.
+use el motor, su `case` en `pantallas/registroMinijuegos.tsx`, y una lección con
+`juego: { id, repasa }` en `datos/curriculo.ts` para que aparezca en el
+recorrido. La generación de voces se acomoda sola.
 
 ## Publicación
 

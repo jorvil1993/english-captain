@@ -28,9 +28,6 @@ type Voz = 'maestra' | 'nino' | 'oracion' | 'coach' | 'espanol'
 type Linea = { texto: string; voz: Voz }
 
 export const FRASES_SUELTAS: Linea[] = [
-  // Bienvenida — el botón que abre los mini juegos.
-  { texto: 'Catholic Minigames', voz: 'maestra' },
-
   // Holy Things & Church
   { texto: 'Great job, Captain! God bless you!', voz: 'maestra' },
 

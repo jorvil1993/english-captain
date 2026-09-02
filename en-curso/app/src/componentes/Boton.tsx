@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react'
 import { aparecer, invitar } from '../animacion/movimiento'
 
 /**
@@ -17,6 +17,7 @@ export function Boton({
   redondo = false,
   invita = false,
   etiqueta,
+  style,
 }: {
   children: ReactNode
   onClick: () => void
@@ -24,6 +25,7 @@ export function Boton({
   redondo?: boolean
   invita?: boolean
   etiqueta?: string
+  style?: CSSProperties
 }) {
   const ref = useRef<HTMLButtonElement>(null)
 
@@ -37,7 +39,7 @@ export function Boton({
   const clases = ['boton', tono ?? '', redondo ? 'redondo' : ''].filter(Boolean).join(' ')
 
   return (
-    <button ref={ref} className={clases} onClick={onClick} aria-label={etiqueta}>
+    <button ref={ref} className={clases} onClick={onClick} aria-label={etiqueta} style={style}>
       {children}
     </button>
   )

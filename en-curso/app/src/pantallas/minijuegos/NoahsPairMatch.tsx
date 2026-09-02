@@ -37,7 +37,6 @@ export function NoahsPairMatch({ onVolver, onPanel, onInicio }: { onVolver: () =
   const [wobbleId, setWobbleId] = useState<string | null>(null)
   const [guiando, setGuiando] = useState(false)
   const [arrastrando, setArrastrando] = useState<string | null>(null)
-  const [posicionArrastre, setPosicionArrastre] = useState({ x: 0, y: 0 })
   const arcaRef = useRef<HTMLDivElement>(null)
   const timerInactividad = useRef<number | null>(null)
 
@@ -118,13 +117,7 @@ export function NoahsPairMatch({ onVolver, onPanel, onInicio }: { onVolver: () =
   const iniciarArrastre = (id: string, e: React.PointerEvent) => {
     if (bloqueado) return
     setArrastrando(id)
-    setPosicionArrastre({ x: e.clientX, y: e.clientY })
     ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
-  }
-
-  const moverArrastre = (e: React.PointerEvent) => {
-    if (!arrastrando) return
-    setPosicionArrastre({ x: e.clientX, y: e.clientY })
   }
 
   const soltarArrastre = (an: PasoOveja, e: React.PointerEvent) => {
@@ -156,7 +149,6 @@ export function NoahsPairMatch({ onVolver, onPanel, onInicio }: { onVolver: () =
     <Marco paso={paso} total={PASOS.length} onPanel={onPanel} onInicio={onInicio}>
       <div
         className="pantalla"
-        onPointerMove={moverArrastre}
         style={{ touchAction: 'none' }}
       >
         <p className="frase">Help the Lost Sheep</p>

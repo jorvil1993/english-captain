@@ -1,5 +1,9 @@
 /**
- * DATOS DE LOS 5 MINI JUEGOS CATÓLICOS (4 AÑOS)
+ * DATOS DE LOS 6 MINI JUEGOS "TAP & PLAY" CATÓLICOS
+ *
+ * Se tocan (a diferencia de los 5 de `minijuegos-extra.ts`, que se arrastran /
+ * trazan / agitan). Cada uno aparece en su lección del recorrido — ver el campo
+ * `juego` en `curriculo.ts`; no hay menú de juego libre.
  */
 
 export type MinijuegoInfo = {

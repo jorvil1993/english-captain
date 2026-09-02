@@ -55,18 +55,6 @@ export function entrarTarjeta(el: Objetivo, retraso = 0) {
   )
 }
 
-/** Varias tarjetas en fila, una detrás de otra. El escalonado da tiempo a mirar. */
-export function entrarFila(elementos: Objetivo[]) {
-  if (suave) return
-  const validos = elementos.filter(Boolean) as Element[]
-  if (!validos.length) return
-  gsap.fromTo(
-    validos,
-    { opacity: 0, scale: 0.9, y: 12 },
-    { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'power2.out', stagger: 0.12 },
-  )
-}
-
 /**
  * Celebrar un acierto. Un latido, no una explosión.
  *
@@ -120,14 +108,6 @@ export function invitar(el: Objetivo) {
   if (!el || suave) return () => {}
   const t = gsap.to(el, { scale: 1.045, duration: 0.95, ease: 'sine.inOut', yoyo: true, repeat: -1 })
   return () => t.kill()
-}
-
-/** Salir: baja y se apaga. Se usa entre escenas del cuento. */
-export function salir(el: Objetivo): Promise<void> {
-  if (!el || suave) return Promise.resolve()
-  return new Promise((resolve) => {
-    gsap.to(el, { opacity: 0, y: 12, duration: 0.35, ease: 'power1.in', onComplete: () => resolve() })
-  })
 }
 
 /** El verso de la oración que se revela. Muy lento a propósito: es oración. */

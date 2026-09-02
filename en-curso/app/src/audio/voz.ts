@@ -31,11 +31,6 @@ let turno = 0
 /** Claves de audio que sí existen. Se llena en `prepararVoz()`. */
 const mp3Disponibles = new Set<string>()
 
-/** Cuántos mp3 hay. Lo usa el panel de papás para avisar si falta generarlos. */
-export function audiosDisponibles(): number {
-  return mp3Disponibles.size
-}
-
 /**
  * Se llama una vez al arrancar. Descubre qué mp3 existen.
  * `manifiesto` es la lista de claves con audio grabado (public/audio/audio.json).

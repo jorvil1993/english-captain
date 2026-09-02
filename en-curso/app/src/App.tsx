@@ -3,8 +3,8 @@ import { prepararVoz } from './audio/voz'
 import { hoyISO, useSesion } from './estado/Sesion'
 import { planDeOracionDeHoy, type PlanDeOracion } from './datos/oraciones-motor'
 import { frasesConocidasHasta, frasesDeLeccion, leccionDeHoy, type LeccionCurricular } from './datos/curriculo'
-import { generarRecorridoDeHoy, type IdMinijuego, type ItemRecorrido, type Parada } from './datos/recorrido'
-import { renderMinijuegoDeHoy, renderMinijuegoLibre } from './pantallas/registroMinijuegos'
+import { generarRecorridoDeHoy, type ItemRecorrido, type Parada } from './datos/recorrido'
+import { renderMinijuegoDeHoy } from './pantallas/registroMinijuegos'
 import { Bienvenida } from './pantallas/Bienvenida'
 import { Prayer } from './pantallas/Prayer'
 import { Story } from './pantallas/Story'
@@ -19,11 +19,14 @@ import { OracionesYCantos } from './pantallas/OracionesYCantos'
 import { TableroVocabulario } from './pantallas/TableroVocabulario'
 import { PalabrasDelDia } from './pantallas/PalabrasDelDia'
 import { EcoOracion } from './pantallas/EcoOracion'
-import { MinijuegosHub } from './pantallas/MinijuegosHub'
+import { BibleFriends } from './pantallas/BibleFriends'
+import { HolyThings } from './pantallas/HolyThings'
+import { MyLittlePrayers } from './pantallas/MyLittlePrayers'
+import { SingAndPraise } from './pantallas/SingAndPraise'
 import { Papas } from './pantallas/Papas'
 import { CompuertaPapas } from './componentes/CompuertaPapas'
 
-type ModoCalma = 'cerrado' | 'rincon' | 'minijuegos'
+type ModoCalma = 'cerrado' | 'rincon'
 
 export function App() {
   const {
@@ -44,7 +47,6 @@ export function App() {
   const [mostrarCompuerta, setMostrarCompuerta] = useState(false)
   const [modoCalma, setModoCalma] = useState<ModoCalma>('cerrado')
   const [seccionRincon, setSeccionRincon] = useState<SeccionRincon | null>(null)
-  const [minijuegoLibre, setMinijuegoLibre] = useState<IdMinijuego | null>(null)
 
   const marcador = useRef({ preguntas: 0, aciertos: 0, intentosVoz: 0 }).current
 
@@ -180,37 +182,31 @@ export function App() {
             onPanel={pedirPanel}
           />
         )
-      case 'stop':
-        return <Stop />
     }
   }
 
   const renderModoCalma = () => {
-    if (modoCalma === 'minijuegos') {
-      if (minijuegoLibre) {
-        return renderMinijuegoLibre(minijuegoLibre, {
-          onPanel: pedirPanel,
-          onVolver: () => setMinijuegoLibre(null),
-        })
-      }
-      return (
-        <MinijuegosHub
-          onElegir={(id) => setMinijuegoLibre(id)}
-          onVolver={() => setModoCalma('cerrado')}
-          onPanel={pedirPanel}
-        />
-      )
-    }
-
-    // modoCalma === 'rincon'
+    const volverAlRincon = () => setSeccionRincon(null)
     if (seccionRincon === 'cuentos') {
-      return <CuentosExplorer onVolver={() => setSeccionRincon(null)} onPanel={pedirPanel} />
+      return <CuentosExplorer onVolver={volverAlRincon} onPanel={pedirPanel} />
+    }
+    if (seccionRincon === 'biblia') {
+      return <BibleFriends onInicio={volverAlRincon} onPanel={pedirPanel} />
     }
     if (seccionRincon === 'oraciones') {
-      return <OracionesYCantos onVolver={() => setSeccionRincon(null)} onPanel={pedirPanel} />
+      return <OracionesYCantos onVolver={volverAlRincon} onPanel={pedirPanel} />
+    }
+    if (seccionRincon === 'oracioncitas') {
+      return <MyLittlePrayers onVolver={volverAlRincon} onPanel={pedirPanel} />
+    }
+    if (seccionRincon === 'alabanza') {
+      return <SingAndPraise onInicio={volverAlRincon} onPanel={pedirPanel} />
+    }
+    if (seccionRincon === 'objetos') {
+      return <HolyThings onVolver={volverAlRincon} onPanel={pedirPanel} />
     }
     if (seccionRincon === 'tablero') {
-      return <TableroVocabulario onVolver={() => setSeccionRincon(null)} onPanel={pedirPanel} />
+      return <TableroVocabulario onVolver={volverAlRincon} onPanel={pedirPanel} />
     }
     return (
       <RinconCatolico

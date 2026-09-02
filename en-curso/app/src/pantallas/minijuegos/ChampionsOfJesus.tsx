@@ -94,13 +94,10 @@ export function ChampionsOfJesus({
       onListo()
       return
     }
-    setCompletados((prev) => {
-      const next = new Set(prev)
-      next.add(sub)
-      if (next.size >= 3) onListo?.()
-      else setModo('menu')
-      return next
-    })
+    // Modo Calma: se marca el submodo jugado (el menú oculta su botón) y se
+    // vuelve al menú para elegir otro o salir con 🏠.
+    setCompletados((prev) => new Set(prev).add(sub))
+    setModo('menu')
   }
 
   // 1. Iniciar Modo Penal (Shoot & Score)

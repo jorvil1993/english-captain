@@ -57,14 +57,20 @@ const lecciones: LeccionCurricular[] = [
   { id: 'u5-1', unidadId: 'u5', fraseIds: ['u5-angel', 'u5-michael'], escenas: [0, 1] },
   { id: 'u5-2', unidadId: 'u5', fraseIds: ['u5-brave', 'u5-no-fear'], escenas: [2, 3] },
   { id: 'u5-3', unidadId: 'u5', fraseIds: ['u5-light', 'u5-guide'], escenas: [4], juego: { id: 'angel', repasa: ['u5-angel', 'u5-light', 'u5-guide'] } },
-  { id: 'u5-4', unidadId: 'u5', fraseIds: ['u5-friend', 'u5-glory-god'], escenas: [5] },
+  // "Calm the Storm" cierra la unidad: agitar y después quedarse quieto mientras
+  // Jesús dice "Peace, be still" — el mismo "no tengas miedo" que ya se enseñó.
+  { id: 'u5-4', unidadId: 'u5', fraseIds: ['u5-friend', 'u5-glory-god'], escenas: [5], juego: { id: 'storm', repasa: ['u5-no-fear', 'u5-brave'] } },
 
   // U6 · candle se enseña sola, se aplica al altar y vuelve a aparecer en el cuento.
   { id: 'u6-1', unidadId: 'u6', fraseIds: ['u6-church', 'u6-candle'], escenas: [0, 4] },
   { id: 'u6-2', unidadId: 'u6', fraseIds: ['u6-altar', 'u6-cross'], escenas: [2, 4], juego: { id: 'altar', repasa: ['u6-candle', 'u6-altar', 'u6-cross'] } },
   { id: 'u6-3', unidadId: 'u6', fraseIds: ['u6-bible', 'u6-bell'], escenas: [0, 3], juego: { id: 'bells', repasa: ['u6-church', 'u6-bell'] } },
-  { id: 'u6-4', unidadId: 'u6', fraseIds: ['u6-quiet', 'u6-bread'], escenas: [1, 3] },
-  { id: 'u6-5', unidadId: 'u6', fraseIds: ['u6-peace'], escenas: [5] },
+  // "Trace the Holy Cross": el dedo sigue el camino de la Señal de la Cruz sobre
+  // el cuerpo — la cruz y la iglesia ya se enseñaron antes en la unidad.
+  { id: 'u6-4', unidadId: 'u6', fraseIds: ['u6-quiet', 'u6-bread'], escenas: [1, 3], juego: { id: 'trace', repasa: ['u6-cross', 'u6-church'] } },
+  // "Loaves and Fishes": repartir el Pan de Vida que se acaba de nombrar,
+  // contando de uno a cinco.
+  { id: 'u6-5', unidadId: 'u6', fraseIds: ['u6-peace'], escenas: [5], juego: { id: 'loaves', repasa: ['u6-bread'] } },
 
   // U7 · el juego de rutina solo llega después del saludo que va a reutilizar.
   { id: 'u7-1', unidadId: 'u7', fraseIds: ['u7-good-morning', 'u7-how-are-you'], escenas: [0, 1], juego: { id: 'routine', repasa: ['u7-good-morning'] } },

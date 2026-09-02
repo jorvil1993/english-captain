@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { decir, esperar } from '../../audio/voz'
-import { bien, campanaIglesia, estrellitas, toque } from '../../audio/sonidos'
+import { campanaIglesia, estrellitas } from '../../audio/sonidos'
 import { Tarjeta } from '../../componentes/Tarjeta'
 import { Marco } from '../../componentes/Marco'
 
@@ -24,7 +24,6 @@ export function LightTheAltar({ onVolver, onPanel, onInicio }: { onVolver: () =>
   const [bloqueado, setBloqueado] = useState(false)
   const [terminado, setTerminado] = useState(false)
   const [llamaArrastrando, setLlamaArrastrando] = useState(false)
-  const [posLlama, setPosLlama] = useState({ x: 0, y: 0 })
   const altarRef = useRef<HTMLDivElement>(null)
   const timerInactividad = useRef<number | null>(null)
 
@@ -86,16 +85,10 @@ export function LightTheAltar({ onVolver, onPanel, onInicio }: { onVolver: () =>
   const iniciarArrastreLlama = (e: React.PointerEvent) => {
     if (bloqueado) return
     setLlamaArrastrando(true)
-    setPosLlama({ x: e.clientX, y: e.clientY })
     ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
   }
 
-  const moverArrastreLlama = (e: React.PointerEvent) => {
-    if (!llamaArrastrando) return
-    setPosLlama({ x: e.clientX, y: e.clientY })
-  }
-
-  const soltarArrastreLlama = (e: React.PointerEvent) => {
+  const soltarArrastreLlama = () => {
     if (!llamaArrastrando) return
     setLlamaArrastrando(false)
     const proximaVela = VELAS.find((v) => !encendidas.includes(v.id))
@@ -108,7 +101,6 @@ export function LightTheAltar({ onVolver, onPanel, onInicio }: { onVolver: () =>
     <Marco paso={encendidas.length} total={VELAS.length} onPanel={onPanel} onInicio={onInicio}>
       <div
         className="pantalla"
-        onPointerMove={moverArrastreLlama}
         style={{ touchAction: 'none' }}
       >
         <p className="frase">Light the Altar</p>
@@ -149,7 +141,7 @@ export function LightTheAltar({ onVolver, onPanel, onInicio }: { onVolver: () =>
 
         {/* La vela sola aparece en primer plano antes de volver al altar. */}
         <div className="fila" style={{ marginTop: 8 }}>
-          {VELAS.map((v, i) => {
+          {VELAS.map((v) => {
             const prendida = encendidas.includes(v.id)
             return (
               <div

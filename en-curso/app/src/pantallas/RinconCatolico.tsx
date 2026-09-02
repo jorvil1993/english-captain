@@ -3,7 +3,14 @@ import { decir, esperar } from '../audio/voz'
 import { Tarjeta } from '../componentes/Tarjeta'
 import { Marco } from '../componentes/Marco'
 
-export type SeccionRincon = 'cuentos' | 'oraciones' | 'tablero'
+export type SeccionRincon =
+  | 'cuentos'
+  | 'biblia'
+  | 'oraciones'
+  | 'oracioncitas'
+  | 'alabanza'
+  | 'objetos'
+  | 'tablero'
 
 /**
  * EL RINCÓN CATÓLICO — Modo libre, seguro y calmado.
@@ -33,7 +40,7 @@ export function RinconCatolico({
   }, [])
 
   return (
-    <Marco paso={0} total={3} onPanel={onPanel}>
+    <Marco paso={0} total={0} onPanel={onPanel}>
       <div className="pantalla">
         <p className="frase">Catholic Corner</p>
         <p className="frase-chica">Cuentos, oraciones y cantos</p>
@@ -44,13 +51,33 @@ export function RinconCatolico({
             <span className="frase-chica">📖 Bible Stories</span>
           </div>
 
+          <div className="ficha" onClick={() => onElegir('biblia')}>
+            <Tarjeta img="u2-shepherd" emoji="✝️" grande />
+            <span className="frase-chica">✝️ Bible Friends</span>
+          </div>
+
           <div className="ficha" onClick={() => onElegir('oraciones')}>
             <Tarjeta img="o-hail-mary" emoji="🕊️" grande />
             <span className="frase-chica">🕊️ Pray & Sing</span>
           </div>
 
+          <div className="ficha" onClick={() => onElegir('oracioncitas')}>
+            <Tarjeta img="o-angel" emoji="🙏" grande />
+            <span className="frase-chica">🙏 Little Prayers</span>
+          </div>
+
+          <div className="ficha" onClick={() => onElegir('alabanza')}>
+            <Tarjeta img="o-glory" emoji="🎵" grande />
+            <span className="frase-chica">🎵 Sing & Praise</span>
+          </div>
+
+          <div className="ficha" onClick={() => onElegir('objetos')}>
+            <Tarjeta img="u6-altar" emoji="⛪" grande />
+            <span className="frase-chica">⛪ Holy Things</span>
+          </div>
+
           <div className="ficha" onClick={() => onElegir('tablero')}>
-            <Tarjeta img="u2-shepherd" emoji="🧩" grande />
+            <Tarjeta img="u3-beautiful" emoji="🧩" grande />
             <span className="frase-chica">🧩 Sound Board</span>
           </div>
         </div>

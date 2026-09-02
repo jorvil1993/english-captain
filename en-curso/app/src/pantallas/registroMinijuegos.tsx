@@ -18,6 +18,9 @@ import { RingTheBells } from './minijuegos/RingTheBells'
  * parada al terminar. 9 de los 11 ya avanzan solos vía `onVolver`; Champions
  * of Jesus y Morning/Night Blessings tienen varios sub-modos y avanzan vía
  * `onListo` recién cuando José ya jugó todos — ver esos dos archivos.
+ *
+ * Los minijuegos solo se juegan acá, dentro del recorrido: no hay menú de
+ * juego libre. Cada uno tiene su lección asignada en `curriculo.ts`.
  */
 export function renderMinijuegoDeHoy(
   id: IdMinijuego,
@@ -46,41 +49,5 @@ export function renderMinijuegoDeHoy(
       return <CalmTheStorm onVolver={avanzar} onPanel={onPanel} />
     case 'bells':
       return <RingTheBells onVolver={avanzar} onPanel={onPanel} />
-  }
-}
-
-/**
- * El mismo minijuego, pero para Modo Calma vía `MinijuegosHub`: acá sí hay
- * 🏠 (`onInicio`), y Champions/Morning-Night vuelven a ser el menú libre e
- * infinito de siempre (`onListo` no se pasa nunca). Comportamiento idéntico
- * al de antes del recorrido diario.
- */
-export function renderMinijuegoLibre(
-  id: IdMinijuego,
-  { onPanel, onVolver }: { onPanel: () => void; onVolver: () => void },
-): ReactNode {
-  switch (id) {
-    case 'champions':
-      return <ChampionsOfJesus onPanel={onPanel} onInicio={onVolver} />
-    case 'routine':
-      return <MorningNightBlessings onPanel={onPanel} onInicio={onVolver} />
-    case 'altar':
-      return <LightTheAltar onVolver={onVolver} onPanel={onPanel} onInicio={onVolver} />
-    case 'noah':
-      return <NoahsPairMatch onVolver={onVolver} onPanel={onPanel} onInicio={onVolver} />
-    case 'nativity':
-      return <DressTheNativity onVolver={onVolver} onPanel={onPanel} onInicio={onVolver} />
-    case 'creation':
-      return <CreationTapBloom onVolver={onVolver} onPanel={onPanel} onInicio={onVolver} />
-    case 'trace':
-      return <TraceTheCross onVolver={onVolver} onPanel={onPanel} onInicio={onVolver} />
-    case 'loaves':
-      return <LoavesAndFishes onVolver={onVolver} onPanel={onPanel} onInicio={onVolver} />
-    case 'angel':
-      return <GuardianAngelCatch onVolver={onVolver} onPanel={onPanel} onInicio={onVolver} />
-    case 'storm':
-      return <CalmTheStorm onVolver={onVolver} onPanel={onPanel} onInicio={onVolver} />
-    case 'bells':
-      return <RingTheBells onVolver={onVolver} onPanel={onPanel} onInicio={onVolver} />
   }
 }

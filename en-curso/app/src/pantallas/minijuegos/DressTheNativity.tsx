@@ -25,7 +25,6 @@ export function DressTheNativity({ onVolver, onPanel, onInicio }: { onVolver: ()
   const [bloqueado, setBloqueado] = useState(false)
   const [terminado, setTerminado] = useState(false)
   const [arrastrando, setArrastrando] = useState<string | null>(null)
-  const [posicionArrastre, setPosicionArrastre] = useState({ x: 0, y: 0 })
   const establoRef = useRef<HTMLDivElement>(null)
   const timerInactividad = useRef<number | null>(null)
 
@@ -94,13 +93,7 @@ export function DressTheNativity({ onVolver, onPanel, onInicio }: { onVolver: ()
   const iniciarArrastre = (id: string, e: React.PointerEvent) => {
     if (bloqueado || colocadas.includes(id)) return
     setArrastrando(id)
-    setPosicionArrastre({ x: e.clientX, y: e.clientY })
     ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
-  }
-
-  const moverArrastre = (e: React.PointerEvent) => {
-    if (!arrastrando) return
-    setPosicionArrastre({ x: e.clientX, y: e.clientY })
   }
 
   const soltarArrastre = (fig: FiguraPesebre, e: React.PointerEvent) => {
@@ -130,7 +123,6 @@ export function DressTheNativity({ onVolver, onPanel, onInicio }: { onVolver: ()
     <Marco paso={colocadas.length} total={FIGURAS.length} onPanel={onPanel} onInicio={onInicio}>
       <div
         className="pantalla"
-        onPointerMove={moverArrastre}
         style={{ touchAction: 'none' }}
       >
         <p className="frase">Dress the Nativity</p>
