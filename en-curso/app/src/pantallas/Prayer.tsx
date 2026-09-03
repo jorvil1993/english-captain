@@ -56,10 +56,12 @@ export function Prayer({
 
       if (plan.versoNuevo != null) {
         if (cancelado || !sigueVivo()) return
-        await esperar(1400)
-        if (cancelado || !sigueVivo()) return
-        await decir("Let's learn something new!")
-        await esperar(500)
+        if (plan.versosRepaso.length > 0) {
+          await esperar(1400)
+          if (cancelado || !sigueVivo()) return
+          await decir("Let's learn something new!")
+          await esperar(500)
+        }
         if (cancelado || !sigueVivo()) return
         setPos(secuencia.length - 1)
         await narrar([oracion.versos[plan.versoNuevo]], 1200)
@@ -101,7 +103,6 @@ export function Prayer({
         <p className="frase" ref={linea}>
           {verso >= 0 ? oracion.versos[verso] : ' '}
         </p>
-        <p className="frase-chica">{oracion.gesto}</p>
         {termino && <p className="frase-chica">✨</p>}
       </div>
     </Marco>

@@ -20,29 +20,28 @@ export type Parada =
 export type ItemRecorrido = { modo: 'fijo'; parada: Parada }
 
 /**
- * El orden tiene intención: una frase de fútbol al micrófono para enganchar →
- * oír y señalar → cuento → cuerpo → juego SOLO si reutiliza lo aprendido →
- * una sola frase breve de oración, después de varias actividades → reconocer
- * → volver a decir las frases de la lección → llevarlo a casa.
+ * El orden tiene intención: 1 sola frase breve de oración al inicio del día
+ * como apertura espiritual serena → fútbol al micrófono para soltar la voz →
+ * vocabulario → cuento → cuerpo → minijuego si aplica → reto de reconocimiento
+ * → hablar las frases de la lección → misión para la casa.
  *
- * La oración completa sigue en el Rincón Católico, al que entra un adulto. El
- * recorrido diario no empieza con rezo ni lo interrumpe repetidamente: primero
- * hay juego y lenguaje; el momento de oración queda como una pausa corta.
+ * Sin interrupciones ni repeticiones de oración en medio del juego: solo 1 al
+ * inicio para no saturar.
  */
 export function generarRecorridoDeHoy(leccion: LeccionCurricular): ItemRecorrido[] {
-  const antesDeLaOracion: Parada[] = [
+  const paradas: Parada[] = [
+    { tipo: 'oracion' },
     { tipo: 'sayit', momento: 'gancho' },
     { tipo: 'vocabulario' },
     { tipo: 'cuento' },
     { tipo: 'move' },
   ]
-  if (leccion.juego) antesDeLaOracion.push({ tipo: 'minijuego', id: leccion.juego.id })
+  if (leccion.juego) paradas.push({ tipo: 'minijuego', id: leccion.juego.id })
+  paradas.push(
+    { tipo: 'challenge' },
+    { tipo: 'sayit', momento: 'leccion' },
+    { tipo: 'takehome' },
+  )
 
-  return [
-    ...antesDeLaOracion.map((parada) => ({ modo: 'fijo' as const, parada })),
-    { modo: 'fijo', parada: { tipo: 'eco-oracion' } },
-    { modo: 'fijo', parada: { tipo: 'challenge' } },
-    { modo: 'fijo', parada: { tipo: 'sayit', momento: 'leccion' } },
-    { modo: 'fijo', parada: { tipo: 'takehome' } },
-  ]
+  return paradas.map((parada) => ({ modo: 'fijo' as const, parada }))
 }

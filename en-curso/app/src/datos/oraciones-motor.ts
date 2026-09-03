@@ -22,8 +22,6 @@ export type PlanDeOracion = {
   versoNuevo: number | null
 }
 
-const TOPE_REPASO = 3
-
 export function planDeOracionDeHoy(params: {
   oracionIndice: number
   oracionVersoIndice: number
@@ -38,22 +36,21 @@ export function planDeOracionDeHoy(params: {
   const enseniados = Math.min(params.oracionVersoIndice, total)
 
   if (params.oracionVersoIndice >= total) {
-    // La celebración también conserva el tamaño de una lección. Repetir la
-    // oración completa de ocho frases de corrido sería demasiado para él;
-    // repasamos solo los dos últimos fragmentos ya dominados.
-    return { oracion, versosRepaso: [total - 2, total - 1], versoNuevo: null }
+    // Si ya completó todos los versos, repasa 1 solo verso por día (el más vencido)
+    let versoVencido = 0
+    let fechaMasAntigua = '9999'
+    for (let i = 0; i < total; i++) {
+      const m = params.memoria[idVerso(oracion.id, i)]
+      const prox = m?.proximo ?? '0000'
+      if (prox < fechaMasAntigua) {
+        fechaMasAntigua = prox
+        versoVencido = i
+      }
+    }
+    return { oracion, versosRepaso: [versoVencido], versoNuevo: null }
   }
 
-  const versoNuevo = enseniados < total ? enseniados : null
-  // El verso de ayer, siempre — continuidad para un niño de 5 años, más
-  // allá de lo que diga el SRS puro.
-  const garantizado = enseniados > 0 ? [enseniados - 1] : []
-  const vencidos: number[] = []
-  for (let i = 0; i < enseniados; i++) {
-    if (garantizado.includes(i)) continue
-    const m = params.memoria[idVerso(oracion.id, i)]
-    if (m && m.proximo <= params.hoy) vencidos.push(i)
-  }
-  const versosRepaso = [...garantizado, ...vencidos].sort((a, b) => a - b).slice(0, TOPE_REPASO)
-  return { oracion, versosRepaso, versoNuevo }
+  // Exactamente 1 verso nuevo cada día, sin acumular versos en la misma sesión
+  const versoNuevo = enseniados
+  return { oracion, versosRepaso: [], versoNuevo }
 }

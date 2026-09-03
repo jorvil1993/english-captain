@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Unidad } from '../datos/tipos'
-import { decir, decirEs, esperar } from '../audio/voz'
+import { decir, esperar } from '../audio/voz'
 import { Tarjeta } from '../componentes/Tarjeta'
 import { Marco } from '../componentes/Marco'
 
@@ -35,9 +35,6 @@ export function TakeItHome({
       await esperar(300)
       await decir(misionActiva.en)
       if (cancelado) return
-      await esperar(600)
-      await decirEs(misionActiva.es)
-      if (cancelado) return
       setListo(true)
       await esperar(1300)
       if (!cancelado) onListo()
@@ -45,14 +42,13 @@ export function TakeItHome({
     return () => {
       cancelado = true
     }
-  }, [misionActiva.en, misionActiva.es])
+  }, [misionActiva.en])
 
   return (
     <Marco paso={0} total={0} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
         <Tarjeta img={misionActiva.img} emoji={misionActiva.emoji} grande audio={misionActiva.en} />
         <p className="frase">{misionActiva.en}</p>
-        <p className="frase-chica">{misionActiva.es}</p>
         {listo && <p className="frase-chica">✨</p>}
       </div>
     </Marco>

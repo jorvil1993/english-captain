@@ -47,7 +47,7 @@ export function Stop({ onContinuar }: { onContinuar?: () => void }) {
     <div className="pantalla">
       <Tarjeta img="fin" emoji="🌟" grande />
       <p className="frase">Great job, Captain {nombre}!</p>
-      <p className="frase-chica">✨ Seguimos aprendiendo.</p>
+      <p className="frase-chica">✨ Keep going!</p>
 
       {onContinuar && (
         <Boton tono="oro" invita onClick={onContinuar}>
@@ -57,7 +57,7 @@ export function Stop({ onContinuar }: { onContinuar?: () => void }) {
 
       {grabaciones.length > 0 && (
         <Boton tono="oro" invita={!sonando} onClick={() => void paraPapa()}>
-          {sonando ? '🔊 …' : '🎧 Muéstrale a papá'}
+          {sonando ? '🔊 …' : '🎧 Show Dad'}
         </Boton>
       )}
     </div>
