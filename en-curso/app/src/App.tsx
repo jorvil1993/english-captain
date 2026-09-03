@@ -4,7 +4,7 @@ import { hoyISO, useSesion } from './estado/Sesion'
 import { TODAS_LAS_FRASES } from './datos/curso'
 import { planDeOracionDeHoy, type PlanDeOracion } from './datos/oraciones-motor'
 import { frasesConocidasHasta, frasesDeLeccion, leccionDeHoy, type LeccionCurricular } from './datos/curriculo'
-import { generarRecorridoDeHoy, type ItemRecorrido, type Parada } from './datos/recorrido'
+import { generarRecorridoDeHoy, INTERVALO_ORACION, type ItemRecorrido, type Parada } from './datos/recorrido'
 import { renderMinijuegoDeHoy } from './pantallas/registroMinijuegos'
 import { Bienvenida } from './pantallas/Bienvenida'
 import { Prayer } from './pantallas/Prayer'
@@ -66,11 +66,14 @@ export function App() {
   const [planOracion, setPlanOracion] = useState<PlanDeOracion | null>(null)
   const [leccion, setLeccion] = useState<LeccionCurricular | null>(null)
   const [continuando, setContinuando] = useState(false)
+  const [contadorOracion, setContadorOracion] = useState(INTERVALO_ORACION)
 
   const prepararSiguienteLeccion = () => {
     const leccionDeEstaSesion = leccionDeHoy(unidad.id, diasEnUnidad)
     setLeccion(leccionDeEstaSesion)
-    setRecorrido(generarRecorridoDeHoy(leccionDeEstaSesion))
+    const { items, contadorFinal } = generarRecorridoDeHoy(leccionDeEstaSesion, contadorOracion)
+    setRecorrido(items)
+    setContadorOracion(contadorFinal)
     setPlanOracion(planDeOracionDeHoy({ oracionIndice, oracionVersoIndice: aveMariaVersoIndice, memoria, hoy: hoyISO() }))
     setCursor(0)
     setEmpezado(true)
