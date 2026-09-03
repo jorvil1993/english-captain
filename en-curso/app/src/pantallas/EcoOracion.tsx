@@ -9,10 +9,12 @@ import { Marco } from '../componentes/Marco'
  * el niño ya ha hecho algo, para que se vuelva familiar por contexto. */
 export function EcoOracion({
   plan,
+  onVersoMostrado,
   onListo,
   onPanel,
 }: {
   plan: PlanDeOracion
+  onVersoMostrado: (versoIdx: number) => void
   onListo: () => void
   onPanel: () => void
 }) {
@@ -25,13 +27,19 @@ export function EcoOracion({
       await esperar(350)
       if (cancelado) return
       await decir(verso)
+      if (cancelado) return
+      onVersoMostrado(indice)
       await esperar(1350)
       if (!cancelado) onListo()
     })()
     return () => {
       cancelado = true
     }
-  }, [onListo, verso])
+    // Las dos funciones vienen de App y cambian de identidad cuando registrar
+    // el verso actual actualiza el progreso. Incluirlas reiniciaría este eco
+    // y repetiría la misma frase sin fin.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [indice, verso])
 
   return (
     <Marco paso={0} total={0} onPanel={onPanel}>

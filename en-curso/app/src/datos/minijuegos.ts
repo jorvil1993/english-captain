@@ -20,7 +20,7 @@ export const LISTA_MINIJUEGOS: MinijuegoInfo[] = [
     titulo: 'Champions of Jesus',
     emoji: '⚽',
     img: 'c-messi',
-    descripcion: 'Fútbol con Messi, Mbappé, Lamine y Dibu dando gracias a Dios.',
+    descripcion: 'Fútbol con Messi, Mbappé, Modrić y Dibu dando gracias a Dios.',
   },
   {
     id: 'altar',

@@ -38,11 +38,11 @@ const JUGADORES: Jugador[] = [
     valor: 'Joy: Play with all your heart!',
   },
   {
-    id: 'yamal',
-    nombre: 'Lamine',
-    orden: 'Pass to Lamine!',
-    audio: 'Lamine! Great team!',
-    img: 'c-yamal',
+    id: 'modric',
+    nombre: 'Luka',
+    orden: 'Pass to Luka!',
+    audio: 'Luka! Great team!',
+    img: 'c-modric',
     emoji: '⭐',
     valor: 'Humility: Learn and share with friends!',
   },
@@ -80,7 +80,7 @@ export function ChampionsOfJesus({
   const [celebrandoGol, setCelebrandoGol] = useState(false)
   const [completados, setCompletados] = useState<Set<SubModo>>(new Set())
 
-  const jugadorObjetivo = JUGADORES[paso % 3] // Para modo pases (Messi, Mbappé, Lamine)
+  const jugadorObjetivo = JUGADORES[paso % 3] // Para modo pases (Messi, Mbappé, Luka)
 
   useEffect(() => {
     if (!onListo || modo !== 'penal' || balonEnArco) return
@@ -235,7 +235,7 @@ export function ChampionsOfJesus({
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
               >
                 <div style={{ width: 88, height: 88 }}>
-                  <Tarjeta img="c-yamal" emoji="⚡" audio="We play together with Jesus! Pass to Messi!" />
+                  <Tarjeta img="c-modric" emoji="⚡" audio="We play together with Jesus! Pass to Messi!" />
                 </div>
                 <span className="frase-chica" style={{ fontSize: 13, fontWeight: 800, marginTop: 4, textAlign: 'center' }}>
                   Team Passing 👟

@@ -3,7 +3,7 @@
 
 Por que fotos reales y no generadas: Jorge lo pidio asi —"que sean jugadores
 reales con sus propias imagenes reales del jugador, eso lo enganchara a el"— y
-tiene razon: el gancho de Jose son Messi, Mbappe y Lamine Yamal de verdad, no
+tiene razon: el gancho de Jose son Messi, Mbappe y Luka Modric de verdad, no
 un dibujo parecido. Y ademas es lo correcto: la cara de una persona real no se
 inventa con una IA. Se usa su fotografia, o no se usa nada.
 
@@ -33,13 +33,13 @@ AGENTE = "AprenderInglesJose/1.0 (proyecto familiar; contacto: gusvillavicencio@
 # clave del cromo -> articulo de Wikipedia del que sacamos la foto principal
 JUGADORES = {
     "c-messi": "Lionel Messi",
-    "c-yamal": "Lamine Yamal",
 }
 
 # Cuando la foto principal del articulo no trae licencia legible (le paso a
 # Mbappe), se nombra a mano un archivo de Commons ya verificado como libre.
 ARCHIVOS_A_MANO = {
     "c-mbappe": "Kylian Mbappe France v Senegal 16 June 2026-391 (cropped 3).jpg",
+    "c-modric": "Luka Modric Croatia v Portugal 2 July 2026-055.jpg",
 }
 
 LICENCIAS_OK = ("cc0", "cc by", "cc-by", "public domain", "pd-")

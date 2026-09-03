@@ -558,7 +558,7 @@ export const ORACIONES: Oracion[] = [
 export const CROMOS: Cromo[] = [
   { id: 'c-messi', nombre: 'Messi', en: 'Messi kicks the ball!', es: '¡Messi patea la pelota!', img: 'c-messi', emoji: '🐐', credito: 'Wikimedia Commons' },
   { id: 'c-mbappe', nombre: 'Mbappé', en: 'Mbappé runs fast!', es: '¡Mbappé corre rápido!', img: 'c-mbappe', emoji: '⚡', credito: 'Wikimedia Commons' },
-  { id: 'c-yamal', nombre: 'Lamine Yamal', en: 'Lamine Yamal scores a goal!', es: '¡Lamine Yamal mete un gol!', img: 'c-yamal', emoji: '✨', credito: 'Wikimedia Commons' },
+  { id: 'c-modric', nombre: 'Luka Modrić', en: 'Luka Modrić scores a goal!', es: '¡Luka Modrić marca un gol!', img: 'c-modric', emoji: '✨', credito: 'Wikimedia Commons' },
 ]
 
 /** Índice plano de todas las frases para el motor de repaso y búsqueda. */

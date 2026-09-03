@@ -50,12 +50,12 @@ const INTERFAZ: Linea[] = [
   { texto: 'Sheep!', voz: 'maestra' },
   { texto: 'Dove!', voz: 'maestra' },
   { texto: 'Elephant!', voz: 'maestra' },
-  // Frases de Fútbol Católico (Messi, Mbappé, Lamine, Dibu)
+  // Frases de Fútbol Católico (Messi, Mbappé, Modrić, Dibu)
   { texto: 'Champions of Jesus', voz: 'coach' },
   { texto: 'Shoot and score!', voz: 'coach' },
   { texto: 'Pass to Messi!', voz: 'nino' },
   { texto: 'Pass to Mbappé!', voz: 'nino' },
-  { texto: 'Pass to Lamine!', voz: 'nino' },
+  { texto: 'Pass to Luka!', voz: 'nino' },
   { texto: 'Dibu saves the ball!', voz: 'coach' },
   { texto: 'GOAL! Thank you, God!', voz: 'nino' },
   { texto: 'Great kick, Captain José!', voz: 'coach' },
@@ -68,7 +68,9 @@ const INTERFAZ: Linea[] = [
   { texto: 'Save!', voz: 'coach' },
   { texto: 'Messi!', voz: 'nino' },
   { texto: 'Mbappé!', voz: 'nino' },
-  { texto: 'Lamine!', voz: 'nino' },
+  { texto: 'Luka!', voz: 'nino' },
+  { texto: 'Luka! Great team!', voz: 'nino' },
+  { texto: 'Luka Modrić scores a goal!', voz: 'nino' },
   { texto: 'Dibu!', voz: 'coach' },
 ]
 

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { prepararVoz } from './audio/voz'
 import { hoyISO, useSesion } from './estado/Sesion'
+import { TODAS_LAS_FRASES } from './datos/curso'
 import { planDeOracionDeHoy, type PlanDeOracion } from './datos/oraciones-motor'
 import { frasesConocidasHasta, frasesDeLeccion, leccionDeHoy, type LeccionCurricular } from './datos/curriculo'
 import { generarRecorridoDeHoy, type ItemRecorrido, type Parada } from './datos/recorrido'
@@ -108,6 +109,9 @@ export function App() {
     // El guard de renderContenido asegura que existe antes de llegar aquí.
     const frasesDeHoy = frasesDeLeccion(unidad, leccion!)
     const frasesConocidas = frasesConocidasHasta(unidad, leccion!)
+    // Siempre empieza con una frase conocida y divertida: es la puerta de
+    // entrada al micrófono, incluso cuando la lección del día es de otro tema.
+    const fraseGancho = TODAS_LAS_FRASES.find((frase) => frase.id === 'u1-kick')
     switch (p.tipo) {
       case 'oracion':
         // `renderParada` solo se llama después de confirmar que `planOracion`
@@ -126,7 +130,14 @@ export function App() {
       case 'vocabulario':
         return <PalabrasDelDia frases={frasesDeHoy} onListo={onListo} onPanel={pedirPanel} />
       case 'eco-oracion':
-        return <EcoOracion plan={planOracion!} onListo={onListo} onPanel={pedirPanel} />
+        return (
+          <EcoOracion
+            plan={planOracion!}
+            onVersoMostrado={(i) => registrarVerso(planOracion!.oracion.id, i)}
+            onListo={onListo}
+            onPanel={pedirPanel}
+          />
+        )
       case 'cuento':
         return (
           <Story
@@ -153,9 +164,10 @@ export function App() {
           />
         )
       case 'sayit':
+        const frasesParaRepetir = p.momento === 'gancho' && fraseGancho ? [fraseGancho] : frasesDeHoy
         return (
           <SayIt
-            frases={frasesDeHoy}
+            frases={frasesParaRepetir}
             onIntento={() => {
               marcador.intentosVoz += 1
             }}
