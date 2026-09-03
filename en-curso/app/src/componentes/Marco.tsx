@@ -1,24 +1,20 @@
 import { type ReactNode } from 'react'
-import { decirEs } from '../audio/voz'
 
 /**
  * El marco de toda pantalla de José:
  * - Botón de inicio / volver (🏠) arriba a la izquierda.
  * - Puntos de avance dinámicos al centro.
  * - Panel de papás (⚙) arriba a la derecha.
- * - Botón de ayuda en español abajo a la izquierda.
  */
 export function Marco({
   paso,
   total,
-  ayudaEs,
   children,
   onPanel,
   onInicio,
 }: {
   paso: number
   total: number
-  ayudaEs?: string
   children: ReactNode
   onPanel?: () => void
   onInicio?: () => void
@@ -56,12 +52,6 @@ export function Marco({
       )}
 
       {children}
-
-      {ayudaEs && (
-        <button className="boton fantasma ayuda" onClick={() => void decirEs(ayudaEs)}>
-          ❓ en español
-        </button>
-      )}
     </>
   )
 }

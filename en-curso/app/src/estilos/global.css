@@ -298,15 +298,6 @@ body {
   padding: 10px 16px;
 }
 
-/* La ayuda en español. Chiquita y en la esquina a propósito: es un rescate,
-   no una muleta (§4 de la investigación). */
-.ayuda {
-  position: fixed;
-  left: max(10px, env(safe-area-inset-left));
-  bottom: max(10px, env(safe-area-inset-bottom));
-  z-index: 5;
-}
-
 /* El acceso al panel de papás. Arriba a la derecha, se mantiene apretado 2
    segundos: José no entra por accidente y papá no tiene que buscar nada. */
 .boton-inicio {

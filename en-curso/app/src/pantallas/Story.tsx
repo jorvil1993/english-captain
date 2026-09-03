@@ -157,7 +157,7 @@ export function Story({
   const esPregunta = (fase === 'preguntando' || fase === 'resolviendo') && Boolean(pregunta)
 
   return (
-    <Marco paso={i} total={escenas.length} ayudaEs={escena.es} onPanel={onPanel} onInicio={onInicio}>
+    <Marco paso={i} total={escenas.length} onPanel={onPanel} onInicio={onInicio}>
       {refuerzo && (
         <div
           style={{

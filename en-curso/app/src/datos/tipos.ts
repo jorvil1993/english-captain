@@ -80,7 +80,7 @@ export type Frase = {
   en: string
   /** La palabra sola. Sin esto, la frase no se puede enseñar sin traducir. */
   etiqueta?: Etiqueta
-  /** El rescate en español. Solo suena si José toca el botón de ayuda. */
+  /** Referencia breve en español para los momentos que la necesitan. */
   es: string
   /** La orden en inglés que dispara el movimiento en MOVE IT. */
   ordenEn: string

@@ -72,7 +72,7 @@ export function SayIt({
   }
 
   return (
-    <Marco paso={i} total={frases.length} ayudaEs={frase.es} onPanel={onPanel} onInicio={onInicio}>
+    <Marco paso={i} total={frases.length} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
         <Tarjeta img={frase.img} emoji={frase.emoji} grande onClick={() => void decir(frase.en)} audio={frase.en} />
         <p className="frase">{frase.en}</p>

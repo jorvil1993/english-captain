@@ -131,7 +131,7 @@ export async function decir(texto: string, clave?: string): Promise<void> {
   return esperar(Math.max(900, texto.length * 95))
 }
 
-/** El rescate en español. Corto, y solo cuando José lo pide. */
+/** El apoyo en español. Corto y reservado para los momentos necesarios. */
 export async function decirEs(texto: string, clave?: string): Promise<void> {
   callar()
   const miTurno = turno

@@ -59,7 +59,7 @@ export function MoveIt({
   }
 
   return (
-    <Marco paso={i} total={ordenes.length} ayudaEs={frase.es} onPanel={onPanel} onInicio={onInicio}>
+    <Marco paso={i} total={ordenes.length} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
         <Tarjeta
           img={frase.img}

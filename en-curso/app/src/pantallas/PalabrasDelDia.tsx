@@ -106,7 +106,7 @@ export function PalabrasDelDia({
   if (!frase) return null
 
   return (
-    <Marco paso={indice} total={frases.length} ayudaEs={frase.es} onPanel={onPanel}>
+    <Marco paso={indice} total={frases.length} onPanel={onPanel}>
       <div className="pantalla">
         <Tarjeta
           img={frase.img}

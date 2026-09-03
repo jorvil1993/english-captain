@@ -48,7 +48,7 @@ export function TakeItHome({
   }, [misionActiva.en, misionActiva.es])
 
   return (
-    <Marco paso={0} total={0} ayudaEs={misionActiva.es} onPanel={onPanel} onInicio={onInicio}>
+    <Marco paso={0} total={0} onPanel={onPanel} onInicio={onInicio}>
       <div className="pantalla">
         <Tarjeta img={misionActiva.img} emoji={misionActiva.emoji} grande audio={misionActiva.en} />
         <p className="frase">{misionActiva.en}</p>

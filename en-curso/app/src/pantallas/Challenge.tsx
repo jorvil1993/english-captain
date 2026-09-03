@@ -142,7 +142,7 @@ export function Challenge({
 
   if (terminado) {
     return (
-      <Marco paso={rondas.length} total={rondas.length} ayudaEs={cromo.es} onPanel={onPanel} onInicio={onInicio}>
+      <Marco paso={rondas.length} total={rondas.length} onPanel={onPanel} onInicio={onInicio}>
         <div className="pantalla">
           <Tarjeta img={cromo.img} emoji={cromo.emoji} grande onClick={() => void decir(cromo.en)} audio={cromo.en} />
           <p className="frase">{cromo.en}</p>
@@ -164,7 +164,7 @@ export function Challenge({
   }
 
   return (
-    <Marco paso={i} total={rondas.length} ayudaEs={objetivo.es} onPanel={onPanel} onInicio={onInicio}>
+    <Marco paso={i} total={rondas.length} onPanel={onPanel} onInicio={onInicio}>
       {refuerzo && (
         <div
           style={{
