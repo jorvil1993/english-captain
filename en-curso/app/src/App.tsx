@@ -26,6 +26,7 @@ import { MyLittlePrayers } from './pantallas/MyLittlePrayers'
 import { SingAndPraise } from './pantallas/SingAndPraise'
 import { Papas } from './pantallas/Papas'
 import { CompuertaPapas } from './componentes/CompuertaPapas'
+import { APP_VERSION } from './datos/version'
 
 type ModoCalma = 'cerrado' | 'rincon'
 
@@ -254,6 +255,9 @@ export function App() {
 
   return (
     <>
+      <span className="badge-version" aria-hidden="true" title={`Versión ${APP_VERSION}`}>
+        {APP_VERSION}
+      </span>
       {mostrarCompuerta && (
         <CompuertaPapas onAprobado={aprobarPanel} onCerrar={() => setMostrarCompuerta(false)} />
       )}

@@ -5,6 +5,7 @@ import { grabacionesDeHoy, reproducir } from '../audio/grabaciones'
 import { ultimoError } from '../componentes/RedDeSeguridad'
 import { hoyISO, useSesion } from '../estado/Sesion'
 import { FichaJuegosMovimiento } from '../componentes/FichaJuegosMovimiento'
+import { APP_VERSION } from '../datos/version'
 
 /**
  * El panel de papás.
@@ -280,6 +281,9 @@ export function Papas({ onSalir, onEntrarModoCalma }: { onSalir: () => void; onE
             </>
           ) : null
         })()}
+        <p style={{ fontSize: 12, color: 'var(--tinta-suave)', marginTop: 24, marginBottom: 12, textAlign: 'center' }}>
+          English with Captain José · Versión {APP_VERSION}
+        </p>
       </div>
     </div>
   )
