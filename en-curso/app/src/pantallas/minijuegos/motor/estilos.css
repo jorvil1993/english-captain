@@ -645,3 +645,46 @@
     opacity: 1;
   }
 }
+
+/* ── Animaciones dinámicas de juego ──────────────────────────────────────── */
+@keyframes mjx-rebote-suave {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-14px) scale(1.08);
+  }
+}
+
+@keyframes mjx-pulso {
+  0%, 100% {
+    transform: translateX(-50%) scale(1);
+    box-shadow: 0 4px 14px rgba(27,107,74,0.4);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.08);
+    box-shadow: 0 6px 20px rgba(27,107,74,0.65);
+  }
+}
+
+@keyframes mjx-aparecer {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes mjx-dibu-patrulla {
+  0% {
+    transform: translateX(-70px);
+  }
+  100% {
+    transform: translateX(70px);
+  }
+}
+
+

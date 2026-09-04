@@ -74,4 +74,5 @@ export const FRASES_SUELTAS: Linea[] = [
   { texto: 'Light another candle!', voz: 'coach' },
   { texto: 'Fire! Warm and bright!', voz: 'nino' },
   { texto: 'Light the altar candle!', voz: 'coach' },
+  { texto: 'The altar is ready for Mass.', voz: 'oracion' },
 ]
