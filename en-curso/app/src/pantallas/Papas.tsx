@@ -17,14 +17,17 @@ export function Papas({ onSalir, onEntrarModoCalma }: { onSalir: () => void; onE
     nombre,
     unidad,
     unidadIndice,
+    diasEnUnidad,
     sesiones,
     memoria,
     modoLibreActivo,
     oracionActual,
     oracionVersoIndice,
+    porcentajeGlobal,
     marcarMision,
     ponerNombre,
     fijarUnidadIndice,
+    fijarLeccionIndice,
     fijarOracionIndice,
     fijarModoLibre,
     borrarTodo,
@@ -68,19 +71,35 @@ export function Papas({ onSalir, onEntrarModoCalma }: { onSalir: () => void; onE
           Unidad {unidad.numero} de {UNIDADES.length} · <b>{unidad.titulo}</b> · virtud: <b>{VIRTUDES[unidad.virtud]}</b>
         </p>
 
-        <h2>Control de Unidades y Modo</h2>
+        <h2>Control de Unidades y Progreso ({porcentajeGlobal}%)</h2>
         <div style={{ background: 'var(--blanco)', padding: 16, borderRadius: 16, marginBottom: 16 }}>
-          <p style={{ margin: '0 0 8px 0', fontWeight: 'bold' }}>Cambiar desde qué unidad continúa el recorrido:</p>
+          <p style={{ margin: '0 0 8px 0', fontWeight: 'bold' }}>
+            Unidad activa:
+          </p>
           <select
             value={unidadIndice}
             onChange={(e) => fijarUnidadIndice(Number(e.target.value))}
-            style={{ width: '100%', fontSize: 15, padding: '8px 12px', borderRadius: 8, border: '1px solid #ccc', marginBottom: 14 }}
+            style={{ width: '100%', fontSize: 15, padding: '8px 12px', borderRadius: 8, border: '1px solid #ccc', marginBottom: 12 }}
           >
             {UNIDADES.map((u, idx) => (
               <option key={u.id} value={idx}>
                 Unidad {u.numero}: {u.titulo} ({VIRTUDES[u.virtud]})
               </option>
             ))}
+          </select>
+
+          <p style={{ margin: '0 0 8px 0', fontWeight: 'bold' }}>
+            Lección dentro de la unidad:
+          </p>
+          <select
+            value={diasEnUnidad}
+            onChange={(e) => fijarLeccionIndice(Number(e.target.value))}
+            style={{ width: '100%', fontSize: 15, padding: '8px 12px', borderRadius: 8, border: '1px solid #ccc', marginBottom: 14 }}
+          >
+            <option value={0}>Lección 1: Primeras 2 frases y cuento</option>
+            <option value={1}>Lección 2: Siguientes 2 frases y movimiento</option>
+            <option value={2}>Lección 3: Frases 5-6 y Minijuego interactivo</option>
+            <option value={3}>Lección 4: Frases finales y misión</option>
           </select>
 
           <label style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: 15, cursor: 'pointer' }}>

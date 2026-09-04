@@ -4,6 +4,7 @@ import { Tarjeta } from '../componentes/Tarjeta'
 import { Marco } from '../componentes/Marco'
 
 export type SeccionRincon =
+  | 'juegos'
   | 'cuentos'
   | 'biblia'
   | 'oraciones'
@@ -46,6 +47,11 @@ export function RinconCatolico({
         <p className="frase-chica">Cuentos, oraciones y cantos</p>
 
         <div className="fila" style={{ flexWrap: 'wrap', maxWidth: 640 }}>
+          <div className="ficha" onClick={() => onElegir('juegos')}>
+            <Tarjeta img="c-messi" emoji="🎮" grande />
+            <span className="frase-chica">🎮 Sacred Games</span>
+          </div>
+
           <div className="ficha" onClick={() => onElegir('cuentos')}>
             <Tarjeta img="plan-story" emoji="📖" grande />
             <span className="frase-chica">📖 Bible Stories</span>

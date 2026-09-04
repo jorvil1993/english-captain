@@ -107,12 +107,14 @@ type Contexto = {
   oracionVersoIndice: number
   aveMariaVersoIndice: number
   oracionActual: Oracion
+  porcentajeGlobal: number
   registrarRespuesta: (fraseId: string, acierto: boolean) => void
   registrarVerso: (oracionId: string, versoIdx: number) => void
   cerrarSesion: (datos: { preguntas: number; aciertos: number; intentosVoz: number }) => void
   marcarMision: (fecha: string, cumplida: boolean) => void
   ponerNombre: (n: string) => void
   fijarUnidadIndice: (idx: number) => void
+  fijarLeccionIndice: (dias: number) => void
   fijarOracionIndice: (idx: number) => void
   fijarModoLibre: (activo: boolean) => void
   borrarTodo: () => void
@@ -194,6 +196,10 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
     }))
   }, [])
 
+  const totalLecciones = UNIDADES.length * 4
+  const leccionGlobal = (g.unidadIndice * 4) + g.diasEnUnidad
+  const porcentajeGlobal = Math.max(1, Math.min(100, Math.round((leccionGlobal / totalLecciones) * 100)))
+
   const valor: Contexto = {
     nombre: g.nombre,
     unidad,
@@ -209,12 +215,14 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
     oracionVersoIndice: g.oracionVersoIndice,
     aveMariaVersoIndice: g.aveMariaVersoIndice ?? 0,
     oracionActual,
+    porcentajeGlobal,
     registrarRespuesta,
     registrarVerso,
     cerrarSesion,
     marcarMision,
     ponerNombre: (n) => setG((v) => ({ ...v, nombre: n.trim() || 'José' })),
     fijarUnidadIndice: (idx) => setG((v) => ({ ...v, unidadIndice: Math.max(0, Math.min(idx, UNIDADES.length - 1)), diasEnUnidad: 0 })),
+    fijarLeccionIndice: (dias) => setG((v) => ({ ...v, diasEnUnidad: Math.max(0, Math.min(dias, 3)) })),
     fijarOracionIndice: (idx) => setG((v) => ({ ...v, oracionIndice: Math.max(0, Math.min(idx, ORACIONES.length - 1)), oracionVersoIndice: 0 })),
     fijarModoLibre: (activo) => setG((v) => ({ ...v, modoLibreActivo: activo })),
     borrarTodo: () => setG(INICIAL),

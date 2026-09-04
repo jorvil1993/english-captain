@@ -57,7 +57,7 @@ export function generarRecorridoDeHoy(
   let contador = actividadesDesdeUltimaOracion
 
   if (contador >= INTERVALO_ORACION) {
-    paradas.push({ tipo: 'oracion' })
+    paradas.push({ tipo: 'eco-oracion' })
     contador = 0
   }
 
@@ -65,7 +65,7 @@ export function generarRecorridoDeHoy(
     paradas.push(act)
     contador++
     if (contador >= INTERVALO_ORACION && act.tipo !== 'takehome') {
-      paradas.push({ tipo: 'oracion' })
+      paradas.push({ tipo: 'eco-oracion' })
       contador = 0
     }
   }

@@ -15,6 +15,7 @@ import { SayIt } from './pantallas/SayIt'
 import { TakeItHome } from './pantallas/TakeItHome'
 import { Stop } from './pantallas/Stop'
 import { RinconCatolico, type SeccionRincon } from './pantallas/RinconCatolico'
+import { MinijuegosExplorer } from './pantallas/MinijuegosExplorer'
 import { CuentosExplorer } from './pantallas/CuentosExplorer'
 import { OracionesYCantos } from './pantallas/OracionesYCantos'
 import { TableroVocabulario } from './pantallas/TableroVocabulario'
@@ -41,6 +42,7 @@ export function App() {
     oracionIndice,
     aveMariaVersoIndice,
     memoria,
+    porcentajeGlobal,
   } = useSesion()
 
   const [empezado, setEmpezado] = useState(false)
@@ -203,6 +205,9 @@ export function App() {
 
   const renderModoCalma = () => {
     const volverAlRincon = () => setSeccionRincon(null)
+    if (seccionRincon === 'juegos') {
+      return <MinijuegosExplorer onVolver={volverAlRincon} onPanel={pedirPanel} />
+    }
     if (seccionRincon === 'cuentos') {
       return <CuentosExplorer onVolver={volverAlRincon} onPanel={pedirPanel} />
     }
@@ -255,6 +260,13 @@ export function App() {
 
   return (
     <>
+      <span
+        className="badge-porcentaje"
+        aria-hidden="true"
+        title={`Unidad ${unidad.numero} · Lección ${diasEnUnidad + 1} (${porcentajeGlobal}%)`}
+      >
+        {porcentajeGlobal}%
+      </span>
       <span className="badge-version" aria-hidden="true" title={`Versión ${APP_VERSION}`}>
         {APP_VERSION}
       </span>
